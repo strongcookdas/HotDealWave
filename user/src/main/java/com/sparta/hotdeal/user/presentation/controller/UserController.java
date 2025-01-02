@@ -46,8 +46,8 @@ public class UserController {
         return ResponseDto.of("회원정보수정 성공", resPatchUsersInfoByIdDto);
     }
 
-    @PatchMapping("/{userId}")
-    public ResponseDto<ResPatchUsersPasswordByIdDto> changeUserInfos(
+    @PatchMapping("/{userId}/password")
+    public ResponseDto<ResPatchUsersPasswordByIdDto> changeUserPassword(
             @PathVariable("userId") UUID userId,
             @RequestBody ReqPatchUsersPasswordByIdDto reqPatchUsersPasswordByIdDto
     ) {
