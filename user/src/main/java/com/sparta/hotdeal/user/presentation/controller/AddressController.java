@@ -3,8 +3,11 @@ package com.sparta.hotdeal.user.presentation.controller;
 import com.sparta.hotdeal.user.presentation.dtos.ResponseDto;
 import com.sparta.hotdeal.user.presentation.dtos.address.request.ReqPostAddressDto;
 import com.sparta.hotdeal.user.presentation.dtos.address.response.ResGetAddressByIdDto;
+import com.sparta.hotdeal.user.presentation.dtos.address.response.ResGetAddressesDto;
 import com.sparta.hotdeal.user.presentation.dtos.address.response.ResGetDefaultAddressDto;
 import com.sparta.hotdeal.user.presentation.dtos.address.response.ResPostAddressDto;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -60,5 +63,25 @@ public class AddressController {
                 .build();
 
         return ResponseDto.of("기본 배송지 조회 성공", resGetDefaultAddressDto);
+    }
+
+    // 구현 시 List가 아닌 페이징을 적용하도록 수정
+    @GetMapping("/address")
+    public ResponseDto<List<ResGetAddressesDto>> getAddresses() {
+
+        ResGetAddressesDto resGetAddressesDto = ResGetAddressesDto.builder()
+                .addressId(UUID.randomUUID())
+                .zipNum("zipNum")
+                .city("city")
+                .district("district")
+                .streetName("streetName")
+                .streetNum("streetNum")
+                .detailAddr("detailAddr")
+                .build();
+
+        List<ResGetAddressesDto> responseDtos = new ArrayList<>();
+        responseDtos.add(resGetAddressesDto);
+
+        return ResponseDto.of("배송지 목록 조회 성공", responseDtos);
     }
 }
