@@ -1,5 +1,6 @@
 package com.sparta.hotdeal.user.presentation.controller;
 
+import com.sparta.hotdeal.user.presentation.dtos.request.ReqPostCheckEmailDto;
 import com.sparta.hotdeal.user.presentation.dtos.request.ReqPostSignUpDto;
 import com.sparta.hotdeal.user.presentation.dtos.response.ResPostSignUpDto;
 import com.sparta.hotdeal.user.presentation.dtos.ResponseDto;
@@ -25,5 +26,13 @@ public class AuthController {
         ResponseDto<ResPostSignUpDto> responseDto = ResponseDto.of(201, "회원가입 성공", resPostSignUpDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+    }
+
+    @PostMapping("check-email")
+    public ResponseEntity<ResponseDto<Void>> checkEmail(@RequestBody ReqPostCheckEmailDto requestDto) {
+
+        ResponseDto<Void> responseDto = ResponseDto.of(200, "사용할 수 있는 이메일입니다.", null);
+
+        return ResponseEntity.ok(responseDto);
     }
 }
