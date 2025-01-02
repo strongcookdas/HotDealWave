@@ -78,7 +78,8 @@ public class ProductController {
     @PatchMapping("/{productId}/reduceQuantity")
     public ResponseDto<ResProductIdDto> reduceQuantity(
             @PathVariable UUID productId,
-            @RequestParam int quantity
+            @RequestParam int quantity,
+            @RequestParam Boolean promotion
     ) {
         ResProductIdDto resProductIdDto = ResProductIdDto.builder()
                 .productId(UUID.randomUUID())
@@ -90,7 +91,8 @@ public class ProductController {
     @PatchMapping("/{productId}/restoreQuantity")
     public ResponseDto<ResProductIdDto> restoreQuantity(
             @PathVariable UUID productId,
-            @RequestParam int quantity
+            @RequestParam int quantity,
+            @RequestParam Boolean promotion
     ) {
         ResProductIdDto resProductIdDto = ResProductIdDto.builder()
                 .productId(UUID.randomUUID())
