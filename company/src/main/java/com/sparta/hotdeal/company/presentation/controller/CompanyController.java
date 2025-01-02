@@ -1,11 +1,11 @@
-package com.sparta.hotdeal.company.presentation;
+package com.sparta.hotdeal.company.presentation.controller;
 
 import com.sparta.hotdeal.company.domain.entity.CompanyStatusEnum;
-import com.sparta.hotdeal.company.presentation.dtos.ReqPatchCompanyByIdDto;
-import com.sparta.hotdeal.company.presentation.dtos.ReqPatchCompanyByIdStatusDto;
-import com.sparta.hotdeal.company.presentation.dtos.ReqPostCompanyDto;
-import com.sparta.hotdeal.company.presentation.dtos.ResGetCompanyByIdDto;
-import com.sparta.hotdeal.company.presentation.dtos.ResponseDto;
+import com.sparta.hotdeal.company.application.dtos.ReqPatchCompanyByIdDto;
+import com.sparta.hotdeal.company.application.dtos.ReqPatchCompanyByIdStatusDto;
+import com.sparta.hotdeal.company.application.dtos.ReqPostCompanyDto;
+import com.sparta.hotdeal.company.application.dtos.ResGetCompanyByIdDto;
+import com.sparta.hotdeal.company.application.dtos.ResponseDto;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
