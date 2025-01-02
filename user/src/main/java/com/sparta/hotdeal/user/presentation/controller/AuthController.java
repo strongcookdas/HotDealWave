@@ -4,9 +4,11 @@ import com.sparta.hotdeal.user.presentation.dtos.ResponseDto;
 import com.sparta.hotdeal.user.presentation.dtos.auth.request.ReqPostCheckEmailDto;
 import com.sparta.hotdeal.user.presentation.dtos.auth.request.ReqPostConfirmEmailDto;
 import com.sparta.hotdeal.user.presentation.dtos.auth.request.ReqPostLoginDto;
+import com.sparta.hotdeal.user.presentation.dtos.auth.request.ReqPostRefreshDto;
 import com.sparta.hotdeal.user.presentation.dtos.auth.request.ReqPostSignUpDto;
 import com.sparta.hotdeal.user.presentation.dtos.auth.request.ReqPostVerifyEmailDto;
 import com.sparta.hotdeal.user.presentation.dtos.auth.response.ResPostLoginDto;
+import com.sparta.hotdeal.user.presentation.dtos.auth.response.ResPostRefreshDto;
 import com.sparta.hotdeal.user.presentation.dtos.auth.response.ResPostSignUpDto;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
@@ -65,6 +67,19 @@ public class AuthController {
                 .build();
 
         ResponseDto<ResPostLoginDto> responseDto = ResponseDto.of(200, "로그인 성공", resPostLoginDto);
+
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<ResponseDto<ResPostRefreshDto>> refresh(@RequestBody ReqPostRefreshDto requestDto) {
+
+        ResPostRefreshDto resPostRefreshDto = ResPostRefreshDto.builder()
+                .accessToken("exampleAccessToken")
+                .refreshToken("exampleRefreshToken")
+                .build();
+
+        ResponseDto<ResPostRefreshDto> responseDto = ResponseDto.of(200, "토큰 재발급 성공", resPostRefreshDto);
 
         return ResponseEntity.ok(responseDto);
     }
