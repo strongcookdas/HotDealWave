@@ -42,8 +42,12 @@ public class Promotion {
     @Column(nullable = false)
     private Integer discountRate;
 
+    @Column(nullable = false)
     private Integer discountPrice;
 
     @Column(nullable = false)
     private Integer quantity;
+
+    @Column(nullable = false)
+    private Integer remaining;
 }

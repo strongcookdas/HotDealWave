@@ -44,6 +44,7 @@ public class Product extends AuditingDate {
     @Enumerated(EnumType.STRING)
     private ProductCategoryEnum category;
 
+    @Column
     private String description;
 
     // detailImgs와 1:1 관계 설정
@@ -59,12 +60,16 @@ public class Product extends AuditingDate {
     @Column(nullable = false)
     private UUID companyId;
 
+    @Column
     @Enumerated(EnumType.STRING)
     private ProductStatusEnum status;
 
+    @Column
     private Double rating;
 
+    @Column
     private Integer reviewCnt;
 
+    @Column
     private Integer discountPrice;
 }
