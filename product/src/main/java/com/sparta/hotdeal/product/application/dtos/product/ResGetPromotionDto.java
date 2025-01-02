@@ -19,4 +19,5 @@ public class ResGetPromotionDto {
     private Integer discountRate;
     private Integer discountPrice;
     private Integer quantity;
+    private Integer remaining;
 }
