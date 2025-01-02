@@ -4,7 +4,7 @@ import com.sparta.hotdeal.user.presentation.dtos.ResponseDto;
 import com.sparta.hotdeal.user.presentation.dtos.users.request.ReqPatchUsersInfoByIdDto;
 import com.sparta.hotdeal.user.presentation.dtos.users.request.ReqPatchUsersPasswordByIdDto;
 import com.sparta.hotdeal.user.presentation.dtos.users.response.ResDeleteUsersByIdDto;
-import com.sparta.hotdeal.user.presentation.dtos.users.response.ResGetUserDto;
+import com.sparta.hotdeal.user.presentation.dtos.users.response.ResGetUsersByIdDto;
 import com.sparta.hotdeal.user.presentation.dtos.users.response.ResPatchUsersInfoByIdDto;
 import com.sparta.hotdeal.user.presentation.dtos.users.response.ResPatchUsersPasswordByIdDto;
 import java.util.UUID;
@@ -22,16 +22,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     @GetMapping("/{userId}")
-    public ResponseEntity<ResponseDto<ResGetUserDto>> getUser(@PathVariable("userId") UUID userId) {
+    public ResponseEntity<ResponseDto<ResGetUsersByIdDto>> getUser(@PathVariable("userId") UUID userId) {
 
-        ResGetUserDto resGetUserDto = ResGetUserDto.builder()
+        ResGetUsersByIdDto resGetUsersByIdDto = ResGetUsersByIdDto.builder()
                 .userId(userId)
                 .email("example@email.com")
                 .nickname("exampleNickname")
                 .defaultAddressId(UUID.randomUUID())
                 .build();
 
-        ResponseDto<ResGetUserDto> responseDto = ResponseDto.of(200, "회원정보조회 성공", resGetUserDto);
+        ResponseDto<ResGetUsersByIdDto> responseDto = ResponseDto.of(200, "회원정보조회 성공", resGetUsersByIdDto);
 
         return ResponseEntity.ok(responseDto);
     }

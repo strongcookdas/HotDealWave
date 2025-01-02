@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ResGetUserDto {
+public class ResGetUsersByIdDto {
     private UUID userId;
     private String email;
     private String nickname;
