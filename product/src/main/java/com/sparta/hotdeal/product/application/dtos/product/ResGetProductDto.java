@@ -1,7 +1,7 @@
 package com.sparta.hotdeal.product.application.dtos.product;
 
-import com.sparta.hotdeal.product.domain.entity.ProductCategoryEnum;
-import com.sparta.hotdeal.product.domain.entity.ProductStatusEnum;
+import com.sparta.hotdeal.product.domain.entity.product.ProductCategoryEnum;
+import com.sparta.hotdeal.product.domain.entity.product.ProductStatusEnum;
 import java.util.List;
 import java.util.UUID;
 import lombok.AccessLevel;

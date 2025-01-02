@@ -1,6 +1,6 @@
 package com.sparta.hotdeal.product.presentation.dtos.product;
 
-import com.sparta.hotdeal.product.domain.entity.ProductCategoryEnum;
+import com.sparta.hotdeal.product.domain.entity.product.ProductCategoryEnum;
 import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
