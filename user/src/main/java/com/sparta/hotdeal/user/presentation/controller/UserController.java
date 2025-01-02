@@ -8,7 +8,6 @@ import com.sparta.hotdeal.user.presentation.dtos.users.response.ResGetUsersByIdD
 import com.sparta.hotdeal.user.presentation.dtos.users.response.ResPatchUsersInfoByIdDto;
 import com.sparta.hotdeal.user.presentation.dtos.users.response.ResPatchUsersPasswordByIdDto;
 import java.util.UUID;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -22,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     @GetMapping("/{userId}")
-    public ResponseEntity<ResponseDto<ResGetUsersByIdDto>> getUser(@PathVariable("userId") UUID userId) {
+    public ResponseDto<ResGetUsersByIdDto> getUser(@PathVariable("userId") UUID userId) {
 
         ResGetUsersByIdDto resGetUsersByIdDto = ResGetUsersByIdDto.builder()
                 .userId(userId)
@@ -31,13 +30,11 @@ public class UserController {
                 .defaultAddressId(UUID.randomUUID())
                 .build();
 
-        ResponseDto<ResGetUsersByIdDto> responseDto = ResponseDto.of(200, "회원정보조회 성공", resGetUsersByIdDto);
-
-        return ResponseEntity.ok(responseDto);
+        return ResponseDto.of("회원정보조회 성공", resGetUsersByIdDto);
     }
 
     @PatchMapping("/{userId}")
-    public ResponseEntity<ResponseDto<ResPatchUsersInfoByIdDto>> changeUserInfos(
+    public ResponseDto<ResPatchUsersInfoByIdDto> changeUserInfos(
             @PathVariable("userId") UUID userId,
             @RequestBody ReqPatchUsersInfoByIdDto reqPatchUsersInfoByIdDto
     ) {
@@ -46,13 +43,11 @@ public class UserController {
                 .userId(userId)
                 .build();
 
-        ResponseDto<ResPatchUsersInfoByIdDto> responseDto = ResponseDto.of(200, "회원정보수정 성공", resPatchUsersInfoByIdDto);
-
-        return ResponseEntity.ok(responseDto);
+        return ResponseDto.of("회원정보수정 성공", resPatchUsersInfoByIdDto);
     }
 
     @PatchMapping("/{userId}")
-    public ResponseEntity<ResponseDto<ResPatchUsersPasswordByIdDto>> changeUserInfos(
+    public ResponseDto<ResPatchUsersPasswordByIdDto> changeUserInfos(
             @PathVariable("userId") UUID userId,
             @RequestBody ReqPatchUsersPasswordByIdDto reqPatchUsersPasswordByIdDto
     ) {
@@ -61,21 +56,17 @@ public class UserController {
                 .userId(userId)
                 .build();
 
-        ResponseDto<ResPatchUsersPasswordByIdDto> responseDto = ResponseDto.of(200, "비밀번호수정 성공",
-                resPatchUsersPasswordByIdDto);
+        return ResponseDto.of("비밀번호수정 성공", resPatchUsersPasswordByIdDto);
 
-        return ResponseEntity.ok(responseDto);
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<ResponseDto<ResDeleteUsersByIdDto>> deleteUser(@PathVariable("userId") UUID userId) {
+    public ResponseDto<ResDeleteUsersByIdDto> deleteUser(@PathVariable("userId") UUID userId) {
 
         ResDeleteUsersByIdDto resDeleteUsersByIdDto = ResDeleteUsersByIdDto.builder()
                 .userId(userId)
                 .build();
 
-        ResponseDto<ResDeleteUsersByIdDto> responseDto = ResponseDto.of(200, "회원탈퇴 성공", resDeleteUsersByIdDto);
-
-        return ResponseEntity.ok(responseDto);
+        return ResponseDto.of("회원탈퇴 성공", resDeleteUsersByIdDto);
     }
 }

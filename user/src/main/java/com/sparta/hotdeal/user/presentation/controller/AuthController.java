@@ -12,10 +12,10 @@ import com.sparta.hotdeal.user.presentation.dtos.auth.response.ResPostRefreshDto
 import com.sparta.hotdeal.user.presentation.dtos.auth.response.ResPostSignUpDto;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -23,64 +23,53 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     @PostMapping("/signup")
-    public ResponseEntity<ResponseDto<ResPostSignUpDto>> signUp(@RequestBody ReqPostSignUpDto requestDto) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseDto<ResPostSignUpDto> signUp(@RequestBody ReqPostSignUpDto requestDto) {
 
         ResPostSignUpDto resPostSignUpDto = ResPostSignUpDto.builder()
                 .userId(UUID.randomUUID())
                 .build();
 
-        ResponseDto<ResPostSignUpDto> responseDto = ResponseDto.of(201, "회원가입 성공", resPostSignUpDto);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+        return ResponseDto.of("회원가입 성공", resPostSignUpDto);
     }
 
     @PostMapping("/check-email")
-    public ResponseEntity<ResponseDto<Void>> checkEmail(@RequestBody ReqPostCheckEmailDto requestDto) {
+    public ResponseDto<Void> checkEmail(@RequestBody ReqPostCheckEmailDto requestDto) {
 
-        ResponseDto<Void> responseDto = ResponseDto.of(200, "사용할 수 있는 이메일입니다.", null);
-
-        return ResponseEntity.ok(responseDto);
+        return ResponseDto.of("사용할 수 있는 이메일입니다.", null);
     }
 
     @PostMapping("/email-verification")
-    public ResponseEntity<ResponseDto<Void>> verifyEmail(@RequestBody ReqPostVerifyEmailDto requestDto) {
+    public ResponseDto<Void> verifyEmail(@RequestBody ReqPostVerifyEmailDto requestDto) {
 
-        ResponseDto<Void> responseDto = ResponseDto.of(200, "이메일 인증이 요청되었습니다. 메일을 확인해주세요.", null);
-
-        return ResponseEntity.ok(responseDto);
+        return ResponseDto.of("이메일 인증이 요청되었습니다. 메일을 확인해주세요.", null);
     }
 
     @PostMapping("/email-verification/confirm")
-    public ResponseEntity<ResponseDto<Void>> confirmEmail(@RequestBody ReqPostConfirmEmailDto requestDto) {
+    public ResponseDto<Void> confirmEmail(@RequestBody ReqPostConfirmEmailDto requestDto) {
 
-        ResponseDto<Void> responseDto = ResponseDto.of(200, "이메일 인증이 처리되었습니다.", null);
-
-        return ResponseEntity.ok(responseDto);
+        return ResponseDto.of("이메일 인증이 처리되었습니다.", null);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ResponseDto<ResPostLoginDto>> login(@RequestBody ReqPostLoginDto requestDto) {
+    public ResponseDto<ResPostLoginDto> login(@RequestBody ReqPostLoginDto requestDto) {
 
         ResPostLoginDto resPostLoginDto = ResPostLoginDto.builder()
                 .accessToken("exampleAccessToken")
                 .refreshToken("exampleRefreshToken")
                 .build();
 
-        ResponseDto<ResPostLoginDto> responseDto = ResponseDto.of(200, "로그인 성공", resPostLoginDto);
-
-        return ResponseEntity.ok(responseDto);
+        return ResponseDto.of("로그인 성공", resPostLoginDto);
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<ResponseDto<ResPostRefreshDto>> refresh(@RequestBody ReqPostRefreshDto requestDto) {
+    public ResponseDto<ResPostRefreshDto> refresh(@RequestBody ReqPostRefreshDto requestDto) {
 
         ResPostRefreshDto resPostRefreshDto = ResPostRefreshDto.builder()
                 .accessToken("exampleAccessToken")
                 .refreshToken("exampleRefreshToken")
                 .build();
 
-        ResponseDto<ResPostRefreshDto> responseDto = ResponseDto.of(200, "토큰 재발급 성공", resPostRefreshDto);
-
-        return ResponseEntity.ok(responseDto);
+        return ResponseDto.of("토큰 재발급 성공", resPostRefreshDto);
     }
 }
