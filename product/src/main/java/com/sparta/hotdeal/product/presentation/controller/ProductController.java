@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -65,6 +66,13 @@ public class ProductController {
                 .build();
 
         return ResponseDto.of("상품이 수정되었습니다.", resProductIdDto);
+    }
+
+    @DeleteMapping("/{productId}")
+    public ResponseDto<ResProductIdDto> deleteProduct(
+            @PathVariable UUID productId
+    ) {
+        return ResponseDto.of("상품이 삭제되었습니다.", null);
     }
 
     @PatchMapping("/{productId}/reduceQuantity")
