@@ -3,6 +3,7 @@ package com.sparta.hotdeal.user.presentation.controller;
 import com.sparta.hotdeal.user.presentation.dtos.ResponseDto;
 import com.sparta.hotdeal.user.presentation.dtos.address.request.ReqPatchAddressByIdDto;
 import com.sparta.hotdeal.user.presentation.dtos.address.request.ReqPostAddressDto;
+import com.sparta.hotdeal.user.presentation.dtos.address.response.ResDeleteAddressByIdDto;
 import com.sparta.hotdeal.user.presentation.dtos.address.response.ResGetAddressByIdDto;
 import com.sparta.hotdeal.user.presentation.dtos.address.response.ResGetAddressesDto;
 import com.sparta.hotdeal.user.presentation.dtos.address.response.ResGetDefaultAddressDto;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -111,5 +113,15 @@ public class AddressController {
                 .build();
 
         return ResponseDto.of("기본 배송지 설정 성공", resPatchDefaultAddressByIdDto);
+    }
+
+    @DeleteMapping("/address/{addressId}")
+    public ResponseDto<ResDeleteAddressByIdDto> deleteAddress(@PathVariable UUID addressId) {
+
+        ResDeleteAddressByIdDto resDeleteAddressByIdDto = ResDeleteAddressByIdDto.builder()
+                .addressId(addressId)
+                .build();
+
+        return ResponseDto.of("배송지 삭제 성공", resDeleteAddressByIdDto);
     }
 }
