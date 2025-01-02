@@ -1,12 +1,18 @@
 package com.sparta.hotdeal.product.application.dtos;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 @Builder
 public class ResponseDto<T> {
-    private Integer status;
     private String message;
     private T data;
+
+    public static <T> ResponseDto<T> of(String message, T data) {
+        return ResponseDto.<T>builder()
+                .message(message)
+                .data(data)
+                .build();
+    }
 }
