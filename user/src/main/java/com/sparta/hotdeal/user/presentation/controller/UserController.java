@@ -2,8 +2,10 @@ package com.sparta.hotdeal.user.presentation.controller;
 
 import com.sparta.hotdeal.user.presentation.dtos.ResponseDto;
 import com.sparta.hotdeal.user.presentation.dtos.users.request.ReqPatchUsersInfoByIdDto;
+import com.sparta.hotdeal.user.presentation.dtos.users.request.ReqPatchUsersPasswordByIdDto;
 import com.sparta.hotdeal.user.presentation.dtos.users.response.ResGetUserDto;
 import com.sparta.hotdeal.user.presentation.dtos.users.response.ResPatchUsersInfoByIdDto;
+import com.sparta.hotdeal.user.presentation.dtos.users.response.ResPatchUsersPasswordByIdDto;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,6 +45,22 @@ public class UserController {
                 .build();
 
         ResponseDto<ResPatchUsersInfoByIdDto> responseDto = ResponseDto.of(200, "회원정보수정 성공", resPatchUsersInfoByIdDto);
+
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @PatchMapping("/{userId}")
+    public ResponseEntity<ResponseDto<ResPatchUsersPasswordByIdDto>> changeUserInfos(
+            @PathVariable("userId") UUID userId,
+            @RequestBody ReqPatchUsersPasswordByIdDto reqPatchUsersPasswordByIdDto
+    ) {
+
+        ResPatchUsersPasswordByIdDto resPatchUsersPasswordByIdDto = ResPatchUsersPasswordByIdDto.builder()
+                .userId(userId)
+                .build();
+
+        ResponseDto<ResPatchUsersPasswordByIdDto> responseDto = ResponseDto.of(200, "비밀번호수정 성공",
+                resPatchUsersPasswordByIdDto);
 
         return ResponseEntity.ok(responseDto);
     }
