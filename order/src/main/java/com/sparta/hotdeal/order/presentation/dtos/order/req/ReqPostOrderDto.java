@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.order.presentation.dtos.order;
+package com.sparta.hotdeal.order.presentation.dtos.order.req;
 
 import java.util.List;
 import lombok.AllArgsConstructor;

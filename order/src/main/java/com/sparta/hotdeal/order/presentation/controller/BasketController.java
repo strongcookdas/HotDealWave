@@ -1,13 +1,13 @@
 package com.sparta.hotdeal.order.presentation.controller;
 
 import com.sparta.hotdeal.order.presentation.dtos.ResponseDto;
-import com.sparta.hotdeal.order.presentation.dtos.basket.ReqPatchBasketDto;
-import com.sparta.hotdeal.order.presentation.dtos.basket.ReqPostBasketDto;
-import com.sparta.hotdeal.order.presentation.dtos.basket.ResDeleteBasketDto;
-import com.sparta.hotdeal.order.presentation.dtos.basket.ResGetBasketByIdDto;
-import com.sparta.hotdeal.order.presentation.dtos.basket.ResGetBasketsDto;
-import com.sparta.hotdeal.order.presentation.dtos.basket.ResPatchBasketDto;
-import com.sparta.hotdeal.order.presentation.dtos.basket.ResPostBasketDto;
+import com.sparta.hotdeal.order.presentation.dtos.basket.req.ReqPatchBasketDto;
+import com.sparta.hotdeal.order.presentation.dtos.basket.req.ReqPostBasketDto;
+import com.sparta.hotdeal.order.presentation.dtos.basket.res.ResDeleteBasketDto;
+import com.sparta.hotdeal.order.presentation.dtos.basket.res.ResGetBasketByIdDto;
+import com.sparta.hotdeal.order.presentation.dtos.basket.res.ResGetBasketsDto;
+import com.sparta.hotdeal.order.presentation.dtos.basket.res.ResPatchBasketDto;
+import com.sparta.hotdeal.order.presentation.dtos.basket.res.ResPostBasketDto;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;

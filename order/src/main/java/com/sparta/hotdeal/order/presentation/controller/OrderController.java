@@ -1,10 +1,10 @@
 package com.sparta.hotdeal.order.presentation.controller;
 
 import com.sparta.hotdeal.order.presentation.dtos.ResponseDto;
-import com.sparta.hotdeal.order.presentation.dtos.order.ReqPatchOrderDto;
-import com.sparta.hotdeal.order.presentation.dtos.order.ReqPostOrderDto;
-import com.sparta.hotdeal.order.presentation.dtos.order.ResGetOrderByIdDto;
-import com.sparta.hotdeal.order.presentation.dtos.order.ResGetOrdersDto;
+import com.sparta.hotdeal.order.presentation.dtos.order.req.ReqPatchOrderDto;
+import com.sparta.hotdeal.order.presentation.dtos.order.req.ReqPostOrderDto;
+import com.sparta.hotdeal.order.presentation.dtos.order.res.ResGetOrderByIdDto;
+import com.sparta.hotdeal.order.presentation.dtos.order.res.ResGetOrdersDto;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;

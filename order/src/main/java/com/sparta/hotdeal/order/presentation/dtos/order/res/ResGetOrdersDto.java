@@ -1,11 +1,10 @@
-package com.sparta.hotdeal.order.presentation.dtos.order;
+package com.sparta.hotdeal.order.presentation.dtos.order.res;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 
 @Getter

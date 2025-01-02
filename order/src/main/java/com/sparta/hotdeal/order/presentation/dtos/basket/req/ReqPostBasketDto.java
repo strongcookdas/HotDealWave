@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.order.presentation.dtos.basket;
+package com.sparta.hotdeal.order.presentation.dtos.basket.req;
 
 import java.util.UUID;
 import lombok.AllArgsConstructor;
