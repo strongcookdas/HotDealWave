@@ -3,11 +3,13 @@ package com.sparta.hotdeal.user.presentation.controller;
 import com.sparta.hotdeal.user.presentation.dtos.ResponseDto;
 import com.sparta.hotdeal.user.presentation.dtos.users.request.ReqPatchUsersInfoByIdDto;
 import com.sparta.hotdeal.user.presentation.dtos.users.request.ReqPatchUsersPasswordByIdDto;
+import com.sparta.hotdeal.user.presentation.dtos.users.response.ResDeleteUsersByIdDto;
 import com.sparta.hotdeal.user.presentation.dtos.users.response.ResGetUserDto;
 import com.sparta.hotdeal.user.presentation.dtos.users.response.ResPatchUsersInfoByIdDto;
 import com.sparta.hotdeal.user.presentation.dtos.users.response.ResPatchUsersPasswordByIdDto;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -61,6 +63,18 @@ public class UserController {
 
         ResponseDto<ResPatchUsersPasswordByIdDto> responseDto = ResponseDto.of(200, "비밀번호수정 성공",
                 resPatchUsersPasswordByIdDto);
+
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<ResponseDto<ResDeleteUsersByIdDto>> deleteUser(@PathVariable("userId") UUID userId) {
+
+        ResDeleteUsersByIdDto resDeleteUsersByIdDto = ResDeleteUsersByIdDto.builder()
+                .userId(userId)
+                .build();
+
+        ResponseDto<ResDeleteUsersByIdDto> responseDto = ResponseDto.of(200, "회원탈퇴 성공", resDeleteUsersByIdDto);
 
         return ResponseEntity.ok(responseDto);
     }
