@@ -7,6 +7,7 @@ import com.sparta.hotdeal.user.presentation.dtos.address.response.ResGetAddressB
 import com.sparta.hotdeal.user.presentation.dtos.address.response.ResGetAddressesDto;
 import com.sparta.hotdeal.user.presentation.dtos.address.response.ResGetDefaultAddressDto;
 import com.sparta.hotdeal.user.presentation.dtos.address.response.ResPatchAddressByIdDto;
+import com.sparta.hotdeal.user.presentation.dtos.address.response.ResPatchDefaultAddressByIdDto;
 import com.sparta.hotdeal.user.presentation.dtos.address.response.ResPostAddressDto;
 import java.util.ArrayList;
 import java.util.List;
@@ -89,12 +90,26 @@ public class AddressController {
     }
 
     @PatchMapping("/address/{addressId}")
-    public ResponseDto<ResPatchAddressByIdDto> updateAddress(@PathVariable UUID addressId, @RequestBody ReqPatchAddressByIdDto requestDto) {
+    public ResponseDto<ResPatchAddressByIdDto> updateAddress(@PathVariable UUID addressId,
+                                                             @RequestBody ReqPatchAddressByIdDto requestDto) {
 
         ResPatchAddressByIdDto resPatchAddressByIdDto = ResPatchAddressByIdDto.builder()
                 .addressId(addressId)
                 .build();
 
         return ResponseDto.of("배송지 수정 성공", resPatchAddressByIdDto);
+    }
+
+    @PatchMapping("/address-default/{addressId}")
+    public ResponseDto<ResPatchDefaultAddressByIdDto> updateDefaultAddress(
+            @PathVariable UUID addressId,
+            @RequestBody ResPatchDefaultAddressByIdDto requestDto
+    ) {
+
+        ResPatchDefaultAddressByIdDto resPatchDefaultAddressByIdDto = ResPatchDefaultAddressByIdDto.builder()
+                .addressId(addressId)
+                .build();
+
+        return ResponseDto.of("기본 배송지 설정 성공", resPatchDefaultAddressByIdDto);
     }
 }
