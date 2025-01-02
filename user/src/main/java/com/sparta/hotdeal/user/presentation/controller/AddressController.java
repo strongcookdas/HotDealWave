@@ -3,6 +3,7 @@ package com.sparta.hotdeal.user.presentation.controller;
 import com.sparta.hotdeal.user.presentation.dtos.ResponseDto;
 import com.sparta.hotdeal.user.presentation.dtos.address.request.ReqPostAddressDto;
 import com.sparta.hotdeal.user.presentation.dtos.address.response.ResGetAddressByIdDto;
+import com.sparta.hotdeal.user.presentation.dtos.address.response.ResGetDefaultAddressDto;
 import com.sparta.hotdeal.user.presentation.dtos.address.response.ResPostAddressDto;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/address")
+@RequestMapping("/api/v1")
 public class AddressController {
 
     @PostMapping
@@ -29,7 +30,7 @@ public class AddressController {
         return ResponseDto.of("배송지 등록 성공", resPostAddressDto);
     }
 
-    @GetMapping("/{addressId}")
+    @GetMapping("/address/{addressId}")
     public ResponseDto<ResGetAddressByIdDto> getAddress(@PathVariable UUID addressId) {
 
         ResGetAddressByIdDto resGetAddressByIdDto = ResGetAddressByIdDto.builder()
@@ -43,5 +44,21 @@ public class AddressController {
                 .build();
 
         return ResponseDto.of("배송지 조회 성공", resGetAddressByIdDto);
+    }
+
+    @GetMapping("/address-default")
+    public ResponseDto<ResGetDefaultAddressDto> getDefaultAddress() {
+
+        ResGetDefaultAddressDto resGetDefaultAddressDto = ResGetDefaultAddressDto.builder()
+                .addressId(UUID.randomUUID())
+                .zipNum("zipNum")
+                .city("city")
+                .district("district")
+                .streetName("streetName")
+                .streetNum("streetNum")
+                .detailAddr("detailAddr")
+                .build();
+
+        return ResponseDto.of("기본 배송지 조회 성공", resGetDefaultAddressDto);
     }
 }
