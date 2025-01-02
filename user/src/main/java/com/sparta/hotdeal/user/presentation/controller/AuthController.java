@@ -1,9 +1,11 @@
 package com.sparta.hotdeal.user.presentation.controller;
 
-import com.sparta.hotdeal.user.presentation.dtos.request.ReqPostCheckEmailDto;
-import com.sparta.hotdeal.user.presentation.dtos.request.ReqPostSignUpDto;
-import com.sparta.hotdeal.user.presentation.dtos.response.ResPostSignUpDto;
 import com.sparta.hotdeal.user.presentation.dtos.ResponseDto;
+import com.sparta.hotdeal.user.presentation.dtos.auth.request.ReqPostCheckEmailDto;
+import com.sparta.hotdeal.user.presentation.dtos.auth.request.ReqPostConfirmEmailDto;
+import com.sparta.hotdeal.user.presentation.dtos.auth.request.ReqPostSignUpDto;
+import com.sparta.hotdeal.user.presentation.dtos.auth.request.ReqPostVerifyEmailDto;
+import com.sparta.hotdeal.user.presentation.dtos.auth.response.ResPostSignUpDto;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +34,22 @@ public class AuthController {
     public ResponseEntity<ResponseDto<Void>> checkEmail(@RequestBody ReqPostCheckEmailDto requestDto) {
 
         ResponseDto<Void> responseDto = ResponseDto.of(200, "사용할 수 있는 이메일입니다.", null);
+
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @PostMapping("email-verification")
+    public ResponseEntity<ResponseDto<Void>> verifyEmail(@RequestBody ReqPostVerifyEmailDto requestDto) {
+
+        ResponseDto<Void> responseDto = ResponseDto.of(200, "이메일 인증이 요청되었습니다. 메일을 확인해주세요.", null);
+
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @PostMapping("email-verification/confirm")
+    public ResponseEntity<ResponseDto<Void>> confirmEmail(@RequestBody ReqPostConfirmEmailDto requestDto) {
+
+        ResponseDto<Void> responseDto = ResponseDto.of(200, "이메일 인증이 처리되었습니다.", null);
 
         return ResponseEntity.ok(responseDto);
     }

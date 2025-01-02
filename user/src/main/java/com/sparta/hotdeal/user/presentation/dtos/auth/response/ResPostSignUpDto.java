@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.user.presentation.dtos.response;
+package com.sparta.hotdeal.user.presentation.dtos.auth.response;
 
 import java.util.UUID;
 import lombok.Builder;
