@@ -1,16 +1,19 @@
 package com.sparta.hotdeal.user.presentation.controller;
 
 import com.sparta.hotdeal.user.presentation.dtos.ResponseDto;
+import com.sparta.hotdeal.user.presentation.dtos.address.request.ReqPatchAddressByIdDto;
 import com.sparta.hotdeal.user.presentation.dtos.address.request.ReqPostAddressDto;
 import com.sparta.hotdeal.user.presentation.dtos.address.response.ResGetAddressByIdDto;
 import com.sparta.hotdeal.user.presentation.dtos.address.response.ResGetAddressesDto;
 import com.sparta.hotdeal.user.presentation.dtos.address.response.ResGetDefaultAddressDto;
+import com.sparta.hotdeal.user.presentation.dtos.address.response.ResPatchAddressByIdDto;
 import com.sparta.hotdeal.user.presentation.dtos.address.response.ResPostAddressDto;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -83,5 +86,15 @@ public class AddressController {
         responseDtos.add(resGetAddressesDto);
 
         return ResponseDto.of("배송지 목록 조회 성공", responseDtos);
+    }
+
+    @PatchMapping("/address/{addressId}")
+    public ResponseDto<ResPatchAddressByIdDto> updateAddress(@PathVariable UUID addressId, @RequestBody ReqPatchAddressByIdDto requestDto) {
+
+        ResPatchAddressByIdDto resPatchAddressByIdDto = ResPatchAddressByIdDto.builder()
+                .addressId(addressId)
+                .build();
+
+        return ResponseDto.of("배송지 수정 성공", resPatchAddressByIdDto);
     }
 }
