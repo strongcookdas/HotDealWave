@@ -48,18 +48,18 @@ public class OrderController {
     }
 
     @GetMapping("/{orderId}")
-    public ResponseDto<ResGetOrderByIdDto> getOrderDetail(@PathVariable UUID orderId) {
+    public ResponseDto<ResGetOrderByIdDto> getOrderById(@PathVariable UUID orderId) {
         return ResponseDto.of("주문 상세 조회 성공", ResGetOrderByIdDto.createDummy(orderId));
     }
 
     @PatchMapping("/{orderId}/status")
-    public ResponseDto<?> patchOrderStatus(@PathVariable UUID orderId, @RequestBody ReqPatchOrderDto req) {
+    public ResponseDto<Void> updateOrderStatus(@PathVariable UUID orderId, @RequestBody ReqPatchOrderDto req) {
         log.info("orderId : {}, ReqPatchOrderDto : {}", orderId, req);
         return ResponseDto.of("주문 상태가 수정되었습니다.", null);
     }
 
     @DeleteMapping("/{orderId}")
-    public ResponseDto<?> deleteOrder(@PathVariable UUID orderId) {
+    public ResponseDto<Void> deleteOrder(@PathVariable UUID orderId) {
         log.info("orderId : {}", orderId);
         return ResponseDto.of("주문 취소가 처리 되었습니다.", null);
     }
