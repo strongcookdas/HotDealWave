@@ -2,12 +2,16 @@ package com.sparta.hotdeal.product.presentation.controller;
 
 import com.sparta.hotdeal.product.application.dtos.ResponseDto;
 import com.sparta.hotdeal.product.application.dtos.product.ResGetProductDto;
-import com.sparta.hotdeal.product.application.dtos.product.ResProductIdDto;
+import com.sparta.hotdeal.product.application.dtos.product.ResPatchProductStatusDto;
+import com.sparta.hotdeal.product.application.dtos.product.ResPatchReduceProductQuantityDto;
+import com.sparta.hotdeal.product.application.dtos.product.ResPatchRestoreProductQuantityDto;
+import com.sparta.hotdeal.product.application.dtos.product.ResPostProductDto;
+import com.sparta.hotdeal.product.application.dtos.product.ResPutProductDto;
 import com.sparta.hotdeal.product.domain.entity.product.ProductCategoryEnum;
 import com.sparta.hotdeal.product.domain.entity.product.ProductStatusEnum;
-import com.sparta.hotdeal.product.presentation.dtos.product.ReqPatchUpdateProductStatusDto;
-import com.sparta.hotdeal.product.presentation.dtos.product.ReqPostCreateProductDto;
-import com.sparta.hotdeal.product.presentation.dtos.product.ReqPutUpdateProductDto;
+import com.sparta.hotdeal.product.presentation.dtos.product.ReqPatchProductStatusDto;
+import com.sparta.hotdeal.product.presentation.dtos.product.ReqPostProductDto;
+import com.sparta.hotdeal.product.presentation.dtos.product.ReqPutProductDto;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -34,71 +38,71 @@ public class ProductController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseDto<ResProductIdDto> createProduct(
-            @RequestBody ReqPostCreateProductDto reqPostCreateProductDto
+    public ResponseDto<ResPostProductDto> createProduct(
+            @RequestBody ReqPostProductDto reqPostCreateProductDto
     ) {
-        ResProductIdDto resProductIdDto = ResProductIdDto.builder()
+        ResPostProductDto resPostProductDto = ResPostProductDto.builder()
                 .productId(UUID.randomUUID())
                 .build();
 
-        return ResponseDto.of("상품이 생성되었습니다.", resProductIdDto);
+        return ResponseDto.of("상품이 생성되었습니다.", resPostProductDto);
     }
 
     @PutMapping("/{productId}")
-    public ResponseDto<ResProductIdDto> updateProduct(
+    public ResponseDto<ResPutProductDto> updateProduct(
             @PathVariable UUID productId,
-            @RequestBody ReqPutUpdateProductDto reqPutUpdateProductDto
+            @RequestBody ReqPutProductDto reqPutUpdateProductDto
     ) {
-        ResProductIdDto resProductIdDto = ResProductIdDto.builder()
+        ResPutProductDto resPutProductDto = ResPutProductDto.builder()
                 .productId(UUID.randomUUID())
                 .build();
 
-        return ResponseDto.of("상품이 수정되었습니다.", resProductIdDto);
+        return ResponseDto.of("상품이 수정되었습니다.", resPutProductDto);
     }
 
     @PatchMapping("/{productId}")
-    public ResponseDto<ResProductIdDto> updateProductStatus(
+    public ResponseDto<ResPatchProductStatusDto> updateProductStatus(
             @PathVariable UUID productId,
-            @RequestBody ReqPatchUpdateProductStatusDto reqPatchUpdateProductStatusDto
+            @RequestBody ReqPatchProductStatusDto reqPatchUpdateProductStatusDto
     ) {
-        ResProductIdDto resProductIdDto = ResProductIdDto.builder()
+        ResPatchProductStatusDto resPatchProductStatusDto = ResPatchProductStatusDto.builder()
                 .productId(UUID.randomUUID())
                 .build();
 
-        return ResponseDto.of("상품이 수정되었습니다.", resProductIdDto);
+        return ResponseDto.of("상품이 수정되었습니다.", resPatchProductStatusDto);
     }
 
     @DeleteMapping("/{productId}")
-    public ResponseDto<ResProductIdDto> deleteProduct(
+    public ResponseDto<Void> deleteProduct(
             @PathVariable UUID productId
     ) {
         return ResponseDto.of("상품이 삭제되었습니다.", null);
     }
 
     @PatchMapping("/{productId}/reduceQuantity")
-    public ResponseDto<ResProductIdDto> reduceQuantity(
+    public ResponseDto<ResPatchReduceProductQuantityDto> reduceQuantity(
             @PathVariable UUID productId,
             @RequestParam int quantity,
             @RequestParam Boolean promotion
     ) {
-        ResProductIdDto resProductIdDto = ResProductIdDto.builder()
+        ResPatchReduceProductQuantityDto resPatchReduceProductQuantityDto = ResPatchReduceProductQuantityDto.builder()
                 .productId(UUID.randomUUID())
                 .build();
 
-        return ResponseDto.of("상품이 수정되었습니다.", resProductIdDto);
+        return ResponseDto.of("상품이 수정되었습니다.", resPatchReduceProductQuantityDto);
     }
 
     @PatchMapping("/{productId}/restoreQuantity")
-    public ResponseDto<ResProductIdDto> restoreQuantity(
+    public ResponseDto<ResPatchRestoreProductQuantityDto> restoreQuantity(
             @PathVariable UUID productId,
             @RequestParam int quantity,
             @RequestParam Boolean promotion
     ) {
-        ResProductIdDto resProductIdDto = ResProductIdDto.builder()
+        ResPatchRestoreProductQuantityDto resPatchRestoreProductQuantityDto = ResPatchRestoreProductQuantityDto.builder()
                 .productId(UUID.randomUUID())
                 .build();
 
-        return ResponseDto.of("상품이 수정되었습니다.", resProductIdDto);
+        return ResponseDto.of("상품이 수정되었습니다.", resPatchRestoreProductQuantityDto);
     }
 
     @GetMapping("/{productId}")

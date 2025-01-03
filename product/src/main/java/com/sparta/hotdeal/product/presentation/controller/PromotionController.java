@@ -3,8 +3,8 @@ package com.sparta.hotdeal.product.presentation.controller;
 import com.sparta.hotdeal.product.application.dtos.ResponseDto;
 import com.sparta.hotdeal.product.application.dtos.product.ResGetPromotionDto;
 import com.sparta.hotdeal.product.application.dtos.product.ResPromotionIdDto;
-import com.sparta.hotdeal.product.presentation.dtos.product.ReqPostCreatePromotionDto;
-import com.sparta.hotdeal.product.presentation.dtos.product.ReqPutUpdatePromotionDto;
+import com.sparta.hotdeal.product.presentation.dtos.product.ReqPostPromotionDto;
+import com.sparta.hotdeal.product.presentation.dtos.product.ReqPutPromotionDto;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,7 +34,7 @@ public class PromotionController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<ResPromotionIdDto> createPromotion(
-            @RequestBody ReqPostCreatePromotionDto reqPostCreatePromotionDto
+            @RequestBody ReqPostPromotionDto reqPostCreatePromotionDto
     ) {
         ResPromotionIdDto resPromotionIdDto = ResPromotionIdDto.builder()
                 .promotionId(UUID.randomUUID())
@@ -46,7 +46,7 @@ public class PromotionController {
     @PutMapping("/{promotionId}")
     public ResponseDto<ResPromotionIdDto> updatePromotion(
             @PathVariable UUID promotionId,
-            @RequestBody ReqPutUpdatePromotionDto reqPutUpdatePromotionDto
+            @RequestBody ReqPutPromotionDto reqPutUpdatePromotionDto
     ) {
         ResPromotionIdDto resPromotionIdDto = ResPromotionIdDto.builder()
                 .promotionId(UUID.randomUUID())

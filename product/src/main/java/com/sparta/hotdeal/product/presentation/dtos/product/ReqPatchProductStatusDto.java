@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class ReqPatchUpdateProductStatusDto {
+public class ReqPatchProductStatusDto {
     private ProductStatusEnum status;
 }

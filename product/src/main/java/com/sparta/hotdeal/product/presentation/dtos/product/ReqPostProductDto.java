@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class ReqPostCreateProductDto {
+public class ReqPostProductDto {
     private String name;
     private Integer price;
     private Integer quantity;

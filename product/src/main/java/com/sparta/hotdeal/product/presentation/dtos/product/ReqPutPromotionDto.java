@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class ReqPutUpdatePromotionDto {
+public class ReqPutPromotionDto {
     private UUID productId;
     private Timestamp start;
     private Timestamp end;
