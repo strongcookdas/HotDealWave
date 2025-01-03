@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: user-service
+  profiles:
+    active: ${ACTIVE_PROFILE}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:19090/eureka/
+    # eureka server 설정 이후 아래 설정 제거
+    enabled: false
+
+server:
+  port: 19092
