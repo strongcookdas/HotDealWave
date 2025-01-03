@@ -1,7 +1,9 @@
 package com.sparta.hotdeal.product.application.service;
 
 import com.sparta.hotdeal.product.application.dtos.req.product.ReqPostProductDto;
+import com.sparta.hotdeal.product.application.dtos.req.product.ReqPutProductDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPostProductDto;
+import com.sparta.hotdeal.product.application.dtos.res.product.ResPutProductDto;
 import com.sparta.hotdeal.product.application.service.client.CompanyClientService;
 import com.sparta.hotdeal.product.domain.entity.product.File;
 import com.sparta.hotdeal.product.domain.entity.product.Product;
@@ -10,6 +12,7 @@ import com.sparta.hotdeal.product.domain.repository.product.ProductRepository;
 import com.sparta.hotdeal.product.domain.repository.product.ProductRepositoryCustomImpl;
 import com.sparta.hotdeal.product.infrastructure.dtos.ResGetCompanyByIdDto;
 import jakarta.transaction.Transactional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -52,5 +55,40 @@ public class ProductService {
         product = productRepository.save(product);
 
         return ResPostProductDto.of(product.getId());
+    }
+
+    @Transactional
+    public ResPutProductDto updateProduct(UUID productId, ReqPutProductDto reqPutUpdateProductDto, String username) {
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+
+        // 파일 객체 가져오기 (기존 파일 그대로 사용)
+        File detailImgsFile = product.getDetailImgs();
+        File thumbImgFile = product.getThumbImg();
+
+        // 상세 이미지 업데이트
+        if (reqPutUpdateProductDto.getDetailImgs() != null) {
+            log.info("detailImgsFile : {}", reqPutUpdateProductDto.getDetailImgs());
+            subFileService.updateSubFiles(reqPutUpdateProductDto.getDetailImgs(), detailImgsFile, username);
+        }
+
+        // 썸네일 이미지 업데이트
+        if (reqPutUpdateProductDto.getThumbImg() != null) {
+            log.info("thumbImgFile : {}", reqPutUpdateProductDto.getThumbImg());
+            subFileService.updateImg(reqPutUpdateProductDto.getThumbImg(), thumbImgFile, username);
+        }
+
+        // 상품 정보 업데이트
+        product.update(
+                reqPutUpdateProductDto.getName(),
+                reqPutUpdateProductDto.getPrice(),
+                reqPutUpdateProductDto.getQuantity(),
+                reqPutUpdateProductDto.getCategory(),
+                reqPutUpdateProductDto.getDescription(),
+                reqPutUpdateProductDto.getStatus()
+        );
+
+        return ResPutProductDto.of(product.getId());
     }
 }

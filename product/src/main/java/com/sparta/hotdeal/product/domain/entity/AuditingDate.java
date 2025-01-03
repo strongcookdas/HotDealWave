@@ -24,4 +24,10 @@ public class AuditingDate {
     private String updatedBy;
     private LocalDateTime deletedAt;
     private String deletedBy;
+
+    // 소프트 삭제 메서드
+    public void delete(String deletedBy) {
+        this.deletedAt = LocalDateTime.now();
+        this.deletedBy = deletedBy;
+    }
 }

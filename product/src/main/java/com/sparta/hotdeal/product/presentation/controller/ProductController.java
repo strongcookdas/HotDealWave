@@ -62,9 +62,14 @@ public class ProductController {
             @PathVariable UUID productId,
             @ModelAttribute ReqPutProductDto reqPutUpdateProductDto
     ) {
-        ResPutProductDto resPutProductDto = ResPutProductDto.builder()
-                .productId(UUID.randomUUID())
-                .build();
+//        ResPutProductDto resPutProductDto = ResPutProductDto.builder()
+//                .productId(UUID.randomUUID())
+//                .build();
+
+        // 임시 유저 정보
+        String deletedBy = "testUser";
+
+        ResPutProductDto resPutProductDto = productService.updateProduct(productId, reqPutUpdateProductDto, deletedBy);
 
         return ResponseDto.of("상품이 수정되었습니다.", resPutProductDto);
     }

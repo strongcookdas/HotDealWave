@@ -96,4 +96,33 @@ public class Product extends AuditingDate {
                 .status(status)
                 .build();
     }
+
+    public void update(
+            String name,
+            Integer price,
+            Integer quantity,
+            ProductCategoryEnum category,
+            String description,
+            ProductStatusEnum status
+    ) {
+        if (name != null) {
+            this.name = name;
+        }
+        if (price != null) {
+            this.price = price;
+        }
+        if (quantity != null) {
+            this.quantity = quantity;
+        }
+        if (category != null) {
+            this.category = category;
+        }
+        if (description != null) {
+            this.description = description;
+        }
+        if (status != null) {
+            this.status = status;
+        }
+    }
+
 }

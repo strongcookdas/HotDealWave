@@ -1,5 +1,6 @@
 package com.sparta.hotdeal.product.domain.entity.product;
 
+import com.sparta.hotdeal.product.domain.entity.AuditingDate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -22,7 +23,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 @Table(name = "p_sub_file")
-public class SubFile {
+public class SubFile extends AuditingDate {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
