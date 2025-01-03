@@ -34,4 +34,16 @@ public class Basket extends AuditingDate {
 
     @Column(nullable = false)
     private Integer quantity;
+
+    public static Basket create(
+            UUID productId,
+            UUID userId,
+            Integer quantity
+    ) {
+        return Basket.builder()
+                .productId(productId)
+                .userId(userId)
+                .quantity(quantity)
+                .build();
+    }
 }

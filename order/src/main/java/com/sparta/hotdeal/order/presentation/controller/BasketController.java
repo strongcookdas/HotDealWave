@@ -8,6 +8,7 @@ import com.sparta.hotdeal.order.application.dtos.basket.res.ResGetBasketByIdDto;
 import com.sparta.hotdeal.order.application.dtos.basket.res.ResGetBasketsDto;
 import com.sparta.hotdeal.order.application.dtos.basket.res.ResPatchBasketDto;
 import com.sparta.hotdeal.order.application.dtos.basket.res.ResPostBasketDto;
+import com.sparta.hotdeal.order.application.service.BasketService;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -28,11 +29,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/baskets")
 public class BasketController {
+
+    private final BasketService basketService;
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<ResPostBasketDto> createBasket(@RequestBody ReqPostBasketDto req) {
-        log.info("ReqPostBasket : {}", req);
-        return ResponseDto.of("장바구니가 추가되었습니다.", ResPostBasketDto.createDummyData());
+        return ResponseDto.of("장바구니가 추가되었습니다.", basketService.createBasket(req.toDto()));
     }
 
     @GetMapping("/{basketId}")

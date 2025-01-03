@@ -14,4 +14,10 @@ public class ResPostBasketDto {
                 .basketId(UUID.randomUUID())
                 .build();
     }
+
+    public static ResPostBasketDto of(UUID basketId) {
+        return ResPostBasketDto.builder()
+                .basketId(basketId)
+                .build();
+    }
 }
