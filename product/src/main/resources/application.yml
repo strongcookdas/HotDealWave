@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: product-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/hotdeal_ecommerce_product_review
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    show-sql: true
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:19090/eureka/
+server:
+  port: 19093
