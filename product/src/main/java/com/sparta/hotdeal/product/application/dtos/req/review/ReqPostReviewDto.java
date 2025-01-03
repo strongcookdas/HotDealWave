@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.product.presentation.dtos.review;
+package com.sparta.hotdeal.product.application.dtos.req.review;
 
 import java.util.List;
 import java.util.UUID;

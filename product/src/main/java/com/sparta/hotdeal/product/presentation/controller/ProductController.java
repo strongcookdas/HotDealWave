@@ -1,17 +1,17 @@
 package com.sparta.hotdeal.product.presentation.controller;
 
-import com.sparta.hotdeal.product.application.dtos.ResponseDto;
-import com.sparta.hotdeal.product.application.dtos.product.ResGetProductDto;
-import com.sparta.hotdeal.product.application.dtos.product.ResPatchProductStatusDto;
-import com.sparta.hotdeal.product.application.dtos.product.ResPatchReduceProductQuantityDto;
-import com.sparta.hotdeal.product.application.dtos.product.ResPatchRestoreProductQuantityDto;
-import com.sparta.hotdeal.product.application.dtos.product.ResPostProductDto;
-import com.sparta.hotdeal.product.application.dtos.product.ResPutProductDto;
+import com.sparta.hotdeal.product.application.dtos.res.ResponseDto;
+import com.sparta.hotdeal.product.application.dtos.res.product.ResGetProductDto;
+import com.sparta.hotdeal.product.application.dtos.res.product.ResPatchProductStatusDto;
+import com.sparta.hotdeal.product.application.dtos.res.product.ResPatchReduceProductQuantityDto;
+import com.sparta.hotdeal.product.application.dtos.res.product.ResPatchRestoreProductQuantityDto;
+import com.sparta.hotdeal.product.application.dtos.res.product.ResPostProductDto;
+import com.sparta.hotdeal.product.application.dtos.res.product.ResPutProductDto;
 import com.sparta.hotdeal.product.domain.entity.product.ProductCategoryEnum;
 import com.sparta.hotdeal.product.domain.entity.product.ProductStatusEnum;
-import com.sparta.hotdeal.product.presentation.dtos.product.ReqPatchProductStatusDto;
-import com.sparta.hotdeal.product.presentation.dtos.product.ReqPostProductDto;
-import com.sparta.hotdeal.product.presentation.dtos.product.ReqPutProductDto;
+import com.sparta.hotdeal.product.application.dtos.req.product.ReqPatchProductStatusDto;
+import com.sparta.hotdeal.product.application.dtos.req.product.ReqPostProductDto;
+import com.sparta.hotdeal.product.application.dtos.req.product.ReqPutProductDto;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -22,6 +22,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,7 +40,7 @@ public class ProductController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<ResPostProductDto> createProduct(
-            @RequestBody ReqPostProductDto reqPostCreateProductDto
+            @ModelAttribute ReqPostProductDto reqPostCreateProductDto
     ) {
         ResPostProductDto resPostProductDto = ResPostProductDto.builder()
                 .productId(UUID.randomUUID())
@@ -51,7 +52,7 @@ public class ProductController {
     @PutMapping("/{productId}")
     public ResponseDto<ResPutProductDto> updateProduct(
             @PathVariable UUID productId,
-            @RequestBody ReqPutProductDto reqPutUpdateProductDto
+            @ModelAttribute ReqPutProductDto reqPutUpdateProductDto
     ) {
         ResPutProductDto resPutProductDto = ResPutProductDto.builder()
                 .productId(UUID.randomUUID())

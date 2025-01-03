@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.product.application.dtos.product;
+package com.sparta.hotdeal.product.application.dtos.res.product;
 
 import com.sparta.hotdeal.product.domain.entity.product.ProductCategoryEnum;
 import com.sparta.hotdeal.product.domain.entity.product.ProductStatusEnum;

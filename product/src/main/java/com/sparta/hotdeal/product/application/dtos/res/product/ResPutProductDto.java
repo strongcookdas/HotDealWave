@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.product.application.dtos.product;
+package com.sparta.hotdeal.product.application.dtos.res.product;
 
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-public class ResPutPromotionDto {
-    private UUID promotionId;
+public class ResPutProductDto {
+    private UUID productId;
 }

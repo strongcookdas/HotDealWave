@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.product.presentation.dtos.product;
+package com.sparta.hotdeal.product.application.dtos.req.product;
 
 import com.sparta.hotdeal.product.domain.entity.product.ProductStatusEnum;
 import lombok.AllArgsConstructor;
