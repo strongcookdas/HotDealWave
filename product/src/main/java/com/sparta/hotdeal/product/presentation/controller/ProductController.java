@@ -1,5 +1,8 @@
 package com.sparta.hotdeal.product.presentation.controller;
 
+import com.sparta.hotdeal.product.application.dtos.req.product.ReqPatchProductStatusDto;
+import com.sparta.hotdeal.product.application.dtos.req.product.ReqPostProductDto;
+import com.sparta.hotdeal.product.application.dtos.req.product.ReqPutProductDto;
 import com.sparta.hotdeal.product.application.dtos.res.ResponseDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResGetProductDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPatchProductStatusDto;
@@ -9,9 +12,7 @@ import com.sparta.hotdeal.product.application.dtos.res.product.ResPostProductDto
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPutProductDto;
 import com.sparta.hotdeal.product.domain.entity.product.ProductCategoryEnum;
 import com.sparta.hotdeal.product.domain.entity.product.ProductStatusEnum;
-import com.sparta.hotdeal.product.application.dtos.req.product.ReqPatchProductStatusDto;
-import com.sparta.hotdeal.product.application.dtos.req.product.ReqPostProductDto;
-import com.sparta.hotdeal.product.application.dtos.req.product.ReqPutProductDto;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -40,7 +41,7 @@ public class ProductController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<ResPostProductDto> createProduct(
-            @ModelAttribute ReqPostProductDto reqPostCreateProductDto
+            @Valid @ModelAttribute ReqPostProductDto reqPostCreateProductDto
     ) {
         ResPostProductDto resPostProductDto = ResPostProductDto.builder()
                 .productId(UUID.randomUUID())

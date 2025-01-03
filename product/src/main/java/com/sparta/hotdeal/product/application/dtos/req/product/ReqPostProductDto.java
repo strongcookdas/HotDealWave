@@ -31,6 +31,10 @@ public class ReqPostProductDto {
     private UUID companyId;
 
     private String description;
+    
+    @NotBlank
     private List<MultipartFile> detailImgs;
+
+    @NotBlank
     private MultipartFile thumbImg;
 }
