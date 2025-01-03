@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.order.presentation.dtos;
+package com.sparta.hotdeal.order.application.dtos;
 
 import lombok.Builder;
 import lombok.Getter;
