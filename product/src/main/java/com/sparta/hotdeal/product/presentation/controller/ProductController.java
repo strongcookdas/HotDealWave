@@ -121,9 +121,11 @@ public class ProductController {
             @RequestParam int quantity,
             @RequestParam Boolean promotion
     ) {
-        ResPatchRestoreProductQuantityDto resPatchRestoreProductQuantityDto = ResPatchRestoreProductQuantityDto.builder()
-                .productId(UUID.randomUUID())
-                .build();
+//        ResPatchRestoreProductQuantityDto resPatchRestoreProductQuantityDto = ResPatchRestoreProductQuantityDto.builder()
+//                .productId(UUID.randomUUID())
+//                .build();
+        ResPatchRestoreProductQuantityDto resPatchRestoreProductQuantityDto = productService.restoreQuantity(productId,
+                quantity, promotion);
 
         return ResponseDto.of("상품이 수정되었습니다.", resPatchRestoreProductQuantityDto);
     }

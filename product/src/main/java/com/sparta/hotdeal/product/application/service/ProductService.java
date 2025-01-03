@@ -5,6 +5,7 @@ import com.sparta.hotdeal.product.application.dtos.req.product.ReqPostProductDto
 import com.sparta.hotdeal.product.application.dtos.req.product.ReqPutProductDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPatchProductStatusDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPatchReduceProductQuantityDto;
+import com.sparta.hotdeal.product.application.dtos.res.product.ResPatchRestoreProductQuantityDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPostProductDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPutProductDto;
 import com.sparta.hotdeal.product.application.service.client.CompanyClientService;
@@ -139,5 +140,19 @@ public class ProductService {
         product.updateQuantity(newQuantity);
 
         return ResPatchReduceProductQuantityDto.of(product.getId());
+    }
+
+    public ResPatchRestoreProductQuantityDto restoreQuantity(UUID productId, int quantity, Boolean promotion) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+
+        int originQuantity = product.getQuantity() + quantity;
+
+        // TODO: 프로모션 상품인 경우
+
+        product.updateQuantity(originQuantity);
+
+        return ResPatchRestoreProductQuantityDto.of(product.getId());
+
     }
 }
