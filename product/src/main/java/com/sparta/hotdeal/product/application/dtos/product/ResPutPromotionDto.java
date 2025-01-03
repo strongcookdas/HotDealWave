@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-public class ResProductIdDto {
-    private UUID productId;
+public class ResPutPromotionDto {
+    private UUID promotionId;
 }
