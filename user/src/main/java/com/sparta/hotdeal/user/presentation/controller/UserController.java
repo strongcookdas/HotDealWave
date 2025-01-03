@@ -1,12 +1,12 @@
 package com.sparta.hotdeal.user.presentation.controller;
 
-import com.sparta.hotdeal.user.presentation.dtos.ResponseDto;
-import com.sparta.hotdeal.user.presentation.dtos.users.request.ReqPatchUsersInfoByIdDto;
-import com.sparta.hotdeal.user.presentation.dtos.users.request.ReqPatchUsersPasswordByIdDto;
-import com.sparta.hotdeal.user.presentation.dtos.users.response.ResDeleteUsersByIdDto;
-import com.sparta.hotdeal.user.presentation.dtos.users.response.ResGetUsersByIdDto;
-import com.sparta.hotdeal.user.presentation.dtos.users.response.ResPatchUsersInfoByIdDto;
-import com.sparta.hotdeal.user.presentation.dtos.users.response.ResPatchUsersPasswordByIdDto;
+import com.sparta.hotdeal.user.application.dtos.ResponseDto;
+import com.sparta.hotdeal.user.application.dtos.users.request.ReqPatchUsersInfoByIdDto;
+import com.sparta.hotdeal.user.application.dtos.users.request.ReqPatchUsersPasswordByIdDto;
+import com.sparta.hotdeal.user.application.dtos.users.response.ResDeleteUsersByIdDto;
+import com.sparta.hotdeal.user.application.dtos.users.response.ResGetUsersByIdDto;
+import com.sparta.hotdeal.user.application.dtos.users.response.ResPatchUsersInfoByIdDto;
+import com.sparta.hotdeal.user.application.dtos.users.response.ResPatchUsersPasswordByIdDto;
 import java.util.UUID;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;

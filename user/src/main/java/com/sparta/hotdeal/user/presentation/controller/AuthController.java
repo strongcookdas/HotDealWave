@@ -1,15 +1,15 @@
 package com.sparta.hotdeal.user.presentation.controller;
 
-import com.sparta.hotdeal.user.presentation.dtos.ResponseDto;
-import com.sparta.hotdeal.user.presentation.dtos.auth.request.ReqPostCheckEmailDto;
-import com.sparta.hotdeal.user.presentation.dtos.auth.request.ReqPostConfirmEmailDto;
-import com.sparta.hotdeal.user.presentation.dtos.auth.request.ReqPostLoginDto;
-import com.sparta.hotdeal.user.presentation.dtos.auth.request.ReqPostRefreshDto;
-import com.sparta.hotdeal.user.presentation.dtos.auth.request.ReqPostSignUpDto;
-import com.sparta.hotdeal.user.presentation.dtos.auth.request.ReqPostVerifyEmailDto;
-import com.sparta.hotdeal.user.presentation.dtos.auth.response.ResPostLoginDto;
-import com.sparta.hotdeal.user.presentation.dtos.auth.response.ResPostRefreshDto;
-import com.sparta.hotdeal.user.presentation.dtos.auth.response.ResPostSignUpDto;
+import com.sparta.hotdeal.user.application.dtos.ResponseDto;
+import com.sparta.hotdeal.user.application.dtos.auth.request.ReqPostCheckEmailDto;
+import com.sparta.hotdeal.user.application.dtos.auth.request.ReqPostConfirmEmailDto;
+import com.sparta.hotdeal.user.application.dtos.auth.request.ReqPostLoginDto;
+import com.sparta.hotdeal.user.application.dtos.auth.request.ReqPostRefreshDto;
+import com.sparta.hotdeal.user.application.dtos.auth.request.ReqPostSignUpDto;
+import com.sparta.hotdeal.user.application.dtos.auth.request.ReqPostVerifyEmailDto;
+import com.sparta.hotdeal.user.application.dtos.auth.response.ResPostLoginDto;
+import com.sparta.hotdeal.user.application.dtos.auth.response.ResPostRefreshDto;
+import com.sparta.hotdeal.user.application.dtos.auth.response.ResPostSignUpDto;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
