@@ -17,7 +17,7 @@ public interface BasketRepository {
 
     List<Basket> findAllByUserId(UUID userId);
 
-    Optional<Basket> findById(UUID basketId);
+    Optional<Basket> findByIdAndUserId(UUID basketId, UUID userId);
 
     void delete(Basket basket);
 }

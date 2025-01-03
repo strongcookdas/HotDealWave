@@ -22,26 +22,25 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class BasketService {
+    private static final UUID TEST_USER_ID = UUID.fromString("8fbd655f-dc52-4bf9-ab23-ef89e923db44");
 
     private final BasketRepository basketRepository;
     private final ProductClientService productClientService;
 
-    @Transactional
     public ResPostBasketDto createBasket(CreateBasketDto basketDto) {
         //product 유효성
         ProductDto productDto = productClientService.getProduct(basketDto.getProductId());
-        Basket basket = Basket.create(productDto.getProductId(),
-                UUID.fromString("8fbd655f-dc52-4bf9-ab23-ef89e923db44"), basketDto.getQuantity());
+        Basket basket = Basket.create(productDto.getProductId(), TEST_USER_ID, basketDto.getQuantity());
         basket = basketRepository.save(basket);
         return ResPostBasketDto.of(basket);
     }
 
+    @Transactional(readOnly = true)
     public List<ResGetBasketListDto> getBasketList() {
-        List<Basket> basketList = basketRepository.findAllByUserId(
-                UUID.fromString("8fbd655f-dc52-4bf9-ab23-ef89e923db44"));
+        List<Basket> basketList = basketRepository.findAllByUserId(TEST_USER_ID);
 
         //ProductListDto를 Map<UUID, ProductListDto>로 변환
         Map<UUID, ProductListDto> productMap = getProductMap(basketList);
@@ -50,6 +49,36 @@ public class BasketService {
                 map(basket -> toResGetBasketListDto(basket, productMap))
                 .collect(Collectors.toList());
 
+    }
+
+    @Transactional(readOnly = true)
+    public ResGetBasketByIdDto getBasketDetail(UUID userId, UUID basketId) {
+        Basket basket = basketRepository.findByIdAndUserId(basketId, userId)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 장바구니가 없습니다."));
+
+        ProductDto productDto = productClientService.getProduct(basket.getProductId());
+
+        return ResGetBasketByIdDto.of(basket, productDto);
+    }
+
+    public ResPatchBasketDto updateBasket(UUID userId, UUID basketId, UpdateBasketDto basketDto) {
+        Basket basket = basketRepository.findByIdAndUserId(basketId, userId)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 장바구니가 없습니다."));
+
+        if (!basket.getUserId().equals(userId)) {
+            throw new IllegalArgumentException("접근 권한이 없습니다.");
+        }
+        basket.updateQuantity(basketDto.getQuantity());
+
+        return ResPatchBasketDto.of(basket);
+    }
+
+    public ResDeleteBasketDto deleteBasket(UUID userId, UUID basketId) {
+        Basket basket = basketRepository.findByIdAndUserId(basketId, userId)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 장바구니가 없습니다."));
+
+        basketRepository.delete(basket);
+        return ResDeleteBasketDto.of(basket);
     }
 
     private Map<UUID, ProductListDto> getProductMap(List<Basket> basketList) {
@@ -70,42 +99,5 @@ public class BasketService {
                 ));
 
         return ResGetBasketListDto.from(basket, product);
-    }
-
-    public ResGetBasketByIdDto getBasketDetail(UUID userId, UUID basketId) {
-        Basket basket = basketRepository.findById(basketId)
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 장바구니가 없습니다."));
-
-        if (!basket.getUserId().equals(userId)) {
-            throw new IllegalArgumentException("접근 권한이 없습니다.");
-        }
-
-        ProductDto productDto = productClientService.getProduct(basket.getProductId());
-
-        return ResGetBasketByIdDto.of(basket, productDto);
-    }
-
-    @Transactional
-    public ResPatchBasketDto updateBasket(UUID userId, UUID basketId, UpdateBasketDto basketDto) {
-        Basket basket = basketRepository.findById(basketId)
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 장바구니가 없습니다."));
-
-        if (!basket.getUserId().equals(userId)) {
-            throw new IllegalArgumentException("접근 권한이 없습니다.");
-        }
-        basket.updateQuantity(basketDto.getQuantity());
-
-        return ResPatchBasketDto.of(basket);
-    }
-
-    @Transactional
-    public ResDeleteBasketDto deleteBasket(UUID userId, UUID basketId) {
-        Basket basket = basketRepository.findById(basketId)
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 장바구니가 없습니다."));
-        if (!basket.getUserId().equals(userId)) {
-            throw new IllegalArgumentException("접근 권한이 없습니다.");
-        }
-        basketRepository.delete(basket);
-        return ResDeleteBasketDto.of(basket);
     }
 }
