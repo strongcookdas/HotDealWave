@@ -9,6 +9,7 @@ import com.sparta.hotdeal.order.application.dtos.basket.res.ResGetBasketListDto;
 import com.sparta.hotdeal.order.application.dtos.basket.res.ResPatchBasketDto;
 import com.sparta.hotdeal.order.application.dtos.basket.res.ResPostBasketDto;
 import com.sparta.hotdeal.order.application.service.BasketService;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,7 @@ public class BasketController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseDto<ResPostBasketDto> createBasket(@RequestBody ReqPostBasketDto req) {
+    public ResponseDto<ResPostBasketDto> createBasket(@RequestBody @Valid ReqPostBasketDto req) {
         return ResponseDto.of("장바구니가 추가되었습니다.", basketService.createBasket(req.toDto()));
     }
 
@@ -51,7 +52,7 @@ public class BasketController {
 
     @PatchMapping("/{basketId}")
     public ResponseDto<ResPatchBasketDto> updateBasket(@PathVariable UUID basketId,
-                                                       @RequestBody ReqPatchBasketDto req) {
+                                                       @RequestBody @Valid ReqPatchBasketDto req) {
         return ResponseDto.of("장바구니 상품 수량이 수정되었습니다.",
                 basketService.updateBasket(
                         UUID.fromString("8fbd655f-dc52-4bf9-ab23-ef89e923db44"),
