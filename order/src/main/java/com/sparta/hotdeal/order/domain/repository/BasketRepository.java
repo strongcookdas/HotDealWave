@@ -6,9 +6,12 @@ package com.sparta.hotdeal.order.domain.repository;
 // BasketRepositoryImpl 프록시 객체를 주입받게 됨
 
 import com.sparta.hotdeal.order.domain.entity.basket.Basket;
+import java.util.List;
+import java.util.UUID;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BasketRepository {
     Basket save(Basket basket);
+    List<Basket> findAllByUserId(UUID userId);
 }

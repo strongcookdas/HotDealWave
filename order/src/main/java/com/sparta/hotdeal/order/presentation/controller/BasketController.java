@@ -5,7 +5,7 @@ import com.sparta.hotdeal.order.application.dtos.basket.req.ReqPatchBasketDto;
 import com.sparta.hotdeal.order.application.dtos.basket.req.ReqPostBasketDto;
 import com.sparta.hotdeal.order.application.dtos.basket.res.ResDeleteBasketDto;
 import com.sparta.hotdeal.order.application.dtos.basket.res.ResGetBasketByIdDto;
-import com.sparta.hotdeal.order.application.dtos.basket.res.ResGetBasketsDto;
+import com.sparta.hotdeal.order.application.dtos.basket.res.ResGetBasketListDto;
 import com.sparta.hotdeal.order.application.dtos.basket.res.ResPatchBasketDto;
 import com.sparta.hotdeal.order.application.dtos.basket.res.ResPostBasketDto;
 import com.sparta.hotdeal.order.application.service.BasketService;
@@ -44,8 +44,8 @@ public class BasketController {
     }
 
     @GetMapping
-    public ResponseDto<List<ResGetBasketsDto>> getBaskets() {
-        return ResponseDto.of("장바구니 조회 성공", ResGetBasketsDto.createDummyList());
+    public ResponseDto<List<ResGetBasketListDto>> getBasketList() {
+        return ResponseDto.of("장바구니 조회 성공", basketService.getBasketList());
     }
 
     @PatchMapping("/{basketId}")
