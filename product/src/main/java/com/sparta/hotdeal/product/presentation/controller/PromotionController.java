@@ -2,7 +2,8 @@ package com.sparta.hotdeal.product.presentation.controller;
 
 import com.sparta.hotdeal.product.application.dtos.ResponseDto;
 import com.sparta.hotdeal.product.application.dtos.product.ResGetPromotionDto;
-import com.sparta.hotdeal.product.application.dtos.product.ResPromotionIdDto;
+import com.sparta.hotdeal.product.application.dtos.product.ResPostPromotionDto;
+import com.sparta.hotdeal.product.application.dtos.product.ResPutPromotionDto;
 import com.sparta.hotdeal.product.presentation.dtos.product.ReqPostPromotionDto;
 import com.sparta.hotdeal.product.presentation.dtos.product.ReqPutPromotionDto;
 import java.sql.Timestamp;
@@ -33,30 +34,30 @@ public class PromotionController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseDto<ResPromotionIdDto> createPromotion(
+    public ResponseDto<ResPostPromotionDto> createPromotion(
             @RequestBody ReqPostPromotionDto reqPostCreatePromotionDto
     ) {
-        ResPromotionIdDto resPromotionIdDto = ResPromotionIdDto.builder()
+        ResPostPromotionDto resPostPromotionDto = ResPostPromotionDto.builder()
                 .promotionId(UUID.randomUUID())
                 .build();
 
-        return ResponseDto.of("프로모션이 생성되었습니다.", resPromotionIdDto);
+        return ResponseDto.of("프로모션이 생성되었습니다.", resPostPromotionDto);
     }
 
     @PutMapping("/{promotionId}")
-    public ResponseDto<ResPromotionIdDto> updatePromotion(
+    public ResponseDto<ResPutPromotionDto> updatePromotion(
             @PathVariable UUID promotionId,
             @RequestBody ReqPutPromotionDto reqPutUpdatePromotionDto
     ) {
-        ResPromotionIdDto resPromotionIdDto = ResPromotionIdDto.builder()
+        ResPutPromotionDto resPutPromotionDto = ResPutPromotionDto.builder()
                 .promotionId(UUID.randomUUID())
                 .build();
 
-        return ResponseDto.of("프로모션이 수정되었습니다.", resPromotionIdDto);
+        return ResponseDto.of("프로모션이 수정되었습니다.", resPutPromotionDto);
     }
 
     @DeleteMapping("/{promotionId}")
-    public ResponseDto<ResPromotionIdDto> deletePromotion(
+    public ResponseDto<Void> deletePromotion(
             @PathVariable UUID promotionId
     ) {
         return ResponseDto.of("프로모션이 삭제되었습니다.", null);
