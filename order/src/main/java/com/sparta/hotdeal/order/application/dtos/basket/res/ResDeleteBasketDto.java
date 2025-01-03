@@ -1,20 +1,20 @@
 package com.sparta.hotdeal.order.application.dtos.basket.res;
 
+import com.sparta.hotdeal.order.domain.entity.basket.Basket;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class ResDeleteBasketDto {
     private UUID basketId;
-    public static ResDeleteBasketDto createDummyData() {
+
+    public static ResDeleteBasketDto of(Basket basket) {
         return ResDeleteBasketDto.builder()
-                .basketId(UUID.randomUUID())
+                .basketId(basket.getId())
                 .build();
     }
 }

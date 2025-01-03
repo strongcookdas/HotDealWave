@@ -61,6 +61,7 @@ public class BasketController {
 
     @DeleteMapping("/{basketId}")
     public ResponseDto<ResDeleteBasketDto> deleteBasket(@PathVariable UUID basketId) {
-        return ResponseDto.of("해당 장바구니가 삭제되었습니다.", ResDeleteBasketDto.createDummyData());
+        return ResponseDto.of("해당 장바구니가 삭제되었습니다.",
+                basketService.deleteBasket(UUID.fromString("8fbd655f-dc52-4bf9-ab23-ef89e923db44"), basketId));
     }
 }

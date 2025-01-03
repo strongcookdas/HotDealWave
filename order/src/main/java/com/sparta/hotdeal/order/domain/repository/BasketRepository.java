@@ -14,6 +14,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BasketRepository {
     Basket save(Basket basket);
+
     List<Basket> findAllByUserId(UUID userId);
+
     Optional<Basket> findById(UUID basketId);
+
+    void delete(Basket basket);
 }
