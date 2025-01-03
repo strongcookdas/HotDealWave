@@ -12,4 +12,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ResPatchReduceProductQuantityDto {
     private UUID productId;
+
+    public static ResPatchReduceProductQuantityDto of(UUID productId) {
+        return ResPatchReduceProductQuantityDto.builder()
+                .productId(productId)
+                .build();
+    }
 }
