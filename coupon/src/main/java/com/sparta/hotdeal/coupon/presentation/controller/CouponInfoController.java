@@ -3,6 +3,8 @@ package com.sparta.hotdeal.coupon.presentation.controller;
 import com.sparta.hotdeal.coupon.application.dto.req.*;
 import com.sparta.hotdeal.coupon.application.dto.res.*;
 import com.sparta.hotdeal.coupon.application.dto.ResponseDto;
+import com.sparta.hotdeal.coupon.application.service.CouponInfoService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,15 +13,15 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/couponInfos")
+@RequiredArgsConstructor
 public class CouponInfoController {
+
+    private final CouponInfoService couponInfoService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<ResPostCouponInfosDto> createCoupon(@RequestBody ReqPostCouponInfosDto reqDto) {
-        ResPostCouponInfosDto responseDto = ResPostCouponInfosDto.builder()
-                .couponId(UUID.randomUUID())
-                .build();
-
+        ResPostCouponInfosDto responseDto = couponInfoService.createCoupon(reqDto);
         return ResponseDto.of("쿠폰 생성 성공", responseDto);
     }
 
