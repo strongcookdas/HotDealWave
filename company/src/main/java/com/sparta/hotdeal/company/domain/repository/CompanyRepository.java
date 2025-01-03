@@ -1,9 +1,10 @@
 package com.sparta.hotdeal.company.domain.repository;
 
 import com.sparta.hotdeal.company.domain.entity.Company;
-import org.springframework.web.bind.annotation.RestController;
+import com.sparta.hotdeal.company.infrastructure.repository.CompanyRepositoryImpl;
+import org.springframework.stereotype.Repository;
 
-@RestController
-public interface CompanyRepository {
+@Repository
+public interface CompanyRepository extends CompanyRepositoryImpl {
     Company save(Company company);
 }
