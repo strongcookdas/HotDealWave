@@ -71,4 +71,15 @@ public class SubFileService {
         }
     }
 
+    public void deleteImg(File detailImgsFile, String username) {
+
+        List<SubFile> existingSubFiles = detailImgsFile.getSubFiles();
+        for (SubFile subFile : existingSubFiles) {
+            // TODO: s3에서 실제 파일 삭제
+
+            if (subFile.getDeletedAt() == null) {
+                subFile.delete(username);
+            }
+        }
+    }
 }

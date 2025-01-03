@@ -93,6 +93,10 @@ public class ProductController {
     public ResponseDto<Void> deleteProduct(
             @PathVariable UUID productId
     ) {
+        // 임시 user
+        String username = "testUser";
+        productService.deleteProduct(productId, username);
+
         return ResponseDto.of("상품이 삭제되었습니다.", null);
     }
 

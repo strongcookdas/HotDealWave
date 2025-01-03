@@ -18,4 +18,9 @@ public class FileService {
         File file = fileRepository.save(new File());
         return file;
     }
+
+    @Transactional
+    public void deleteFile(File file, String username) {
+        file.delete(username);
+    }
 }

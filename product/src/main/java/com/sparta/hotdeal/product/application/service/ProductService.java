@@ -105,4 +105,24 @@ public class ProductService {
 
         return ResPatchProductStatusDto.of(product.getId());
     }
+
+    @Transactional
+    public void deleteProduct(UUID productId, String username) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+
+        // 파일 삭제 처리
+        File detailImgsFile = product.getDetailImgs();
+        File thumbImgFile = product.getThumbImg();
+
+        fileService.deleteFile(detailImgsFile, username);
+        fileService.deleteFile(thumbImgFile, username);
+
+        // 서브파일 삭제 처리
+        subFileService.deleteImg(detailImgsFile, username);
+        subFileService.deleteImg(thumbImgFile, username);
+
+        // 상품 삭제 처리
+        product.delete(username);
+    }
 }
