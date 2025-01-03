@@ -32,6 +32,7 @@ public class CouponInfoController {
 
     @PatchMapping("/{couponInfoId}/status")
     public ResponseDto<Void> updateCouponStatus(@PathVariable UUID couponInfoId, @RequestBody ReqPatchCouponInfosByIdStatusDto reqDto) {
+        couponInfoService.updateCouponStatus(couponInfoId, reqDto.getStatus());
         return ResponseDto.of("쿠폰 상태 변경 성공", null);
     }
 

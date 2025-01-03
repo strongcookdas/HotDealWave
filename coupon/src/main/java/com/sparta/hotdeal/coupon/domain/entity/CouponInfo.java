@@ -51,4 +51,7 @@ public class CouponInfo {
     @Column(name = "company_id")
     private UUID companyId;
 
+    public void updateStatus(CouponStatus status) {
+        this.status = status;
+    }
 }
