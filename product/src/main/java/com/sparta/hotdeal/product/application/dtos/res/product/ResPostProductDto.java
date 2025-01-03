@@ -12,4 +12,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ResPostProductDto {
     private UUID productId;
+
+    public static ResPostProductDto of(UUID productId) {
+        return ResPostProductDto.builder()
+                .productId(productId)
+                .build();
+    }
 }

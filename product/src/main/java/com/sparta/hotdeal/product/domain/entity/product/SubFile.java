@@ -35,4 +35,10 @@ public class SubFile {
 
     @Column(nullable = false)
     private String resource;
+
+    public static SubFile of(String resource, File file) {
+        return SubFile.builder()
+                .resource(resource)
+                .file(file).build();
+    }
 }

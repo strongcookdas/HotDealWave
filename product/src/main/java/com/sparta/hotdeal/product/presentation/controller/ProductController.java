@@ -10,11 +10,13 @@ import com.sparta.hotdeal.product.application.dtos.res.product.ResPatchReducePro
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPatchRestoreProductQuantityDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPostProductDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPutProductDto;
+import com.sparta.hotdeal.product.application.service.ProductService;
 import com.sparta.hotdeal.product.domain.entity.product.ProductCategoryEnum;
 import com.sparta.hotdeal.product.domain.entity.product.ProductStatusEnum;
-import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -34,19 +36,24 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/products")
+@RequiredArgsConstructor
 public class ProductController {
+
+    private final ProductService productService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<ResPostProductDto> createProduct(
-            @Valid @ModelAttribute ReqPostProductDto reqPostCreateProductDto
+            @ModelAttribute ReqPostProductDto reqPostCreateProductDto
     ) {
-        ResPostProductDto resPostProductDto = ResPostProductDto.builder()
-                .productId(UUID.randomUUID())
-                .build();
+//        ResPostProductDto resPostProductDto = ResPostProductDto.builder()
+//                .productId(UUID.randomUUID())
+//                .build();
 
+        ResPostProductDto resPostProductDto = productService.createProduct(reqPostCreateProductDto);
         return ResponseDto.of("상품이 생성되었습니다.", resPostProductDto);
     }
 

@@ -72,4 +72,28 @@ public class Product extends AuditingDate {
 
     @Column
     private Integer discountPrice;
+
+    public static Product create(
+            String name,
+            int price,
+            int quantity,
+            ProductCategoryEnum category,
+            String description,
+            File detailImgs,
+            File thumbImg,
+            UUID companyId,
+            ProductStatusEnum status
+    ) {
+        return Product.builder()
+                .name(name)
+                .price(price)
+                .quantity(quantity)
+                .category(category)
+                .description(description)
+                .detailImgs(detailImgs)
+                .thumbImg(thumbImg)
+                .companyId(companyId)
+                .status(status)
+                .build();
+    }
 }
