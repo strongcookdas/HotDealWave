@@ -3,6 +3,8 @@ package com.sparta.hotdeal.coupon.presentation.controller;
 import com.sparta.hotdeal.coupon.application.dto.req.*;
 import com.sparta.hotdeal.coupon.application.dto.res.*;
 import com.sparta.hotdeal.coupon.application.dto.ResponseDto;
+import com.sparta.hotdeal.coupon.application.service.CouponService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,7 +14,10 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/coupons")
+@RequiredArgsConstructor
 public class CouponController {
+
+    private final CouponService couponService;
 
     @PostMapping("/issue")
     @ResponseStatus(HttpStatus.CREATED)
