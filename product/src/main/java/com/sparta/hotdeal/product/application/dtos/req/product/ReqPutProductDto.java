@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.product.presentation.dtos.product;
+package com.sparta.hotdeal.product.application.dtos.req.product;
 
 import com.sparta.hotdeal.product.domain.entity.product.ProductCategoryEnum;
 import com.sparta.hotdeal.product.domain.entity.product.ProductStatusEnum;
@@ -6,6 +6,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -16,7 +17,7 @@ public class ReqPutProductDto {
     private Integer quantity;
     private ProductCategoryEnum category;
     private String description;
-    private List<String> detailImgs;
-    private String thumbImg;
+    private List<MultipartFile> detailImgs;
+    private MultipartFile thumbImg;
     private ProductStatusEnum status;
 }
