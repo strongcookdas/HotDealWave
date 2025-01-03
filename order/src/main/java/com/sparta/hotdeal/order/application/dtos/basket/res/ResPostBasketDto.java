@@ -10,12 +10,6 @@ import lombok.Getter;
 public class ResPostBasketDto {
     private UUID basketId;
 
-    public static ResPostBasketDto createDummyData() {
-        return ResPostBasketDto.builder()
-                .basketId(UUID.randomUUID())
-                .build();
-    }
-
     public static ResPostBasketDto of(Basket basket) {
         return ResPostBasketDto.builder()
                 .basketId(basket.getId())

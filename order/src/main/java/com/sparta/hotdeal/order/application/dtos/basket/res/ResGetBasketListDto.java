@@ -28,22 +28,4 @@ public class ResGetBasketListDto {
                 .productPrice(product.getPrice())
                 .build();
     }
-
-
-    public static List<ResGetBasketListDto> createDummyList() {
-        List<ResGetBasketListDto> dummyBaskets = new ArrayList<>();
-
-        for (int i = 1; i <= 3; i++) {
-            ResGetBasketListDto basket = ResGetBasketListDto.builder()
-                    .basketId(UUID.randomUUID())
-                    .productId(UUID.randomUUID())
-                    .productName("Product " + i)
-                    .productQuantity(i)
-                    .productPrice(10000 * i)
-                    .build();
-            dummyBaskets.add(basket);
-        }
-
-        return dummyBaskets;
-    }
 }
