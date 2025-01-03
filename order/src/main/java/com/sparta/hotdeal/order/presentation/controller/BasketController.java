@@ -52,8 +52,11 @@ public class BasketController {
     @PatchMapping("/{basketId}")
     public ResponseDto<ResPatchBasketDto> updateBasket(@PathVariable UUID basketId,
                                                        @RequestBody ReqPatchBasketDto req) {
-        log.info("ReqPatchBasketDto : {}", req);
-        return ResponseDto.of("장바구니 상품 수량이 수정되었습니다.", ResPatchBasketDto.createDummyData());
+        return ResponseDto.of("장바구니 상품 수량이 수정되었습니다.",
+                basketService.updateBasket(
+                        UUID.fromString("8fbd655f-dc52-4bf9-ab23-ef89e923db44"),
+                        basketId,
+                        req.toDto()));
     }
 
     @DeleteMapping("/{basketId}")

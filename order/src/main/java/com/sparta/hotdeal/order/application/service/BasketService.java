@@ -1,8 +1,10 @@
 package com.sparta.hotdeal.order.application.service;
 
 import com.sparta.hotdeal.order.application.dtos.basket.CreateBasketDto;
+import com.sparta.hotdeal.order.application.dtos.basket.UpdateBasketDto;
 import com.sparta.hotdeal.order.application.dtos.basket.res.ResGetBasketByIdDto;
 import com.sparta.hotdeal.order.application.dtos.basket.res.ResGetBasketListDto;
+import com.sparta.hotdeal.order.application.dtos.basket.res.ResPatchBasketDto;
 import com.sparta.hotdeal.order.application.dtos.basket.res.ResPostBasketDto;
 import com.sparta.hotdeal.order.application.dtos.product.ProductDto;
 import com.sparta.hotdeal.order.application.dtos.product.ProductListDto;
@@ -80,5 +82,18 @@ public class BasketService {
         ProductDto productDto = productClientService.getProduct(basket.getProductId());
 
         return ResGetBasketByIdDto.of(basket, productDto);
+    }
+
+    @Transactional
+    public ResPatchBasketDto updateBasket(UUID userId, UUID basketId, UpdateBasketDto basketDto) {
+        Basket basket = basketRepository.findById(basketId)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 장바구니가 없습니다."));
+
+        if (!basket.getUserId().equals(userId)) {
+            throw new IllegalArgumentException("접근 권한이 없습니다.");
+        }
+        basket.updateQuantity(basketDto.getQuantity());
+
+        return ResPatchBasketDto.of(basket);
     }
 }

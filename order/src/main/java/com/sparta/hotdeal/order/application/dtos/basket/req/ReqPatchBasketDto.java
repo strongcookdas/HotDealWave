@@ -1,14 +1,15 @@
 package com.sparta.hotdeal.order.application.dtos.basket.req;
 
+import com.sparta.hotdeal.order.application.dtos.basket.UpdateBasketDto;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class ReqPatchBasketDto {
     private Integer quantity;
+
+    public UpdateBasketDto toDto() {
+        return UpdateBasketDto.create(quantity);
+    }
 }
