@@ -1,5 +1,6 @@
 package com.sparta.hotdeal.company.presentation.controller;
 
+import com.sparta.hotdeal.company.application.service.CompanyService;
 import com.sparta.hotdeal.company.domain.entity.CompanyStatusEnum;
 import com.sparta.hotdeal.company.application.dtos.ReqPatchCompanyByIdDto;
 import com.sparta.hotdeal.company.application.dtos.ReqPatchCompanyByIdStatusDto;
@@ -9,6 +10,7 @@ import com.sparta.hotdeal.company.application.dtos.ResponseDto;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -21,11 +23,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/companies")
+@RequiredArgsConstructor
 public class CompanyController {
+    private final CompanyService companyService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<Void> createCompany(@RequestBody ReqPostCompanyDto reqPostCompanyDto) {
+        companyService.createCompany(reqPostCompanyDto);
         return ResponseDto.of("업체가 신청되었습니다.", null);
     }
 

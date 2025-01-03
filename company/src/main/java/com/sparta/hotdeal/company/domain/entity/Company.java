@@ -39,5 +39,26 @@ public class Company {
     private String companyEmail;
 
     @Column(nullable = false)
+    private String brandName;
+
+    @Column(nullable = false)
     private CompanyStatusEnum status;
+
+    public static Company create(
+            Long businessRegistrationNumber,
+            Long companyPhoneNumber,
+            UUID managerId,
+            String companyEmail,
+            String brandName,
+            CompanyStatusEnum status
+    ) {
+        return Company.builder()
+                .businessRegistrationNumber(businessRegistrationNumber)
+                .companyPhoneNumber(companyPhoneNumber)
+                .managerId(managerId)
+                .companyEmail(companyEmail)
+                .brandName(brandName)
+                .status(status)
+                .build();
+    }
 }
