@@ -79,9 +79,12 @@ public class ProductController {
             @PathVariable UUID productId,
             @RequestBody ReqPatchProductStatusDto reqPatchUpdateProductStatusDto
     ) {
-        ResPatchProductStatusDto resPatchProductStatusDto = ResPatchProductStatusDto.builder()
-                .productId(UUID.randomUUID())
-                .build();
+//        ResPatchProductStatusDto resPatchProductStatusDto = ResPatchProductStatusDto.builder()
+//                .productId(UUID.randomUUID())
+//                .build();
+
+        ResPatchProductStatusDto resPatchProductStatusDto = productService.updateProductStatus(productId,
+                reqPatchUpdateProductStatusDto);
 
         return ResponseDto.of("상품이 수정되었습니다.", resPatchProductStatusDto);
     }

@@ -125,4 +125,7 @@ public class Product extends AuditingDate {
         }
     }
 
+    public void updateStatus(ProductStatusEnum status) {
+        this.status = status;
+    }
 }

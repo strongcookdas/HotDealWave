@@ -1,7 +1,9 @@
 package com.sparta.hotdeal.product.application.service;
 
+import com.sparta.hotdeal.product.application.dtos.req.product.ReqPatchProductStatusDto;
 import com.sparta.hotdeal.product.application.dtos.req.product.ReqPostProductDto;
 import com.sparta.hotdeal.product.application.dtos.req.product.ReqPutProductDto;
+import com.sparta.hotdeal.product.application.dtos.res.product.ResPatchProductStatusDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPostProductDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPutProductDto;
 import com.sparta.hotdeal.product.application.service.client.CompanyClientService;
@@ -90,5 +92,17 @@ public class ProductService {
         );
 
         return ResPutProductDto.of(product.getId());
+    }
+
+    @Transactional
+    public ResPatchProductStatusDto updateProductStatus(UUID productId,
+                                                        ReqPatchProductStatusDto reqPatchUpdateProductStatusDto) {
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+
+        product.updateStatus(reqPatchUpdateProductStatusDto.getStatus());
+
+        return ResPatchProductStatusDto.of(product.getId());
     }
 }
