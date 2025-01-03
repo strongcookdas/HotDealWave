@@ -1,5 +1,7 @@
 package com.sparta.hotdeal.order.application.dtos.basket.res;
 
+import com.sparta.hotdeal.order.application.dtos.product.ProductDto;
+import com.sparta.hotdeal.order.domain.entity.basket.Basket;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,18 +14,18 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ResGetBasketByIdDto {
     private UUID basketId;
+    private Integer quantity;
     private UUID productId;
     private String productName;
-    private Integer productQuantity;
     private Integer productPrice;
 
-    public static ResGetBasketByIdDto createDummyData(UUID basketId) {
+    public static ResGetBasketByIdDto of(Basket basket, ProductDto product) {
         return ResGetBasketByIdDto.builder()
-                .basketId(basketId)
-                .productId(UUID.randomUUID())
-                .productName("product Sample")
-                .productQuantity(2)
-                .productPrice(5000)
+                .basketId(basket.getId())
+                .quantity(basket.getQuantity())
+                .productId(product.getProductId())
+                .productName(product.getName())
+                .productPrice(product.getPrice())
                 .build();
     }
 }

@@ -1,7 +1,5 @@
 package com.sparta.hotdeal.order.application.dtos.product;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

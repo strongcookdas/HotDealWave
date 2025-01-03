@@ -7,6 +7,7 @@ package com.sparta.hotdeal.order.domain.repository;
 
 import com.sparta.hotdeal.order.domain.entity.basket.Basket;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Repository;
 
@@ -14,4 +15,5 @@ import org.springframework.stereotype.Repository;
 public interface BasketRepository {
     Basket save(Basket basket);
     List<Basket> findAllByUserId(UUID userId);
+    Optional<Basket> findById(UUID basketId);
 }

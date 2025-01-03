@@ -40,7 +40,8 @@ public class BasketController {
 
     @GetMapping("/{basketId}")
     public ResponseDto<ResGetBasketByIdDto> getBasketDetail(@PathVariable UUID basketId) {
-        return ResponseDto.of("장바구니 단건 조회 성공", ResGetBasketByIdDto.createDummyData(basketId));
+        return ResponseDto.of("장바구니 단건 조회 성공",
+                basketService.getBasketDetail(UUID.fromString("8fbd655f-dc52-4bf9-ab23-ef89e923db44"), basketId));
     }
 
     @GetMapping
