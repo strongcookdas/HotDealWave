@@ -37,19 +37,7 @@ public class CouponInfoController {
 
     @GetMapping("/{couponInfoId}")
     public ResponseDto<ResGetCouponInfosByIdDto> getCouponDetail(@PathVariable UUID couponInfoId) {
-        ResGetCouponInfosByIdDto responseDto = ResGetCouponInfosByIdDto.builder()
-                .couponId(UUID.randomUUID())
-                .name("임시 쿠폰")
-                .quantity(100)
-                .issuedCount(50)
-                .discountAmount(5000)
-                .minOrderAmount(50000)
-                .expirationDate(null)
-                .status("ISSUED")
-                .couponType("FIRST_COME_FIRST_SERVE")
-                .companyId(UUID.randomUUID())
-                .build();
-
+        ResGetCouponInfosByIdDto responseDto = couponInfoService.getCouponDetail(couponInfoId);
         return ResponseDto.of("쿠폰 상세 조회 성공", responseDto);
     }
 
