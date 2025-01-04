@@ -18,26 +18,26 @@ import org.springframework.web.multipart.MultipartFile;
 @Setter
 public class ReqPostProductDto {
 
-    @NotBlank
+    @NotBlank(message = "상품명을 입력해주세요.")
     private String name;
 
-    @Positive
+    @Positive(message = "가격은 1 이상으로 입력해주세요.")
     private Integer price;
 
-    @Positive
+    @Positive(message = "수량은 1 이상으로 입력해주세요.")
     private Integer quantity;
 
-    @NotNull
+    @NotNull(message = "카테고리를 입력해주세요.")
     private ProductCategoryEnum category;
 
-    @NotNull
+    @NotNull(message = "업체를 입력해주세요.")
     private UUID companyId;
 
     private String description;
 
-    @NotNull
+    @NotNull(message = "이미지를 선택해주세요.")
     private List<MultipartFile> detailImgs;
 
-    @NotNull
+    @NotNull(message = "이미지를 선택해주세요.")
     private MultipartFile thumbImg;
 }

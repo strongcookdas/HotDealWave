@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @Getter
 public class ReqPatchProductStatusDto {
 
-    @NotNull
+    @NotNull(message = "상태를 입력해주세요.")
     private ProductStatusEnum status;
 }
