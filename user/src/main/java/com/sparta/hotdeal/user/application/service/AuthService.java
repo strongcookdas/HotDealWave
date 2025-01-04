@@ -1,5 +1,6 @@
 package com.sparta.hotdeal.user.application.service;
 
+import com.sparta.hotdeal.user.application.dtos.auth.request.ReqPostConfirmEmailDto;
 import com.sparta.hotdeal.user.application.dtos.auth.request.ReqPostSignUpDto;
 import com.sparta.hotdeal.user.application.dtos.auth.request.ReqPostVerifyEmailDto;
 import com.sparta.hotdeal.user.application.dtos.auth.response.ResPostSignUpDto;
@@ -55,6 +56,14 @@ public class AuthService {
         String code = createCode();
         mailService.sendEmail(requestDto.getEmail(), MAIL_TITLE, code);
         redisUtil.setValues(requestDto.getEmail(), code, authCodeExpirationMillis);
+    }
+
+    public void confirmEmail(ReqPostConfirmEmailDto requestDto) {
+        String code = redisUtil.getValues(requestDto.getEmail());
+
+        if (!code.equals(requestDto.getVerificationToken())) {
+            throw new IllegalArgumentException(ErrorMessage.WRONG_VERIFICATION_CODE.getMessage());
+        }
     }
 
     private void checkNickname(String nickname) {

@@ -55,7 +55,9 @@ public class AuthController {
     @PostMapping("/email-verification/confirm")
     public ResponseDto<Void> confirmEmail(@RequestBody ReqPostConfirmEmailDto requestDto) {
 
-        return ResponseDto.of("이메일 인증이 처리되었습니다.", null);
+        authService.confirmEmail(requestDto);
+
+        return ResponseDto.of(ResponseMessage.EMAIL_CONFIRMED.getMessage(), null);
     }
 
     @PostMapping("/login")
