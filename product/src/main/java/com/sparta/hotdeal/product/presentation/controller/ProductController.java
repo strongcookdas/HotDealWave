@@ -134,21 +134,22 @@ public class ProductController {
     public ResponseDto<ResGetProductDto> getProduct(
             @PathVariable UUID productId
     ) {
-        ResGetProductDto resGetProductDto = ResGetProductDto.builder()
-                .productId(UUID.randomUUID())
-                .name("노트")
-                .price(1000)
-                .quantity(100)
-                .category(ProductCategoryEnum.OFFICE_SUPPLIES)
-                .companyId(UUID.randomUUID())
-                .description("줄선 노트입니다.")
-                .detailImgs(List.of("img1", "img2"))
-                .thumbImg("img")
-                .status(ProductStatusEnum.ON_SALE)
-                .rating(3.5)
-                .reviewCnt(3)
-                .discountPrice(null)
-                .build();
+//        ResGetProductDto resGetProductDto = ResGetProductDto.builder()
+//                .productId(UUID.randomUUID())
+//                .name("노트")
+//                .price(1000)
+//                .quantity(100)
+//                .category(ProductCategoryEnum.OFFICE_SUPPLIES)
+//                .companyId(UUID.randomUUID())
+//                .description("줄선 노트입니다.")
+//                .detailImgs(List.of("img1", "img2"))
+//                .thumbImg("img")
+//                .status(ProductStatusEnum.ON_SALE)
+//                .rating(3.5)
+//                .reviewCnt(3)
+//                .discountPrice(null)
+//                .build();
+        ResGetProductDto resGetProductDto = productService.getProduct(productId);
 
         return ResponseDto.of("상품이 조회되었습니다.", resGetProductDto);
     }

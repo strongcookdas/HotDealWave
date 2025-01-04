@@ -3,6 +3,7 @@ package com.sparta.hotdeal.product.application.service;
 import com.sparta.hotdeal.product.application.dtos.req.product.ReqPatchProductStatusDto;
 import com.sparta.hotdeal.product.application.dtos.req.product.ReqPostProductDto;
 import com.sparta.hotdeal.product.application.dtos.req.product.ReqPutProductDto;
+import com.sparta.hotdeal.product.application.dtos.res.product.ResGetProductDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPatchProductStatusDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPatchReduceProductQuantityDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPatchRestoreProductQuantityDto;
@@ -12,14 +13,18 @@ import com.sparta.hotdeal.product.application.service.client.CompanyClientServic
 import com.sparta.hotdeal.product.domain.entity.product.File;
 import com.sparta.hotdeal.product.domain.entity.product.Product;
 import com.sparta.hotdeal.product.domain.entity.product.ProductStatusEnum;
+import com.sparta.hotdeal.product.domain.entity.product.SubFile;
 import com.sparta.hotdeal.product.domain.repository.product.ProductRepository;
 import com.sparta.hotdeal.product.domain.repository.product.ProductRepositoryCustomImpl;
 import com.sparta.hotdeal.product.infrastructure.dtos.ResGetCompanyByIdDto;
-import jakarta.transaction.Transactional;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
@@ -155,5 +160,42 @@ public class ProductService {
 
         return ResPatchRestoreProductQuantityDto.of(product.getId());
 
+    }
+
+    @Transactional(readOnly = true)
+    public ResGetProductDto getProduct(UUID productId) {
+        // 상품 조회
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+
+        // 파일
+        File detailImgsFile = product.getDetailImgs();
+        File thumbImgFile = product.getThumbImg();
+
+        // 서브 파일 조회
+        List<String> detailImgs = detailImgsFile.getSubFiles().stream().map(SubFile::getResource).toList();
+        String thumbImg = thumbImgFile.getSubFiles().get(0).getResource();
+
+        BigDecimal rating = BigDecimal.valueOf(product.getRatingSum())
+                .divide(BigDecimal.valueOf(product.getReviewCnt()), 1, RoundingMode.HALF_UP);
+
+        // responseDto
+        ResGetProductDto resGetProductDto = ResGetProductDto.builder()
+                .productId(productId)
+                .name(product.getName())
+                .price(product.getPrice())
+                .quantity(product.getQuantity())
+                .category(product.getCategory())
+                .companyId(product.getCompanyId())
+                .description(product.getDescription())
+                .detailImgs(detailImgs)
+                .thumbImg(thumbImg)
+                .status(product.getStatus())
+                .rating(rating.doubleValue())
+                .reviewCnt(product.getReviewCnt())
+                .discountPrice(product.getDiscountPrice())
+                .build();
+
+        return resGetProductDto;
     }
 }
