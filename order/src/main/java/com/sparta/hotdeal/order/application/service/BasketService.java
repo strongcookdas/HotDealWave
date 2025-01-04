@@ -1,7 +1,7 @@
 package com.sparta.hotdeal.order.application.service;
 
-import com.sparta.hotdeal.order.application.dtos.basket.CreateBasketDto;
-import com.sparta.hotdeal.order.application.dtos.basket.UpdateBasketDto;
+import com.sparta.hotdeal.order.application.dtos.basket.req.ReqPatchBasketDto;
+import com.sparta.hotdeal.order.application.dtos.basket.req.ReqPostBasketDto;
 import com.sparta.hotdeal.order.application.dtos.basket.res.ResDeleteBasketDto;
 import com.sparta.hotdeal.order.application.dtos.basket.res.ResGetBasketByIdDto;
 import com.sparta.hotdeal.order.application.dtos.basket.res.ResGetBasketListDto;
@@ -29,13 +29,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @RequiredArgsConstructor
 public class BasketService { //판매중인 상품이 아닌 경우에 대해서 고민이 필요
+
     private final BasketRepository basketRepository;
     private final ProductClientService productClientService;
 
-    public ResPostBasketDto createBasket(UUID userId, CreateBasketDto basketDto) {
+    public ResPostBasketDto createBasket(UUID userId, ReqPostBasketDto req) {
         //product 유효성
-        ProductDto productDto = productClientService.getProduct(basketDto.getProductId());
-        Basket basket = Basket.create(productDto.getProductId(), userId, basketDto.getQuantity());
+        ProductDto productDto = productClientService.getProduct(req.getProductId());
+        Basket basket = Basket.create(productDto.getProductId(), userId, req.getQuantity());
         basket = basketRepository.save(basket);
         return ResPostBasketDto.of(basket);
     }
@@ -60,11 +61,11 @@ public class BasketService { //판매중인 상품이 아닌 경우에 대해서
         return ResGetBasketByIdDto.of(basket, productDto);
     }
 
-    public ResPatchBasketDto updateBasket(UUID userId, UUID basketId, UpdateBasketDto basketDto) {
+    public ResPatchBasketDto updateBasket(UUID userId, UUID basketId, ReqPatchBasketDto req) {
         Basket basket = basketRepository.findByIdAndUserId(basketId, userId)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
 
-        basket.updateQuantity(basketDto.getQuantity());
+        basket.updateQuantity(req.getQuantity());
 
         return ResPatchBasketDto.of(basket);
     }

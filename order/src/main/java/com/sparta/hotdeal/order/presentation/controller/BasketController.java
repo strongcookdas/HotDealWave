@@ -41,7 +41,7 @@ public class BasketController {
     public ResponseDto<ResPostBasketDto> createBasket(@AuthenticationPrincipal RequestUserDetails userDetails,
                                                       @RequestBody @Valid ReqPostBasketDto req) {
         log.info("userId : {}", userDetails.getUserId());
-        return ResponseDto.of("장바구니가 추가되었습니다.", basketService.createBasket(userDetails.getUserId(), req.toDto()));
+        return ResponseDto.of("장바구니가 추가되었습니다.", basketService.createBasket(userDetails.getUserId(), req));
     }
 
     @GetMapping("/{basketId}")
@@ -68,7 +68,7 @@ public class BasketController {
                 basketService.updateBasket(
                         userDetails.getUserId(),
                         basketId,
-                        req.toDto()));
+                        req));
     }
 
     @DeleteMapping("/{basketId}")
