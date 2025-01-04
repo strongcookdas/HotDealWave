@@ -27,22 +27,20 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @RequiredArgsConstructor
 public class BasketService { //판매중인 상품이 아닌 경우에 대해서 고민이 필요
-    private static final UUID TEST_USER_ID = UUID.fromString("8fbd655f-dc52-4bf9-ab23-ef89e923db44");
-
     private final BasketRepository basketRepository;
     private final ProductClientService productClientService;
 
-    public ResPostBasketDto createBasket(CreateBasketDto basketDto) {
+    public ResPostBasketDto createBasket(UUID userId, CreateBasketDto basketDto) {
         //product 유효성
         ProductDto productDto = productClientService.getProduct(basketDto.getProductId());
-        Basket basket = Basket.create(productDto.getProductId(), TEST_USER_ID, basketDto.getQuantity());
+        Basket basket = Basket.create(productDto.getProductId(), userId, basketDto.getQuantity());
         basket = basketRepository.save(basket);
         return ResPostBasketDto.of(basket);
     }
 
     @Transactional(readOnly = true)
-    public Page<ResGetBasketListDto> getBasketList(Pageable pageable) {
-        Page<Basket> basketPage = basketRepository.findAllByUserId(TEST_USER_ID, pageable);
+    public Page<ResGetBasketListDto> getBasketList(UUID userId, Pageable pageable) {
+        Page<Basket> basketPage = basketRepository.findAllByUserId(userId, pageable);
 
         //ProductListDto를 Map<UUID, ProductListDto>로 변환
         Map<UUID, ProductListDto> productMap = getProductMap(basketPage.getContent());

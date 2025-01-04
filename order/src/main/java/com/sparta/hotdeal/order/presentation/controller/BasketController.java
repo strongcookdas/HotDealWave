@@ -9,6 +9,7 @@ import com.sparta.hotdeal.order.application.dtos.basket.res.ResGetBasketListDto;
 import com.sparta.hotdeal.order.application.dtos.basket.res.ResPatchBasketDto;
 import com.sparta.hotdeal.order.application.dtos.basket.res.ResPostBasketDto;
 import com.sparta.hotdeal.order.application.service.BasketService;
+import com.sparta.hotdeal.order.infrastructure.custom.RequestUserDetails;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -36,34 +38,43 @@ public class BasketController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseDto<ResPostBasketDto> createBasket(@RequestBody @Valid ReqPostBasketDto req) {
-        return ResponseDto.of("장바구니가 추가되었습니다.", basketService.createBasket(req.toDto()));
+    public ResponseDto<ResPostBasketDto> createBasket(@AuthenticationPrincipal RequestUserDetails userDetails,
+                                                      @RequestBody @Valid ReqPostBasketDto req) {
+        log.info("userId : {}", userDetails.getUserId());
+        return ResponseDto.of("장바구니가 추가되었습니다.", basketService.createBasket(userDetails.getUserId(), req.toDto()));
     }
 
     @GetMapping("/{basketId}")
-    public ResponseDto<ResGetBasketByIdDto> getBasketDetail(@PathVariable UUID basketId) {
+    public ResponseDto<ResGetBasketByIdDto> getBasketDetail(@AuthenticationPrincipal RequestUserDetails userDetails,
+                                                            @PathVariable UUID basketId) {
+        log.info("userId : {}", userDetails.getUserId());
         return ResponseDto.of("장바구니 단건 조회 성공",
-                basketService.getBasketDetail(UUID.fromString("8fbd655f-dc52-4bf9-ab23-ef89e923db44"), basketId));
+                basketService.getBasketDetail(userDetails.getUserId(), basketId));
     }
 
     @GetMapping
-    public ResponseDto<Page<ResGetBasketListDto>> getBasketList(Pageable pageable) { //pageable 에 대한 설정 논의 필요
-        return ResponseDto.of("장바구니 조회 성공", basketService.getBasketList(pageable));
+    public ResponseDto<Page<ResGetBasketListDto>> getBasketList(@AuthenticationPrincipal RequestUserDetails userDetails,
+                                                                Pageable pageable) { //pageable 에 대한 설정 논의 필요
+        log.info("userId : {}", userDetails.getUserId());
+        return ResponseDto.of("장바구니 조회 성공", basketService.getBasketList(userDetails.getUserId(), pageable));
     }
 
     @PatchMapping("/{basketId}")
-    public ResponseDto<ResPatchBasketDto> updateBasket(@PathVariable UUID basketId,
+    public ResponseDto<ResPatchBasketDto> updateBasket(@AuthenticationPrincipal RequestUserDetails userDetails,
+                                                       @PathVariable UUID basketId,
                                                        @RequestBody @Valid ReqPatchBasketDto req) {
+        log.info("userId : {}", userDetails.getUserId());
         return ResponseDto.of("장바구니 상품 수량이 수정되었습니다.",
                 basketService.updateBasket(
-                        UUID.fromString("8fbd655f-dc52-4bf9-ab23-ef89e923db44"),
+                        userDetails.getUserId(),
                         basketId,
                         req.toDto()));
     }
 
     @DeleteMapping("/{basketId}")
-    public ResponseDto<ResDeleteBasketDto> deleteBasket(@PathVariable UUID basketId) {
+    public ResponseDto<ResDeleteBasketDto> deleteBasket(@AuthenticationPrincipal RequestUserDetails userDetails,
+                                                        @PathVariable UUID basketId) {
         return ResponseDto.of("해당 장바구니가 삭제되었습니다.",
-                basketService.deleteBasket(UUID.fromString("8fbd655f-dc52-4bf9-ab23-ef89e923db44"), basketId));
+                basketService.deleteBasket(userDetails.getUserId(), basketId));
     }
 }

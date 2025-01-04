@@ -22,3 +22,7 @@ eureka:
 
 server:
   port: 19094
+
+logging:
+  level:
+    org.springframework.security: DEBUG
