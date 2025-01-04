@@ -41,6 +41,10 @@ public class AuthService {
 
     @Transactional
     public ResPostSignUpDto signup(ReqPostSignUpDto requestDto) {
+        Email email = emailRepository.findById(requestDto.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.EMAIL_NOT_VERIFIED.getMessage()));
+
+        checkEmailIsVerified(email);
         checkNickname(requestDto.getNickname());
         checkRole(requestDto.getRole());
 
@@ -58,6 +62,7 @@ public class AuthService {
         }
     }
 
+    @Transactional
     public void sendVerifyEmail(ReqPostVerifyEmailDto requestDto) {
         checkEmail(requestDto.getEmail());
 
@@ -71,6 +76,7 @@ public class AuthService {
         redisUtil.setValues(requestDto.getEmail(), code, authCodeExpirationMillis);
     }
 
+    @Transactional
     public void confirmEmail(ReqPostConfirmEmailDto requestDto) {
         String code = redisUtil.getValues(requestDto.getEmail());
 
@@ -106,6 +112,12 @@ public class AuthService {
     private void checkRole(UserRole role) {
         if (role.toValue().equals("MANAGER") || role.toValue().equals("MASTER")) {
             throw new IllegalArgumentException(ErrorMessage.NOT_ALLOWED_ROLE.getMessage());
+        }
+    }
+
+    private void checkEmailIsVerified(Email email) {
+        if (!email.isVerified()) {
+            throw new IllegalArgumentException(ErrorMessage.EMAIL_NOT_VERIFIED.getMessage());
         }
     }
 
