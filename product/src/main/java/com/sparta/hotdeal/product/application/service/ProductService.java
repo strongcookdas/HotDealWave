@@ -142,6 +142,7 @@ public class ProductService {
         return ResPatchReduceProductQuantityDto.of(product.getId());
     }
 
+    @Transactional
     public ResPatchRestoreProductQuantityDto restoreQuantity(UUID productId, int quantity, Boolean promotion) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("Product not found"));
