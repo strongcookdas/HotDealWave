@@ -10,3 +10,9 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      username: ${REDIS_LOCAL_USERNAME}
+      password: ${REDIS_LOCAL_PASSWORD}

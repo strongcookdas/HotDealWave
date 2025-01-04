@@ -45,9 +45,11 @@ public class AuthController {
     }
 
     @PostMapping("/email-verification")
-    public ResponseDto<Void> verifyEmail(@RequestBody ReqPostVerifyEmailDto requestDto) {
+    public ResponseDto<Void> sendVerifyEmail(@RequestBody ReqPostVerifyEmailDto requestDto) {
 
-        return ResponseDto.of("이메일 인증이 요청되었습니다. 메일을 확인해주세요.", null);
+        authService.sendVerifyEmail(requestDto);
+
+        return ResponseDto.of(ResponseMessage.EMAIL_SENT.getMessage(), null);
     }
 
     @PostMapping("/email-verification/confirm")
