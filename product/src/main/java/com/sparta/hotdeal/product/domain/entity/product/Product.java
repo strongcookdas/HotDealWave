@@ -67,7 +67,7 @@ public class Product extends AuditingDate {
     private ProductStatusEnum status;
 
     @Column
-    private Double rating;
+    private Integer ratingSum;
 
     @Column
     private Integer reviewCnt;
