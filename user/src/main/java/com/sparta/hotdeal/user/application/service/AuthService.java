@@ -74,9 +74,15 @@ public class AuthService {
     public void confirmEmail(ReqPostConfirmEmailDto requestDto) {
         String code = redisUtil.getValues(requestDto.getEmail());
 
+        Email email = emailRepository.findById(requestDto.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.EMAIL_NOT_VERIFIED.getMessage()));
+
         if (!code.equals(requestDto.getVerificationToken())) {
             throw new IllegalArgumentException(ErrorMessage.WRONG_VERIFICATION_CODE.getMessage());
         }
+
+        email.updateVerified();
+        redisUtil.deleteValues(requestDto.getEmail());
     }
 
     public ResPostLoginDto login(String email, String password) {
