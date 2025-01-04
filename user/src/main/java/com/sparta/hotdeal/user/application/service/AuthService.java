@@ -8,8 +8,10 @@ import com.sparta.hotdeal.user.application.dtos.auth.response.ResPostSignUpDto;
 import com.sparta.hotdeal.user.application.exception.ErrorMessage;
 import com.sparta.hotdeal.user.application.util.JwtUtil;
 import com.sparta.hotdeal.user.application.util.RedisUtil;
+import com.sparta.hotdeal.user.domain.entity.Email;
 import com.sparta.hotdeal.user.domain.entity.User;
 import com.sparta.hotdeal.user.domain.entity.UserRole;
+import com.sparta.hotdeal.user.domain.repository.EmailRepository;
 import com.sparta.hotdeal.user.domain.repository.UserRepository;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,7 @@ public class AuthService {
     private final static String MAIL_TITLE = "핫딜 이커머스 서비스 인증번호";
 
     private final UserRepository userRepository;
+    private final EmailRepository emailRepository;
     private final PasswordEncoder passwordEncoder;
     private final MailService mailService;
     private final RedisUtil redisUtil;
@@ -56,6 +59,13 @@ public class AuthService {
     }
 
     public void sendVerifyEmail(ReqPostVerifyEmailDto requestDto) {
+        checkEmail(requestDto.getEmail());
+
+        if (emailRepository.existsById(requestDto.getEmail())) {
+            Email email = requestDto.toEntity();
+            emailRepository.save(email);
+        }
+
         String code = createCode();
         mailService.sendEmail(requestDto.getEmail(), MAIL_TITLE, code);
         redisUtil.setValues(requestDto.getEmail(), code, authCodeExpirationMillis);
