@@ -21,7 +21,6 @@ import lombok.NoArgsConstructor;
 public class User extends Audit{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(columnDefinition = "UUID", updatable = false, nullable = false)
     private UUID userId;
 
     @Column(nullable = false)
