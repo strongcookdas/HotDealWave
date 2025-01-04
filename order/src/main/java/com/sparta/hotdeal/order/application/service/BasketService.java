@@ -26,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class BasketService {
+public class BasketService { //판매중인 상품이 아닌 경우에 대해서 고민이 필요
     private static final UUID TEST_USER_ID = UUID.fromString("8fbd655f-dc52-4bf9-ab23-ef89e923db44");
 
     private final BasketRepository basketRepository;
@@ -97,6 +97,6 @@ public class BasketService {
                         "Product not found for productId: " + basket.getProductId()
                 ));
 
-        return ResGetBasketListDto.from(basket, product);
+        return ResGetBasketListDto.of(basket, product);
     }
 }

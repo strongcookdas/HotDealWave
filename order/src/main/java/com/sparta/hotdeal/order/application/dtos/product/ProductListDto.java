@@ -2,12 +2,10 @@ package com.sparta.hotdeal.order.application.dtos.product;
 
 import java.util.UUID;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor
 @Builder(access = AccessLevel.PRIVATE)
 public class ProductListDto {
     private UUID productId;
@@ -16,6 +14,10 @@ public class ProductListDto {
     private String category;
     private String thumbImg;
     private Integer discountPrice;
+    private String status;
+    private double rating;
+    private Integer reviewCnt;
+    private Integer quantity;
 
     public static ProductListDto create(
             UUID productId,
@@ -23,7 +25,11 @@ public class ProductListDto {
             Integer price,
             String category,
             String thumbImg,
-            Integer discountPrice
+            Integer discountPrice,
+            String status,
+            double rating,
+            Integer reviewCnt,
+            Integer quantity
     ) {
         return ProductListDto.builder()
                 .productId(productId)
@@ -32,6 +38,10 @@ public class ProductListDto {
                 .category(category)
                 .thumbImg(thumbImg)
                 .discountPrice(discountPrice)
+                .status(status)
+                .rating(rating)
+                .reviewCnt(reviewCnt)
+                .quantity(quantity)
                 .build();
     }
 }
