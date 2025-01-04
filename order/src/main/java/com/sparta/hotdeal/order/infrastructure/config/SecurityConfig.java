@@ -1,6 +1,6 @@
 package com.sparta.hotdeal.order.infrastructure.config;
 
-import com.sparta.hotdeal.order.infrastructure.exception.CustomAccessDeniedHandler;
+import com.sparta.hotdeal.order.infrastructure.exception.handler.CustomAccessDeniedHandler;
 import com.sparta.hotdeal.order.infrastructure.filter.AuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

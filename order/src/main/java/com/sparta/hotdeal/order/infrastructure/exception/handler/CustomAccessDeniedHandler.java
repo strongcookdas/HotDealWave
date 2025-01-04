@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.order.infrastructure.exception;
+package com.sparta.hotdeal.order.infrastructure.exception.handler;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

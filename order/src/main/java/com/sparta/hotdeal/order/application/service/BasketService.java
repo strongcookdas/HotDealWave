@@ -12,6 +12,8 @@ import com.sparta.hotdeal.order.application.dtos.product.ProductListDto;
 import com.sparta.hotdeal.order.application.service.client.ProductClientService;
 import com.sparta.hotdeal.order.domain.entity.basket.Basket;
 import com.sparta.hotdeal.order.domain.repository.BasketRepository;
+import com.sparta.hotdeal.order.infrastructure.exception.ApplicationException;
+import com.sparta.hotdeal.order.infrastructure.exception.ErrorCode;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -51,7 +53,7 @@ public class BasketService { //판매중인 상품이 아닌 경우에 대해서
     @Transactional(readOnly = true)
     public ResGetBasketByIdDto getBasketDetail(UUID userId, UUID basketId) {
         Basket basket = basketRepository.findByIdAndUserId(basketId, userId)
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 장바구니가 없습니다."));
+                .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
 
         ProductDto productDto = productClientService.getProduct(basket.getProductId());
 
@@ -60,11 +62,8 @@ public class BasketService { //판매중인 상품이 아닌 경우에 대해서
 
     public ResPatchBasketDto updateBasket(UUID userId, UUID basketId, UpdateBasketDto basketDto) {
         Basket basket = basketRepository.findByIdAndUserId(basketId, userId)
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 장바구니가 없습니다."));
+                .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
 
-        if (!basket.getUserId().equals(userId)) {
-            throw new IllegalArgumentException("접근 권한이 없습니다.");
-        }
         basket.updateQuantity(basketDto.getQuantity());
 
         return ResPatchBasketDto.of(basket);
@@ -72,7 +71,7 @@ public class BasketService { //판매중인 상품이 아닌 경우에 대해서
 
     public ResDeleteBasketDto deleteBasket(UUID userId, UUID basketId) {
         Basket basket = basketRepository.findByIdAndUserId(basketId, userId)
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 장바구니가 없습니다."));
+                .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
 
         basketRepository.delete(basket);
         return ResDeleteBasketDto.of(basket);
@@ -91,9 +90,7 @@ public class BasketService { //판매중인 상품이 아닌 경우에 대해서
 
     private ResGetBasketListDto toResGetBasketListDto(Basket basket, Map<UUID, ProductListDto> productMap) {
         ProductListDto product = Optional.ofNullable(productMap.get(basket.getProductId()))
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Product not found for productId: " + basket.getProductId()
-                ));
+                .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
 
         return ResGetBasketListDto.of(basket, product);
     }
