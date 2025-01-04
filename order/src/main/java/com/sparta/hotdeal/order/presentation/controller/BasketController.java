@@ -10,10 +10,11 @@ import com.sparta.hotdeal.order.application.dtos.basket.res.ResPatchBasketDto;
 import com.sparta.hotdeal.order.application.dtos.basket.res.ResPostBasketDto;
 import com.sparta.hotdeal.order.application.service.BasketService;
 import jakarta.validation.Valid;
-import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,8 +47,8 @@ public class BasketController {
     }
 
     @GetMapping
-    public ResponseDto<List<ResGetBasketListDto>> getBasketList() {
-        return ResponseDto.of("장바구니 조회 성공", basketService.getBasketList());
+    public ResponseDto<Page<ResGetBasketListDto>> getBasketList(Pageable pageable) { //pageable 에 대한 설정 논의 필요
+        return ResponseDto.of("장바구니 조회 성공", basketService.getBasketList(pageable));
     }
 
     @PatchMapping("/{basketId}")

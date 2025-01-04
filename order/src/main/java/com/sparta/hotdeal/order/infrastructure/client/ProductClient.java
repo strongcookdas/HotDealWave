@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,17 +21,16 @@ public interface ProductClient extends ProductClientService {
     ResponseDto<ResGetProductByIdDto> getProductFromAPI(@PathVariable UUID productId);
 
     @GetMapping(value = "/api/v1/products")
-    ResponseDto<Void> getProductListFromAPI(@RequestParam("productIds") List<UUID> productIds);
+    ResponseDto<Page<ResGetProductListDto>> getProductListFromAPI(@RequestParam("productIds") List<UUID> productIds);
 
     @Override
     default ProductDto getProduct(UUID productId) {
-        //return this.getProductFromAPI(productId).getData().toDto();
-        return ResGetProductByIdDto.createDummy().toDto();
+        return this.getProductFromAPI(productId).getData().toDto();
     }
 
     @Override
     default List<ProductListDto> getProductList(List<UUID> productIds){
-        List<ResGetProductListDto> list = ResGetProductListDto.createDummyListFromIds(productIds);
+        List<ResGetProductListDto> list = this.getProductListFromAPI(productIds).getData().toList();
         return list.stream()
                 .map(ResGetProductListDto::toDto)
                 .collect(Collectors.toList());

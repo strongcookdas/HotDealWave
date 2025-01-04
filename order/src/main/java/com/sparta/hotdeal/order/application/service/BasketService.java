@@ -18,6 +18,8 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,16 +41,13 @@ public class BasketService {
     }
 
     @Transactional(readOnly = true)
-    public List<ResGetBasketListDto> getBasketList() {
-        List<Basket> basketList = basketRepository.findAllByUserId(TEST_USER_ID);
+    public Page<ResGetBasketListDto> getBasketList(Pageable pageable) {
+        Page<Basket> basketPage = basketRepository.findAllByUserId(TEST_USER_ID, pageable);
 
         //ProductListDto를 Map<UUID, ProductListDto>로 변환
-        Map<UUID, ProductListDto> productMap = getProductMap(basketList);
+        Map<UUID, ProductListDto> productMap = getProductMap(basketPage.getContent());
 
-        return basketList.stream().
-                map(basket -> toResGetBasketListDto(basket, productMap))
-                .collect(Collectors.toList());
-
+        return basketPage.map(basket -> toResGetBasketListDto(basket, productMap));
     }
 
     @Transactional(readOnly = true)
