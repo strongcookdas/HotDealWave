@@ -1,6 +1,6 @@
 package com.sparta.hotdeal.user.infrastructure.redis;
 
-import com.sparta.hotdeal.user.application.redis.RedisUtil;
+import com.sparta.hotdeal.user.application.util.RedisUtil;
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;

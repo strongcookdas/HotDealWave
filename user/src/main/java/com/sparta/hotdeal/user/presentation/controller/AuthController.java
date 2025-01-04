@@ -63,12 +63,9 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseDto<ResPostLoginDto> login(@RequestBody ReqPostLoginDto requestDto) {
 
-        ResPostLoginDto resPostLoginDto = ResPostLoginDto.builder()
-                .accessToken("exampleAccessToken")
-                .refreshToken("exampleRefreshToken")
-                .build();
+        ResPostLoginDto resPostLoginDto = authService.login(requestDto.getEmail(), requestDto.getPassword());
 
-        return ResponseDto.of("로그인 성공", resPostLoginDto);
+        return ResponseDto.of(ResponseMessage.LOGIN_SUCCESS.getMessage(), resPostLoginDto);
     }
 
     @PostMapping("/refresh")

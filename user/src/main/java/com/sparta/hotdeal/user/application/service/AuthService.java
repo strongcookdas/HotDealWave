@@ -3,9 +3,11 @@ package com.sparta.hotdeal.user.application.service;
 import com.sparta.hotdeal.user.application.dtos.auth.request.ReqPostConfirmEmailDto;
 import com.sparta.hotdeal.user.application.dtos.auth.request.ReqPostSignUpDto;
 import com.sparta.hotdeal.user.application.dtos.auth.request.ReqPostVerifyEmailDto;
+import com.sparta.hotdeal.user.application.dtos.auth.response.ResPostLoginDto;
 import com.sparta.hotdeal.user.application.dtos.auth.response.ResPostSignUpDto;
 import com.sparta.hotdeal.user.application.exception.ErrorMessage;
-import com.sparta.hotdeal.user.application.redis.RedisUtil;
+import com.sparta.hotdeal.user.application.util.JwtUtil;
+import com.sparta.hotdeal.user.application.util.RedisUtil;
 import com.sparta.hotdeal.user.domain.entity.User;
 import com.sparta.hotdeal.user.domain.entity.UserRole;
 import com.sparta.hotdeal.user.domain.repository.UserRepository;
@@ -29,6 +31,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final MailService mailService;
     private final RedisUtil redisUtil;
+    private final JwtUtil jwtUtil;
 
     @Value("${spring.mail.auth-code-expiration-millis}")
     private long authCodeExpirationMillis;
@@ -64,6 +67,18 @@ public class AuthService {
         if (!code.equals(requestDto.getVerificationToken())) {
             throw new IllegalArgumentException(ErrorMessage.WRONG_VERIFICATION_CODE.getMessage());
         }
+    }
+
+    public ResPostLoginDto login(String email, String password) {
+        User user = userRepository.findByEmail(email)
+                .filter(u -> passwordEncoder.matches(password, u.getPassword()))
+                .orElseThrow(() -> new IllegalArgumentException(
+                        ErrorMessage.WRONG_EMAIL_OR_PASSWORD.getMessage()));
+
+        return ResPostLoginDto.builder()
+                .accessToken(jwtUtil.createToken(user.getUserId(), user.getRole()))
+                .refreshToken(null)
+                .build();
     }
 
     private void checkNickname(String nickname) {
