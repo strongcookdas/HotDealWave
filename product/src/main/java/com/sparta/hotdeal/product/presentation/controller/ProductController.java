@@ -11,17 +11,10 @@ import com.sparta.hotdeal.product.application.dtos.res.product.ResPatchRestorePr
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPostProductDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPutProductDto;
 import com.sparta.hotdeal.product.application.service.ProductService;
-import com.sparta.hotdeal.product.domain.entity.product.ProductCategoryEnum;
-import com.sparta.hotdeal.product.domain.entity.product.ProductStatusEnum;
-import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -162,46 +155,49 @@ public class ProductController {
             @RequestParam(defaultValue = "asc") String direction,
             @RequestParam(required = false) String search
     ) {
-        ResGetProductDto resGetProductDto1 = ResGetProductDto.builder()
-                .productId(UUID.randomUUID())
-                .name("노트")
-                .price(1000)
-                .quantity(100)
-                .category(ProductCategoryEnum.OFFICE_SUPPLIES)
-                .companyId(UUID.randomUUID())
-                .description("줄선 노트입니다.")
-                .detailImgs(List.of("img1", "img2"))
-                .thumbImg("img")
-                .status(ProductStatusEnum.ON_SALE)
-                .rating(3.5)
-                .reviewCnt(3)
-                .discountPrice(null)
-                .build();
+//        ResGetProductDto resGetProductDto1 = ResGetProductDto.builder()
+//                .productId(UUID.randomUUID())
+//                .name("노트")
+//                .price(1000)
+//                .quantity(100)
+//                .category(ProductCategoryEnum.OFFICE_SUPPLIES)
+//                .companyId(UUID.randomUUID())
+//                .description("줄선 노트입니다.")
+//                .detailImgs(List.of("img1", "img2"))
+//                .thumbImg("img")
+//                .status(ProductStatusEnum.ON_SALE)
+//                .rating(3.5)
+//                .reviewCnt(3)
+//                .discountPrice(null)
+//                .build();
+//
+//        ResGetProductDto resGetProductDto2 = ResGetProductDto.builder()
+//                .productId(UUID.randomUUID())
+//                .name("볼펜")
+//                .price(700)
+//                .quantity(100)
+//                .category(ProductCategoryEnum.OFFICE_SUPPLIES)
+//                .companyId(UUID.randomUUID())
+//                .description("검정색 볼펜입니다.")
+//                .detailImgs(List.of("img1", "img2"))
+//                .thumbImg("img")
+//                .status(ProductStatusEnum.ON_SALE)
+//                .rating(4.3)
+//                .reviewCnt(7)
+//                .discountPrice(null)
+//                .build();
+//
+//        List<ResGetProductDto> productList = List.of(resGetProductDto1, resGetProductDto2);
+//
+//        // Pageable 생성
+//        Pageable pageable = PageRequest.of(page_number - 1, page_size,
+//                "asc".equalsIgnoreCase(direction) ? Sort.by(sort_by).ascending() : Sort.by(sort_by).descending());
+//
+//        // Page 객체 생성
+//        Page<ResGetProductDto> productPage = new PageImpl<>(productList, pageable, productList.size());
 
-        ResGetProductDto resGetProductDto2 = ResGetProductDto.builder()
-                .productId(UUID.randomUUID())
-                .name("볼펜")
-                .price(700)
-                .quantity(100)
-                .category(ProductCategoryEnum.OFFICE_SUPPLIES)
-                .companyId(UUID.randomUUID())
-                .description("검정색 볼펜입니다.")
-                .detailImgs(List.of("img1", "img2"))
-                .thumbImg("img")
-                .status(ProductStatusEnum.ON_SALE)
-                .rating(4.3)
-                .reviewCnt(7)
-                .discountPrice(null)
-                .build();
-
-        List<ResGetProductDto> productList = List.of(resGetProductDto1, resGetProductDto2);
-
-        // Pageable 생성
-        Pageable pageable = PageRequest.of(page_number - 1, page_size,
-                "asc".equalsIgnoreCase(direction) ? Sort.by(sort_by).ascending() : Sort.by(sort_by).descending());
-
-        // Page 객체 생성
-        Page<ResGetProductDto> productPage = new PageImpl<>(productList, pageable, productList.size());
+        Page<ResGetProductDto> productPage = productService.getAllProducts(page_number, page_size, sort_by, direction,
+                search);
 
         // ResponseDto로 감싸서 반환
         return ResponseDto.of("상품이 조회되었습니다.", productPage);

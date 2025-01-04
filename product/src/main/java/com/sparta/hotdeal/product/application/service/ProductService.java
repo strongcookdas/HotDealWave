@@ -21,8 +21,14 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -168,20 +174,39 @@ public class ProductService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("Product not found"));
 
-        // 파일
+        return convertToResGetProductDto(product);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ResGetProductDto> getAllProducts(int pageNumber, int pageSize, String sortBy, String direction,
+                                                 String search) {
+        Sort sort = direction.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, sort);
+
+        Page<Product> products = productRepository.findAllWithSearchAndPaging(search, pageable);
+
+        List<ResGetProductDto> productDtos = products.stream()
+                .map(this::convertToResGetProductDto)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(productDtos, pageable, products.getTotalElements());
+    }
+
+    private ResGetProductDto convertToResGetProductDto(Product product) {
+        // 평점 계산
+        BigDecimal rating =
+                product.getRatingSum() == null ? BigDecimal.valueOf(0.0) : BigDecimal.valueOf(product.getRatingSum())
+                        .divide(BigDecimal.valueOf(product.getReviewCnt()), 1, RoundingMode.HALF_UP);
+
+        // 파일 정보
         File detailImgsFile = product.getDetailImgs();
         File thumbImgFile = product.getThumbImg();
-
-        // 서브 파일 조회
         List<String> detailImgs = detailImgsFile.getSubFiles().stream().map(SubFile::getResource).toList();
         String thumbImg = thumbImgFile.getSubFiles().get(0).getResource();
 
-        BigDecimal rating = BigDecimal.valueOf(product.getRatingSum())
-                .divide(BigDecimal.valueOf(product.getReviewCnt()), 1, RoundingMode.HALF_UP);
-
-        // responseDto
-        ResGetProductDto resGetProductDto = ResGetProductDto.builder()
-                .productId(productId)
+        // ResGetProductDto 생성
+        return ResGetProductDto.builder()
+                .productId(product.getId())
                 .name(product.getName())
                 .price(product.getPrice())
                 .quantity(product.getQuantity())
@@ -195,7 +220,6 @@ public class ProductService {
                 .reviewCnt(product.getReviewCnt())
                 .discountPrice(product.getDiscountPrice())
                 .build();
-
-        return resGetProductDto;
     }
+
 }
