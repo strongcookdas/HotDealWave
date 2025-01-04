@@ -32,6 +32,12 @@ public class AuthService {
                 .build();
     }
 
+    public void checkEmail(String email) {
+        if (userRepository.existsByEmail(email)) {
+            throw new IllegalArgumentException(ErrorMessage.DUPLICATED_EMAIL.getMessage());
+        }
+    }
+
     private void checkNickname(String nickname) {
         if (userRepository.existsByNickname(nickname)) {
             throw new IllegalArgumentException(ErrorMessage.DUPLICATED_NICKNAME.getMessage());

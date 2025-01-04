@@ -39,7 +39,9 @@ public class AuthController {
     @PostMapping("/check-email")
     public ResponseDto<Void> checkEmail(@RequestBody ReqPostCheckEmailDto requestDto) {
 
-        return ResponseDto.of("사용할 수 있는 이메일입니다.", null);
+        authService.checkEmail(requestDto.getEmail());
+
+        return ResponseDto.of(ResponseMessage.USABLE_EMAIL.getMessage(), null);
     }
 
     @PostMapping("/email-verification")
