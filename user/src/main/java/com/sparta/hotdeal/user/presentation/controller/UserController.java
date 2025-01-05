@@ -61,10 +61,8 @@ public class UserController {
     @DeleteMapping("/{userId}")
     public ResponseDto<ResDeleteUsersByIdDto> deleteUser(@PathVariable("userId") UUID userId) {
 
-        ResDeleteUsersByIdDto resDeleteUsersByIdDto = ResDeleteUsersByIdDto.builder()
-                .userId(userId)
-                .build();
+        ResDeleteUsersByIdDto resDeleteUsersByIdDto = userService.deleteUser(userId);
 
-        return ResponseDto.of("회원탈퇴 성공", resDeleteUsersByIdDto);
+        return ResponseDto.of(ResponseMessage.DELETE_USER_SUCCESS.getMessage(), resDeleteUsersByIdDto);
     }
 }

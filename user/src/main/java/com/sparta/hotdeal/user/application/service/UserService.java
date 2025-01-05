@@ -2,6 +2,7 @@ package com.sparta.hotdeal.user.application.service;
 
 import com.sparta.hotdeal.user.application.dtos.users.request.ReqPatchUsersInfoByIdDto;
 import com.sparta.hotdeal.user.application.dtos.users.request.ReqPatchUsersPasswordByIdDto;
+import com.sparta.hotdeal.user.application.dtos.users.response.ResDeleteUsersByIdDto;
 import com.sparta.hotdeal.user.application.dtos.users.response.ResGetUsersByIdDto;
 import com.sparta.hotdeal.user.application.dtos.users.response.ResPatchUsersInfoByIdDto;
 import com.sparta.hotdeal.user.application.dtos.users.response.ResPatchUsersPasswordByIdDto;
@@ -51,6 +52,18 @@ public class UserService {
         user.updatePassword(encodedPassword);
 
         return ResPatchUsersPasswordByIdDto.builder()
+                .userId(user.getUserId())
+                .build();
+    }
+
+    @Transactional
+    public ResDeleteUsersByIdDto deleteUser(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.USER_NOT_FOUND.getMessage()));
+
+        user.updateDeleted(userId.toString());
+
+        return ResDeleteUsersByIdDto.builder()
                 .userId(user.getUserId())
                 .build();
     }
