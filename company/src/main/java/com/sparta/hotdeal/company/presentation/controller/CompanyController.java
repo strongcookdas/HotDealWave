@@ -51,14 +51,7 @@ public class CompanyController {
 
     @GetMapping("/{companyId}")
     public ResponseDto<ResGetCompanyByIdDto> getCompanyById(@PathVariable UUID companyId) {
-        ResGetCompanyByIdDto resGetCompanyByIdDto = ResGetCompanyByIdDto.builder()
-                .companyEmail("test1@test.com")
-                .companyPhoneNumber(12345678L)
-                .brandName("testBrandName")
-                .businessRegistrationNumber(12345678L)
-                .managerId(UUID.randomUUID())
-                .status(CompanyStatusEnum.PENDING)
-                .build();
+        ResGetCompanyByIdDto resGetCompanyByIdDto = companyService.getCompanyById(companyId);
         return ResponseDto.of("업체가 조회되었습니다.", resGetCompanyByIdDto);
     }
 

@@ -3,6 +3,7 @@ package com.sparta.hotdeal.company.application.service;
 import com.sparta.hotdeal.company.application.dtos.company.ReqPatchCompanyByIdDto;
 import com.sparta.hotdeal.company.application.dtos.company.ReqPatchCompanyByIdStatusDto;
 import com.sparta.hotdeal.company.application.dtos.company.ReqPostCompanyDto;
+import com.sparta.hotdeal.company.application.dtos.company.ResGetCompanyByIdDto;
 import com.sparta.hotdeal.company.domain.entity.company.Company;
 import com.sparta.hotdeal.company.domain.entity.company.CompanyStatusEnum;
 import com.sparta.hotdeal.company.domain.repository.CompanyRepository;
@@ -54,6 +55,22 @@ public class CompanyService {
         if (!CompanyStatusEnum.isValidStatus(String.valueOf(reqPatchCompanyByIdStatusDto.getStatus()))) {
             throw new ApplicationException(ErrorCode.INVALID_VALUE_EXCEPTION);
         }
+
         fetchedCompany.updateStatus(reqPatchCompanyByIdStatusDto.getStatus());
+    }
+
+    public ResGetCompanyByIdDto getCompanyById(UUID companyId) {
+        // (1) 업체 유무 확인
+        Company fetchedCompany = companyRepository.findById(companyId)
+                .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+
+        return ResGetCompanyByIdDto.builder()
+                .companyEmail(fetchedCompany.getCompanyEmail())
+                .companyPhoneNumber(fetchedCompany.getCompanyPhoneNumber())
+                .brandName(fetchedCompany.getBrandName())
+                .businessRegistrationNumber(fetchedCompany.getBusinessRegistrationNumber())
+                .managerId(fetchedCompany.getManagerId())
+                .status(fetchedCompany.getStatus())
+                .build();
     }
 }
