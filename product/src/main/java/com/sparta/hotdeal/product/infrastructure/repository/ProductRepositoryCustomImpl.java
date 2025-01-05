@@ -1,10 +1,11 @@
-package com.sparta.hotdeal.product.domain.repository.product;
+package com.sparta.hotdeal.product.infrastructure.repository;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.hotdeal.product.domain.entity.product.Product;
 import com.sparta.hotdeal.product.domain.entity.product.QProduct;
+import com.sparta.hotdeal.product.domain.repository.product.ProductRepositoryCustom;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.util.ArrayList;
