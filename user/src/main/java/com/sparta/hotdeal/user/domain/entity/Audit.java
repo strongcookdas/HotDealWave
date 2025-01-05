@@ -31,13 +31,13 @@ public abstract class Audit {
 
     private String deletedBy;
 
-    public void updateCreatedByAndLastModifiedBy(String username) {
-        createdBy = username;
-        updatedBy = username;
+    public void updateCreatedByAndUpdateBy(String userId) {
+        createdBy = userId;
+        updatedBy = userId;
     }
 
-    public void updateDeleted(String username) {
-        deletedBy = username;
+    public void updateDeleted(String userId) {
+        deletedBy = userId;
         deletedAt = LocalDateTime.now();
     }
 }
