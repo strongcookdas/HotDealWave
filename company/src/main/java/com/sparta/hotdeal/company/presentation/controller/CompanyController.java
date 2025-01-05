@@ -36,8 +36,9 @@ public class CompanyController {
     }
 
     @PatchMapping("/{companyId}")
-    public ResponseDto<Void> updateCompany(@PathVariable UUID companyId,
+    public ResponseDto<Void> updateCompany(@Valid @PathVariable UUID companyId,
                                            @RequestBody ReqPatchCompanyByIdDto reqPatchCompanyByIdDto) {
+        companyService.updateCompany(companyId, reqPatchCompanyByIdDto);
         return ResponseDto.of("업체가 수정되었습니다.", null);
     }
 

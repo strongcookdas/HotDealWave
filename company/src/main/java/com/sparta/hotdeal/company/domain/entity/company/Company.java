@@ -64,4 +64,11 @@ public class Company {
                 .status(status)
                 .build();
     }
+
+    public void update(Long companyPhoneNumber, UUID managerId, String companyEmail, String brandName) {
+        this.companyPhoneNumber = companyPhoneNumber;
+        this.managerId = managerId;
+        this.companyEmail = companyEmail;
+        this.brandName = brandName;
+    }
 }

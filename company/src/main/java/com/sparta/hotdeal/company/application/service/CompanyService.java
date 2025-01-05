@@ -1,12 +1,15 @@
 package com.sparta.hotdeal.company.application.service;
 
+import com.sparta.hotdeal.company.application.dtos.company.ReqPatchCompanyByIdDto;
 import com.sparta.hotdeal.company.application.dtos.company.ReqPostCompanyDto;
 import com.sparta.hotdeal.company.domain.entity.company.Company;
 import com.sparta.hotdeal.company.domain.repository.CompanyRepository;
 import com.sparta.hotdeal.company.infrastructure.exception.ApplicationException;
 import com.sparta.hotdeal.company.infrastructure.exception.ErrorCode;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,5 +31,16 @@ public class CompanyService {
                 reqPostCompanyDto.getStatus()
         );
         companyRepository.save(company);
+    }
+
+    @Transactional
+    public void updateCompany(UUID companyId, ReqPatchCompanyByIdDto reqPatchCompanyByIdDto) {
+        // (1) 업체 유무 확인
+        Company fetchedCompany = companyRepository.findById(companyId).orElseThrow(() -> new ApplicationException(
+                ErrorCode.NOT_FOUND_EXCEPTION
+        ));
+
+        fetchedCompany.update(reqPatchCompanyByIdDto.getCompanyPhoneNumber(), reqPatchCompanyByIdDto.getManagerId(),
+                reqPatchCompanyByIdDto.getCompanyEmail(), reqPatchCompanyByIdDto.getBrandName());
     }
 }
