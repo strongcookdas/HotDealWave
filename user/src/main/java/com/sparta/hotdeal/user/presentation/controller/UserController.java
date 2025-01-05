@@ -35,16 +35,14 @@ public class UserController {
     }
 
     @PatchMapping("/{userId}")
-    public ResponseDto<ResPatchUsersInfoByIdDto> changeUserInfos(
+    public ResponseDto<ResPatchUsersInfoByIdDto> updateUserInfos(
             @PathVariable("userId") UUID userId,
             @RequestBody ReqPatchUsersInfoByIdDto reqPatchUsersInfoByIdDto
     ) {
 
-        ResPatchUsersInfoByIdDto resPatchUsersInfoByIdDto = ResPatchUsersInfoByIdDto.builder()
-                .userId(userId)
-                .build();
+        ResPatchUsersInfoByIdDto resPatchUsersInfoByIdDto = userService.updateUser(userId, reqPatchUsersInfoByIdDto);
 
-        return ResponseDto.of("회원정보수정 성공", resPatchUsersInfoByIdDto);
+        return ResponseDto.of(ResponseMessage.UPDATE_USER_SUCCESS.getMessage(), resPatchUsersInfoByIdDto);
     }
 
     @PatchMapping("/{userId}/password")

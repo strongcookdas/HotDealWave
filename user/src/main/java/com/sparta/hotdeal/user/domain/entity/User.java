@@ -37,4 +37,12 @@ public class User extends Audit{
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
     private UserRole role;
+
+    public void updateUser(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void updatePassword(String password) {
+        this.password = password;
+    }
 }
