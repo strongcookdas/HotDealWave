@@ -12,6 +12,7 @@ public class CompanyService {
     private final CompanyRepository companyRepository;
 
     public void createCompany(ReqPostCompanyDto reqPostCompanyDto) {
+
         Company company = Company.create(
                 reqPostCompanyDto.getBusinessRegistrationNumber(),
                 reqPostCompanyDto.getCompanyPhoneNumber(),
@@ -20,6 +21,7 @@ public class CompanyService {
                 reqPostCompanyDto.getBrandName(),
                 reqPostCompanyDto.getStatus()
         );
+        System.out.println(company.getStatus());
         companyRepository.save(company);
     }
 }

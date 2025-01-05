@@ -1,10 +1,13 @@
 package com.sparta.hotdeal.company.domain.entity;
 
+import lombok.Getter;
+
+@Getter
 public enum CompanyStatusEnum {
-    REQUESTED("REQUESTED"),
-    PENDING("PENDING"),
-    APPROVED("APPROVED"),
-    REJECTED("REJECTED");
+    REQUESTED(Status.REQUESTED),
+    PENDING(Status.PENDING),
+    APPROVED(Status.APPROVED),
+    REJECTED(Status.REJECTED);
 
     private final String status;
 
@@ -12,7 +15,11 @@ public enum CompanyStatusEnum {
         this.status = status;
     }
 
-    public String getStatus() {
-        return status;
+    public static class Status {
+
+        public static final String REQUESTED = "REQUESTED";
+        public static final String PENDING = "PENDING";
+        public static final String APPROVED = "APPROVED";
+        public static final String REJECTED = "REJECTED";
     }
 }

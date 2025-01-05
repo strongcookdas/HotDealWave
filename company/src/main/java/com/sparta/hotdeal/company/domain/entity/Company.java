@@ -2,6 +2,8 @@ package com.sparta.hotdeal.company.domain.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -42,6 +44,7 @@ public class Company {
     private String brandName;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private CompanyStatusEnum status;
 
     public static Company create(
