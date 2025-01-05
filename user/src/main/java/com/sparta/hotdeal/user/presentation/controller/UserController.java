@@ -46,16 +46,15 @@ public class UserController {
     }
 
     @PatchMapping("/{userId}/password")
-    public ResponseDto<ResPatchUsersPasswordByIdDto> changeUserPassword(
+    public ResponseDto<ResPatchUsersPasswordByIdDto> updateUserPassword(
             @PathVariable("userId") UUID userId,
             @RequestBody ReqPatchUsersPasswordByIdDto reqPatchUsersPasswordByIdDto
     ) {
 
-        ResPatchUsersPasswordByIdDto resPatchUsersPasswordByIdDto = ResPatchUsersPasswordByIdDto.builder()
-                .userId(userId)
-                .build();
+        ResPatchUsersPasswordByIdDto resPatchUsersPasswordByIdDto =
+                userService.updateUserPassword(userId, reqPatchUsersPasswordByIdDto);
 
-        return ResponseDto.of("비밀번호수정 성공", resPatchUsersPasswordByIdDto);
+        return ResponseDto.of(ResponseMessage.UPDATE_USER_PASSWORD_SUCCESS.getMessage(), resPatchUsersPasswordByIdDto);
 
     }
 
