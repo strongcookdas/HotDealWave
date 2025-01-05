@@ -16,6 +16,8 @@ import com.sparta.hotdeal.product.domain.entity.product.ProductStatusEnum;
 import com.sparta.hotdeal.product.domain.entity.product.SubFile;
 import com.sparta.hotdeal.product.domain.repository.product.ProductRepository;
 import com.sparta.hotdeal.product.infrastructure.dtos.ResGetCompanyByIdDto;
+import com.sparta.hotdeal.product.infrastructure.exception.ApplicationException;
+import com.sparta.hotdeal.product.infrastructure.exception.ErrorCode;
 import com.sparta.hotdeal.product.infrastructure.repository.ProductRepositoryCustomImpl;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -76,7 +78,7 @@ public class ProductService {
     public ResPutProductDto updateProduct(UUID productId, ReqPutProductDto reqPutUpdateProductDto, String username) {
 
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+                .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
 
         // 파일 객체 가져오기 (기존 파일 그대로 사용)
         File detailImgsFile = product.getDetailImgs();
@@ -112,7 +114,7 @@ public class ProductService {
                                                         ReqPatchProductStatusDto reqPatchUpdateProductStatusDto) {
 
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+                .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
 
         product.updateStatus(reqPatchUpdateProductStatusDto.getStatus());
 
@@ -122,7 +124,7 @@ public class ProductService {
     @Transactional
     public void deleteProduct(UUID productId, String username) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+                .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
 
         // 파일 삭제 처리
         File detailImgsFile = product.getDetailImgs();
@@ -142,7 +144,7 @@ public class ProductService {
     @Transactional
     public ResPatchReduceProductQuantityDto reduceQuantity(UUID productId, int quantity, Boolean promotion) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+                .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
 
         int newQuantity = product.getQuantity() - quantity;
 
@@ -156,7 +158,7 @@ public class ProductService {
     @Transactional
     public ResPatchRestoreProductQuantityDto restoreQuantity(UUID productId, int quantity, Boolean promotion) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+                .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
 
         int originQuantity = product.getQuantity() + quantity;
 
@@ -172,7 +174,7 @@ public class ProductService {
     public ResGetProductDto getProduct(UUID productId) {
         // 상품 조회
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+                .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
 
         return convertToResGetProductDto(product);
     }
