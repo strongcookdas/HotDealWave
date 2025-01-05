@@ -46,8 +46,7 @@ public class ProductService {
     private final ProductRepositoryCustomImpl productRepositoryCustomImpl;
     private final FileService fileService;
     private final SubFileService subFileService;
-
-    @Transactional
+    
     public ResPostProductDto createProduct(ReqPostProductDto productDto) {
         // company 검증
         ResGetCompanyByIdDto company = companyClientService.getCompany(productDto.getCompanyId());
@@ -74,7 +73,6 @@ public class ProductService {
         return ResPostProductDto.of(product.getId());
     }
 
-    @Transactional
     public ResPutProductDto updateProduct(UUID productId, ReqPutProductDto reqPutUpdateProductDto, String username) {
 
         Product product = productRepository.findById(productId)
@@ -109,7 +107,6 @@ public class ProductService {
         return ResPutProductDto.of(product.getId());
     }
 
-    @Transactional
     public ResPatchProductStatusDto updateProductStatus(UUID productId,
                                                         ReqPatchProductStatusDto reqPatchUpdateProductStatusDto) {
 
@@ -121,7 +118,6 @@ public class ProductService {
         return ResPatchProductStatusDto.of(product.getId());
     }
 
-    @Transactional
     public void deleteProduct(UUID productId, String username) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
@@ -141,7 +137,6 @@ public class ProductService {
         product.delete(username);
     }
 
-    @Transactional
     public ResPatchReduceProductQuantityDto reduceQuantity(UUID productId, int quantity, Boolean promotion) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
@@ -155,7 +150,6 @@ public class ProductService {
         return ResPatchReduceProductQuantityDto.of(product.getId());
     }
 
-    @Transactional
     public ResPatchRestoreProductQuantityDto restoreQuantity(UUID productId, int quantity, Boolean promotion) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));

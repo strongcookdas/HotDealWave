@@ -13,13 +13,11 @@ public class FileService {
 
     private final FileRepository fileRepository;
 
-    @Transactional
     public File saveFile() {
         File file = fileRepository.save(new File());
         return file;
     }
-
-    @Transactional
+    
     public void deleteFile(File file, String username) {
         file.delete(username);
     }

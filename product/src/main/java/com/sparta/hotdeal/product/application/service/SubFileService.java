@@ -17,7 +17,6 @@ public class SubFileService {
 
     private final SubFileRepository subFileRepository;
 
-    @Transactional
     public SubFile saveImg(MultipartFile img, File file) {
         String filename = UUID.randomUUID().toString().replace("-", "") + "_" + img.getOriginalFilename();
 
@@ -29,7 +28,6 @@ public class SubFileService {
         return subFile;
     }
 
-    @Transactional
     public SubFile updateImg(MultipartFile file, File detailImgsFile, String username) {
         // 기존 SubFile 삭제 (S3에서 파일 삭제)
         detailImgsFile.getSubFiles().forEach(subFile -> {
