@@ -45,6 +45,10 @@ public class CouponService {
         // 5. 쿠폰 발급 처리
         couponInfo.incrementIssuedCount();
 
+        if (couponInfo.getIssuedCount() == couponInfo.getQuantity()) {
+            couponInfo.updateStatus(CouponStatus.OUT_OF_STOCK);
+        }
+
         // 6. 쿠폰 엔티티 저장
         Coupon coupon = Coupon.builder()
                 .userId(userId)
