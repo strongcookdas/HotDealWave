@@ -42,10 +42,11 @@ public class CompanyController {
         return ResponseDto.of("업체가 수정되었습니다.", null);
     }
 
-    @PatchMapping("/{companyId}/approve")
-    public ResponseDto<Void> updateCompanyStatus(@PathVariable UUID companyId,
+    @PatchMapping("/{companyId}/status")
+    public ResponseDto<Void> updateCompanyStatus(@Valid @PathVariable UUID companyId,
                                                  @RequestBody ReqPatchCompanyByIdStatusDto reqPatchCompanyByIdStatusDto) {
-        return ResponseDto.of("업체가 승인되었습니다.", null);
+        companyService.updateCompanyStatus(companyId, reqPatchCompanyByIdStatusDto);
+        return ResponseDto.of("상태가 수정되었습니다.", null);
     }
 
     @GetMapping("/{companyId}")

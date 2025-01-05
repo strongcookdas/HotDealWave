@@ -1,8 +1,10 @@
 package com.sparta.hotdeal.company.application.service;
 
 import com.sparta.hotdeal.company.application.dtos.company.ReqPatchCompanyByIdDto;
+import com.sparta.hotdeal.company.application.dtos.company.ReqPatchCompanyByIdStatusDto;
 import com.sparta.hotdeal.company.application.dtos.company.ReqPostCompanyDto;
 import com.sparta.hotdeal.company.domain.entity.company.Company;
+import com.sparta.hotdeal.company.domain.entity.company.CompanyStatusEnum;
 import com.sparta.hotdeal.company.domain.repository.CompanyRepository;
 import com.sparta.hotdeal.company.infrastructure.exception.ApplicationException;
 import com.sparta.hotdeal.company.infrastructure.exception.ErrorCode;
@@ -42,5 +44,16 @@ public class CompanyService {
 
         fetchedCompany.update(reqPatchCompanyByIdDto.getCompanyPhoneNumber(), reqPatchCompanyByIdDto.getManagerId(),
                 reqPatchCompanyByIdDto.getCompanyEmail(), reqPatchCompanyByIdDto.getBrandName());
+    }
+
+    public void updateCompanyStatus(UUID companyId, ReqPatchCompanyByIdStatusDto reqPatchCompanyByIdStatusDto) {
+        // (1) 업체 유무 확인
+        Company fetchedCompany = companyRepository.findById(companyId)
+                .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+        // (2) 상태 값 유효성 검사
+        if (!CompanyStatusEnum.isValidStatus(String.valueOf(reqPatchCompanyByIdStatusDto.getStatus()))) {
+            throw new ApplicationException(ErrorCode.INVALID_VALUE_EXCEPTION);
+        }
+        fetchedCompany.updateStatus(reqPatchCompanyByIdStatusDto.getStatus());
     }
 }

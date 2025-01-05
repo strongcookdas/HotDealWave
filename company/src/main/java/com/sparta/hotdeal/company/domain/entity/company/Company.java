@@ -71,4 +71,8 @@ public class Company {
         this.companyEmail = companyEmail;
         this.brandName = brandName;
     }
+
+    public void updateStatus(CompanyStatusEnum status) {
+        this.status = status;
+    }
 }

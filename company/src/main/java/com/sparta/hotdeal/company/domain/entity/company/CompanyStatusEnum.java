@@ -22,4 +22,13 @@ public enum CompanyStatusEnum {
         public static final String APPROVED = "APPROVED";
         public static final String REJECTED = "REJECTED";
     }
+
+    public static boolean isValidStatus(String status) {
+        for (CompanyStatusEnum statusEnum : CompanyStatusEnum.values()) {
+            if (statusEnum.getStatus().equalsIgnoreCase(status)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
