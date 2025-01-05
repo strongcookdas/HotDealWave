@@ -11,6 +11,8 @@ import com.sparta.hotdeal.company.infrastructure.exception.ApplicationException;
 import com.sparta.hotdeal.company.infrastructure.exception.ErrorCode;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,8 +24,10 @@ public class CompanyService {
     public void createCompany(ReqPostCompanyDto reqPostCompanyDto) {
         // (1) 업체 등록 번호 중복 확인
         companyRepository.findByBusinessRegistrationNumber(
-                reqPostCompanyDto.getBusinessRegistrationNumber()).orElseThrow(() -> new ApplicationException(
-                ErrorCode.ALREADY_EXIST_EXCEPTION));
+                        reqPostCompanyDto.getBusinessRegistrationNumber())
+                .ifPresent(company -> {
+                    throw new ApplicationException(ErrorCode.ALREADY_EXIST_EXCEPTION);
+                });
 
         Company company = Company.create(
                 reqPostCompanyDto.getBusinessRegistrationNumber(),
@@ -72,5 +76,10 @@ public class CompanyService {
                 .managerId(fetchedCompany.getManagerId())
                 .status(fetchedCompany.getStatus())
                 .build();
+    }
+
+    public Page<ResGetCompanyByIdDto> getCompanyList(Pageable pageable) {
+        Page<Company> companyPage = companyRepository.findAll(pageable);
+        return companyPage.map(ResGetCompanyByIdDto::create);
     }
 }

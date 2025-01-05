@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -56,18 +58,7 @@ public class CompanyController {
     }
 
     @GetMapping
-    public ResponseDto<List<ResGetCompanyByIdDto>> getCompanyList() {
-        ResGetCompanyByIdDto resGetCompanyByIdDto = ResGetCompanyByIdDto.builder()
-                .companyEmail("test1@test.com")
-                .companyPhoneNumber(12345678L)
-                .brandName("testBrandName")
-                .businessRegistrationNumber(12345678L)
-                .managerId(UUID.randomUUID())
-                .status(CompanyStatusEnum.PENDING)
-                .build();
-
-        List<ResGetCompanyByIdDto> responseDtos = new ArrayList<>();
-        responseDtos.add(resGetCompanyByIdDto);
-        return ResponseDto.of("업체목록이 조회되었습니다.", responseDtos);
+    public ResponseDto<Page<ResGetCompanyByIdDto>> getCompanyList(Pageable pageable) {
+        return ResponseDto.of("업체목록이 조회되었습니다.", companyService.getCompanyList(pageable));
     }
 }
