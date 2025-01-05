@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.company.domain.entity;
+package com.sparta.hotdeal.company.domain.entity.company;
 
 import lombok.Getter;
 

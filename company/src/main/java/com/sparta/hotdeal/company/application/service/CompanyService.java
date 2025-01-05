@@ -1,7 +1,7 @@
 package com.sparta.hotdeal.company.application.service;
 
 import com.sparta.hotdeal.company.application.dtos.ReqPostCompanyDto;
-import com.sparta.hotdeal.company.domain.entity.Company;
+import com.sparta.hotdeal.company.domain.entity.company.Company;
 import com.sparta.hotdeal.company.domain.repository.CompanyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,7 +21,6 @@ public class CompanyService {
                 reqPostCompanyDto.getBrandName(),
                 reqPostCompanyDto.getStatus()
         );
-        System.out.println(company.getStatus());
         companyRepository.save(company);
     }
 }

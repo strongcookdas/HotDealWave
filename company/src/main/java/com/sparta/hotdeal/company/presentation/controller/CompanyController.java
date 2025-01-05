@@ -1,7 +1,7 @@
 package com.sparta.hotdeal.company.presentation.controller;
 
 import com.sparta.hotdeal.company.application.service.CompanyService;
-import com.sparta.hotdeal.company.domain.entity.CompanyStatusEnum;
+import com.sparta.hotdeal.company.domain.entity.company.CompanyStatusEnum;
 import com.sparta.hotdeal.company.application.dtos.ReqPatchCompanyByIdDto;
 import com.sparta.hotdeal.company.application.dtos.ReqPatchCompanyByIdStatusDto;
 import com.sparta.hotdeal.company.application.dtos.ReqPostCompanyDto;

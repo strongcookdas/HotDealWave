@@ -1,6 +1,6 @@
 package com.sparta.hotdeal.company.domain.repository;
 
-import com.sparta.hotdeal.company.domain.entity.Company;
+import com.sparta.hotdeal.company.domain.entity.company.Company;
 import org.springframework.stereotype.Repository;
 
 @Repository
