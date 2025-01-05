@@ -11,6 +11,7 @@ import com.sparta.hotdeal.product.application.dtos.res.product.ResPatchRestorePr
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPostProductDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPutProductDto;
 import com.sparta.hotdeal.product.application.service.ProductService;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -153,7 +154,8 @@ public class ProductController {
             @RequestParam(defaultValue = "10") int page_size,
             @RequestParam(defaultValue = "createdAt") String sort_by,
             @RequestParam(defaultValue = "asc") String direction,
-            @RequestParam(required = false) String search
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) List<UUID> productIds
     ) {
 //        ResGetProductDto resGetProductDto1 = ResGetProductDto.builder()
 //                .productId(UUID.randomUUID())
@@ -197,7 +199,7 @@ public class ProductController {
 //        Page<ResGetProductDto> productPage = new PageImpl<>(productList, pageable, productList.size());
 
         Page<ResGetProductDto> productPage = productService.getAllProducts(page_number, page_size, sort_by, direction,
-                search);
+                search, productIds);
 
         // ResponseDto로 감싸서 반환
         return ResponseDto.of("상품이 조회되었습니다.", productPage);

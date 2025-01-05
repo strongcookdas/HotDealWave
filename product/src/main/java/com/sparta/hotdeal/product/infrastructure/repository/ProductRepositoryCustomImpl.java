@@ -11,6 +11,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -31,7 +32,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
     }
 
     @Override
-    public Page<Product> findAllWithSearchAndPaging(String search, Pageable pageable) {
+    public Page<Product> findAllWithSearchAndPaging(String search, List<UUID> productIds, Pageable pageable) {
         QProduct qProduct = QProduct.product;
 
         // 검색 조건
@@ -39,6 +40,10 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
         if (search != null && !search.isEmpty()) {
             predicate.and(qProduct.name.containsIgnoreCase(search))
                     .or(qProduct.description.containsIgnoreCase(search));
+        }
+
+        if (productIds != null && !productIds.isEmpty()) {
+            predicate.and(qProduct.id.in(productIds));
         }
 
         // 동적 정렬 조건

@@ -46,7 +46,7 @@ public class ProductService {
     private final ProductRepositoryCustomImpl productRepositoryCustomImpl;
     private final FileService fileService;
     private final SubFileService subFileService;
-    
+
     public ResPostProductDto createProduct(ReqPostProductDto productDto) {
         // company 검증
         ResGetCompanyByIdDto company = companyClientService.getCompany(productDto.getCompanyId());
@@ -175,11 +175,11 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public Page<ResGetProductDto> getAllProducts(int pageNumber, int pageSize, String sortBy, String direction,
-                                                 String search) {
+                                                 String search, List<UUID> productIds) {
         Sort sort = direction.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, sort);
 
-        Page<Product> products = productRepository.findAllWithSearchAndPaging(search, pageable);
+        Page<Product> products = productRepository.findAllWithSearchAndPaging(search, productIds, pageable);
 
         List<ResGetProductDto> productDtos = products.stream()
                 .map(this::convertToResGetProductDto)
