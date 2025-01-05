@@ -9,6 +9,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public class ReqPostOrderDto {
     private List<UUID> basketList;
-    private String addressId;
+    private UUID addressId;
     private UUID couponId;
 }

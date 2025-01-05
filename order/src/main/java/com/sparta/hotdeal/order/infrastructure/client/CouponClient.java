@@ -11,4 +11,14 @@ public interface CouponClient extends CouponClientService {
     default ResGetCouponForOrderDto getUserCoupon(UUID couponId) {
         return ResGetCouponForOrderDto.createDummy();
     }
+
+    @Override
+    default void useCoupon(UUID couponId){
+        // 구현
+    }
+
+    @Override
+    default void recoverCoupon(UUID couponId){
+        // 구현
+    }
 }

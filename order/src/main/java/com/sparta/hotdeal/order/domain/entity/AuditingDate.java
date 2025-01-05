@@ -30,4 +30,13 @@ public class AuditingDate {
     private LocalDateTime deletedAt;
 
     private String deletedBy;
+
+    public void delete(String username) {
+        this.deletedAt = LocalDateTime.now();
+    }
+
+    public void recover() {
+        this.deletedAt = null;
+        this.deletedBy = null;
+    }
 }

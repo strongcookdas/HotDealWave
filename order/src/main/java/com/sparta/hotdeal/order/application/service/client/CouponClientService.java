@@ -5,4 +5,6 @@ import java.util.UUID;
 
 public interface CouponClientService {
     ResGetCouponForOrderDto getUserCoupon(UUID couponId);
+    void useCoupon(UUID couponId);
+    void recoverCoupon(UUID couponId);
 }

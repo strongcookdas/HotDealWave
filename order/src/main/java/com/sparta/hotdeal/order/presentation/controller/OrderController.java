@@ -7,6 +7,7 @@ import com.sparta.hotdeal.order.application.dtos.order.res.OrderResponseMessage;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrderByIdDto;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrdersDto;
 import com.sparta.hotdeal.order.application.service.order.OrderService;
+import com.sparta.hotdeal.order.infrastructure.custom.RequestUserDetails;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -32,9 +34,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrderController {
 
     private final OrderService orderService;
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseDto<Void> createOrder(@RequestBody ReqPostOrderDto req) {
+    public ResponseDto<Void> createOrder(@AuthenticationPrincipal RequestUserDetails userDetails,
+                                         @RequestBody ReqPostOrderDto req) {
+        orderService.createOrder(userDetails.getUserId(), req);
         return ResponseDto.of(OrderResponseMessage.CREATE_ORDER.getMessage(), null);
     }
 
