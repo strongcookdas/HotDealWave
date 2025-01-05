@@ -3,6 +3,8 @@ package com.sparta.hotdeal.order.infrastructure.client;
 import com.sparta.hotdeal.order.application.dtos.ResponseDto;
 import com.sparta.hotdeal.order.application.dtos.product.ProductDto;
 import com.sparta.hotdeal.order.application.dtos.product.ProductListDto;
+import com.sparta.hotdeal.order.application.dtos.product.req.ReqProductReduceQuantityDto;
+import com.sparta.hotdeal.order.application.dtos.product.res.ResGetProductListForOrderDto;
 import com.sparta.hotdeal.order.application.service.client.ProductClientService;
 import com.sparta.hotdeal.order.infrastructure.dtos.product.ResGetProductByIdDto;
 import com.sparta.hotdeal.order.infrastructure.dtos.product.ResGetProductListDto;
@@ -29,10 +31,23 @@ public interface ProductClient extends ProductClientService {
     }
 
     @Override
-    default List<ProductListDto> getProductList(List<UUID> productIds){
+    default List<ProductListDto> getProductList(List<UUID> productIds) {
         List<ResGetProductListDto> list = this.getProductListFromAPI(productIds).getData().toList();
         return list.stream()
                 .map(ResGetProductListDto::toDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    default List<ResGetProductListForOrderDto> getProductListForOrder(List<UUID> productIds) {
+        List<ResGetProductListDto> list = this.getProductListFromAPI(productIds).getData().toList();
+        return list.stream()
+                .map(ResGetProductListDto::toGetProductListForOrderDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    default void reduceProductQuantity(List<ReqProductReduceQuantityDto> reqProductReduceQuantityDtoList){
+        // api 호출
     }
 }

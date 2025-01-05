@@ -1,29 +1,14 @@
 package com.sparta.hotdeal.order.application.dtos.order.req;
 
 import java.util.List;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Getter
-@Builder
-@ToString
-@NoArgsConstructor
 @AllArgsConstructor
 public class ReqPostOrderDto {
-    private List<OrderedProduct> orderedProducts;
+    private List<UUID> basketList;
     private String addressId;
-    private String orderStatus;
-    private String couponId;
-
-    @Getter
-    @Builder
-    @ToString
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class OrderedProduct {
-        private String basketId;
-    }
+    private UUID couponId;
 }

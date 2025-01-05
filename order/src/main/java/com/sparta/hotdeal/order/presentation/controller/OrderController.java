@@ -3,8 +3,10 @@ package com.sparta.hotdeal.order.presentation.controller;
 import com.sparta.hotdeal.order.application.dtos.ResponseDto;
 import com.sparta.hotdeal.order.application.dtos.order.req.ReqPatchOrderDto;
 import com.sparta.hotdeal.order.application.dtos.order.req.ReqPostOrderDto;
+import com.sparta.hotdeal.order.application.dtos.order.res.OrderResponseMessage;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrderByIdDto;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrdersDto;
+import com.sparta.hotdeal.order.application.service.order.OrderService;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -28,11 +30,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/orders")
 public class OrderController {
+
+    private final OrderService orderService;
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<Void> createOrder(@RequestBody ReqPostOrderDto req) {
-        log.info("ReqPostOrderDto : {}", req);
-        return ResponseDto.of("주문이 처리되었습니다.", null);
+        return ResponseDto.of(OrderResponseMessage.CREATE_ORDER.getMessage(), null);
     }
 
     @GetMapping
