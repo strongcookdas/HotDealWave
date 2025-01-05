@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.product.domain.repository.product;
+package com.sparta.hotdeal.product.infrastructure.repository;
 
 import com.sparta.hotdeal.product.domain.entity.product.Product;
 import org.springframework.data.domain.Page;

@@ -5,7 +5,8 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.hotdeal.product.domain.entity.product.Product;
 import com.sparta.hotdeal.product.domain.entity.product.QProduct;
-import com.sparta.hotdeal.product.domain.repository.product.ProductRepositoryCustom;
+import com.sparta.hotdeal.product.infrastructure.exception.ApplicationException;
+import com.sparta.hotdeal.product.infrastructure.exception.ErrorCode;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.util.ArrayList;
@@ -77,7 +78,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 case "price" -> order.isAscending()
                         ? qProduct.price.asc()
                         : qProduct.price.desc();
-                default -> throw new IllegalArgumentException("Invalid sort property: " + order.getProperty());
+                default -> throw new ApplicationException(ErrorCode.INVALID_SORT_EXCEPTION);
             };
 
             if (orderSpecifier != null) {
