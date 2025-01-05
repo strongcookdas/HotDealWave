@@ -35,8 +35,7 @@ public class CouponInfoService {
 
     // 발급 쿠폰 상세 조회
     public ResGetCouponInfosByIdDto getCouponDetail(UUID couponInfoId) {
-        CouponInfo couponInfo = couponInfoRepository.findById(couponInfoId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_COUPONINFO));
+        CouponInfo couponInfo = findByIdOrThrow(couponInfoId);
 
         return CouponInfoMapper.toResGetCouponInfosByIdDto(couponInfo);
     }
@@ -44,8 +43,7 @@ public class CouponInfoService {
     // 발급 쿠폰 상태 변경
     @Transactional
     public void updateCouponStatus(UUID couponInfoId, CouponStatus status) {
-        CouponInfo couponInfo = couponInfoRepository.findById(couponInfoId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_COUPONINFO));
+        CouponInfo couponInfo = findByIdOrThrow(couponInfoId);
 
         if (couponInfo.getStatus() == status) {
             throw new CustomException(ErrorCode.ALREADY_SET_COUPONINFO_STATUS);
@@ -56,8 +54,7 @@ public class CouponInfoService {
     // 쿠폰 수정
     @Transactional
     public void updateCoupon(UUID couponInfoId, ReqPutCouponInfosByIdDto reqDto) {
-        CouponInfo couponInfo = couponInfoRepository.findById(couponInfoId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_COUPONINFO));
+        CouponInfo couponInfo = findByIdOrThrow(couponInfoId);
 
         couponInfo.update(
                 reqDto.getName(),
@@ -68,5 +65,10 @@ public class CouponInfoService {
                 reqDto.getCouponType(),
                 reqDto.getCompanyId()
         );
+    }
+
+    public CouponInfo findByIdOrThrow(UUID couponInfoId) {
+        return couponInfoRepository.findById(couponInfoId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_COUPONINFO));
     }
 }
