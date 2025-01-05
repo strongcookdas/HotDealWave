@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.company.application.dtos;
+package com.sparta.hotdeal.company.application.dtos.company;
 
 import java.util.UUID;
 import lombok.Builder;

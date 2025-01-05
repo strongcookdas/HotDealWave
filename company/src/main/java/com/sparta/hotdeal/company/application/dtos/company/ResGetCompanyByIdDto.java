@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.company.application.dtos;
+package com.sparta.hotdeal.company.application.dtos.company;
 
 import com.sparta.hotdeal.company.domain.entity.company.CompanyStatusEnum;
 import java.util.UUID;
@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ReqPostCompanyDto {
+public class ResGetCompanyByIdDto {
     private Long businessRegistrationNumber;
     private Long companyPhoneNumber;
     private UUID managerId;

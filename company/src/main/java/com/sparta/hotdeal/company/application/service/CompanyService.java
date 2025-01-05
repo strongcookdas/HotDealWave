@@ -1,6 +1,6 @@
 package com.sparta.hotdeal.company.application.service;
 
-import com.sparta.hotdeal.company.application.dtos.ReqPostCompanyDto;
+import com.sparta.hotdeal.company.application.dtos.company.ReqPostCompanyDto;
 import com.sparta.hotdeal.company.domain.entity.company.Company;
 import com.sparta.hotdeal.company.domain.repository.CompanyRepository;
 import lombok.RequiredArgsConstructor;
