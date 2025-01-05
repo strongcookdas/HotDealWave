@@ -7,6 +7,7 @@ import com.sparta.hotdeal.company.application.dtos.company.ReqPatchCompanyByIdSt
 import com.sparta.hotdeal.company.application.dtos.company.ReqPostCompanyDto;
 import com.sparta.hotdeal.company.application.dtos.company.ResGetCompanyByIdDto;
 import com.sparta.hotdeal.company.application.dtos.ResponseDto;
+import jakarta.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -29,7 +30,7 @@ public class CompanyController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseDto<Void> createCompany(@RequestBody ReqPostCompanyDto reqPostCompanyDto) {
+    public ResponseDto<Void> createCompany(@Valid @RequestBody ReqPostCompanyDto reqPostCompanyDto) {
         companyService.createCompany(reqPostCompanyDto);
         return ResponseDto.of("업체가 신청되었습니다.", null);
     }
