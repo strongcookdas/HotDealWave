@@ -64,4 +64,8 @@ public class CouponInfo {
         this.couponType = couponType;
         this.companyId = companyId;
     }
+
+    public void incrementIssuedCount() {
+        this.issuedCount++;
+    }
 }
