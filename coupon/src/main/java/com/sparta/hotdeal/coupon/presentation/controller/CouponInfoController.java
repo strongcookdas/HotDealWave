@@ -27,6 +27,7 @@ public class CouponInfoController {
 
     @PutMapping("/{couponInfoId}")
     public ResponseDto<Void> updateCoupon(@PathVariable UUID couponInfoId, @RequestBody ReqPutCouponInfosByIdDto reqDto) {
+        couponInfoService.updateCoupon(couponInfoId, reqDto);
         return ResponseDto.of("쿠폰 수정 성공", null);
     }
 

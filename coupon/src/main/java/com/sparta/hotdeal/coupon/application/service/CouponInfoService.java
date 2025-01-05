@@ -1,6 +1,7 @@
 package com.sparta.hotdeal.coupon.application.service;
 
 import com.sparta.hotdeal.coupon.application.dto.req.ReqPostCouponInfosDto;
+import com.sparta.hotdeal.coupon.application.dto.req.ReqPutCouponInfosByIdDto;
 import com.sparta.hotdeal.coupon.application.dto.res.ResGetCouponInfosByIdDto;
 import com.sparta.hotdeal.coupon.application.dto.res.ResPostCouponInfosDto;
 import com.sparta.hotdeal.coupon.application.exception.CustomException;
@@ -50,5 +51,22 @@ public class CouponInfoService {
             throw new CustomException(ErrorCode.ALREADY_SET_COUPONINFO_STATUS);
         }
         couponInfo.updateStatus(status);
+    }
+
+    // 쿠폰 수정
+    @Transactional
+    public void updateCoupon(UUID couponInfoId, ReqPutCouponInfosByIdDto reqDto) {
+        CouponInfo couponInfo = couponInfoRepository.findById(couponInfoId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_COUPONINFO));
+
+        couponInfo.update(
+                reqDto.getName(),
+                reqDto.getQuantity(),
+                reqDto.getDiscountAmount(),
+                reqDto.getMinOrderAmount(),
+                reqDto.getExpirationDate(),
+                reqDto.getCouponType(),
+                reqDto.getCompanyId()
+        );
     }
 }
