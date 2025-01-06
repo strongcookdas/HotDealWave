@@ -39,11 +39,16 @@ public class Order extends AuditingDate {
 
     private UUID couponId;
 
+    private Integer couponDiscountAmount;
+
+
+
     public static Order create(
             UUID addressId,
             UUID userId,
             Long totalAmount,
-            UUID couponId
+            UUID couponId,
+            Integer couponDiscountAmount
     ) {
         return Order.builder()
                 .addressId(addressId)
@@ -51,6 +56,7 @@ public class Order extends AuditingDate {
                 .totalAmount(totalAmount)
                 .status(OrderStatus.CREATE)
                 .couponId(couponId)
+                .couponDiscountAmount(couponDiscountAmount)
                 .build();
     }
 }

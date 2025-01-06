@@ -43,7 +43,6 @@ public class OrderService {
         ResGetCouponForOrderDto coupon = orderCouponService.getCoupon(req.getCouponId());
         orderCouponService.validateCouponWithCompany(coupon, totalAmountByCompanyMap, totalAmount);
         if (coupon != null) {
-            totalAmount -= coupon.getDiscountAmount();
             orderCouponService.useCoupon(coupon.getCouponId());
         }
 
@@ -58,17 +57,14 @@ public class OrderService {
                 address.getAddressId(),
                 userId,
                 totalAmount,
-                (coupon==null)? null:coupon.getCouponId()
+                (coupon==null)? null:coupon.getCouponId(),
+                (coupon==null)? 0: coupon.getDiscountAmount()
         );
 
         order = orderRepository.save(order);
         orderProductService.createOrderProductList(order,basketList,productMap);
+        // 결제 비동기 처리 추후 구현 필요
     }
 
 
-    // 7. 결제 처리
-    private void processPayment(long totalAmount) {
-        // 결제 처리 로직 (추후 구현)
-        // 예: paymentService.processPayment(totalAmount);
-    }
 }
