@@ -1,5 +1,6 @@
 package com.sparta.hotdeal.product.domain.entity.product;
 
+import com.sparta.hotdeal.product.domain.entity.AuditingDate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -16,6 +17,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Where;
 
 @Getter
 @Entity
@@ -23,7 +25,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 @Table(name = "p_promotion")
-public class Promotion {
+@Where(clause = "deleted_at IS NULL")
+public class Promotion extends AuditingDate {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
