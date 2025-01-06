@@ -1,7 +1,7 @@
 package com.sparta.hotdeal.order.infrastructure.dtos.product;
 
 import com.sparta.hotdeal.order.application.dtos.product.res.ResGetProductListForBasketDto;
-import com.sparta.hotdeal.order.application.dtos.product.res.ResGetProductListForOrderDto;
+import com.sparta.hotdeal.order.application.dtos.product.res.ProductDto;
 import java.util.List;
 import java.util.UUID;
 import lombok.AccessLevel;
@@ -40,8 +40,8 @@ public class ResGetProductListDto {
         );
     }
 
-    public ResGetProductListForOrderDto toGetProductListForOrderDto() {
-        return ResGetProductListForOrderDto.create(
+    public ProductDto toGetProductListForOrderDto() {
+        return ProductDto.create(
                 productId,
                 name,
                 price,

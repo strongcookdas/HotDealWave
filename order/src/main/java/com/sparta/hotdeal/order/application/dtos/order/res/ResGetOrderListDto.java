@@ -1,7 +1,7 @@
 package com.sparta.hotdeal.order.application.dtos.order.res;
 
 import com.sparta.hotdeal.order.application.dtos.order_product.OrderProductDto;
-import com.sparta.hotdeal.order.application.dtos.product.res.ResGetProductListForOrderDto;
+import com.sparta.hotdeal.order.application.dtos.product.res.ProductDto;
 import com.sparta.hotdeal.order.domain.entity.order.Order;
 import com.sparta.hotdeal.order.domain.entity.order.OrderStatus;
 import java.time.LocalDateTime;
@@ -27,7 +27,7 @@ public class ResGetOrderListDto {
         private Integer productQuantity;
         private Integer productPrice;
 
-        public static Product of(ResGetProductListForOrderDto product, OrderProductDto orderProductDto) {
+        public static Product of(ProductDto product, OrderProductDto orderProductDto) {
             return Product.builder()
                     .productId(product.getProductId())
                     .productName(product.getName())
@@ -38,13 +38,13 @@ public class ResGetOrderListDto {
     }
 
     public static ResGetOrderListDto of(Order order, List<OrderProductDto> orderProductDtoList,
-                                        Map<UUID, ResGetProductListForOrderDto> productMap) {
+                                        Map<UUID, ProductDto> productMap) {
         return ResGetOrderListDto.builder()
                 .orderId(order.getId())
                 .createdAt(order.getCreatedAt())
                 .status(order.getStatus())
                 .productList(orderProductDtoList.stream().map(orderProductDto -> {
-                    ResGetProductListForOrderDto product = productMap.get(orderProductDto.getProductId());
+                    ProductDto product = productMap.get(orderProductDto.getProductId());
                     return Product.of(product, orderProductDto);
                 }).toList())
                 .build();

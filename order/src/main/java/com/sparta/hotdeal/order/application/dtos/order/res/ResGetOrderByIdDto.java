@@ -2,7 +2,7 @@ package com.sparta.hotdeal.order.application.dtos.order.res;
 
 import com.sparta.hotdeal.order.application.dtos.address.res.ResGetAddressByIdForOrderDto;
 import com.sparta.hotdeal.order.application.dtos.order_product.OrderProductDto;
-import com.sparta.hotdeal.order.application.dtos.product.res.ResGetProductListForOrderDto;
+import com.sparta.hotdeal.order.application.dtos.product.res.ProductDto;
 import com.sparta.hotdeal.order.application.dtos.user.ResGetUserByIdForOrderDto;
 import com.sparta.hotdeal.order.domain.entity.order.Order;
 import com.sparta.hotdeal.order.domain.entity.order.OrderStatus;
@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 
 @Getter
 @Builder
@@ -36,7 +35,7 @@ public class ResGetOrderByIdDto {
         private Integer productQuantity;
         private Integer productPrice;
 
-        public static Product of(ResGetProductListForOrderDto product, OrderProductDto orderProduct) {
+        public static Product of(ProductDto product, OrderProductDto orderProduct) {
             return Product.builder()
                     .productId(product.getProductId())
                     .productName(product.getName())
@@ -106,7 +105,7 @@ public class ResGetOrderByIdDto {
 
     public static ResGetOrderByIdDto of(Order order, ResGetAddressByIdForOrderDto address,
                                         List<OrderProductDto> orderProductDtoList,
-                                        Map<UUID, ResGetProductListForOrderDto> productMap,
+                                        Map<UUID, ProductDto> productMap,
                                         ResGetUserByIdForOrderDto user
     ) {
         return ResGetOrderByIdDto.builder()

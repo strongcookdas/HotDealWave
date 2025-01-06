@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
-public class ResGetProductListForOrderDto {
+public class ProductDto {
     private UUID productId;
     private String name;
     private Integer price;
@@ -20,7 +20,7 @@ public class ResGetProductListForOrderDto {
     private Integer quantity;
     private UUID companyId;
 
-    public static ResGetProductListForOrderDto create(
+    public static ProductDto create(
             UUID productId,
             String name,
             Integer price,
@@ -33,7 +33,7 @@ public class ResGetProductListForOrderDto {
             Integer quantity,
             UUID companyId
     ) {
-        return ResGetProductListForOrderDto.builder()
+        return ProductDto.builder()
                 .productId(productId)
                 .name(name)
                 .price(price)

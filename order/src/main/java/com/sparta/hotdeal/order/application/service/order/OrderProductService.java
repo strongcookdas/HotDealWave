@@ -2,7 +2,7 @@ package com.sparta.hotdeal.order.application.service.order;
 
 import com.sparta.hotdeal.order.application.dtos.order_product.OrderProductDto;
 import com.sparta.hotdeal.order.application.dtos.product.req.ReqProductReduceQuantityDto;
-import com.sparta.hotdeal.order.application.dtos.product.res.ResGetProductListForOrderDto;
+import com.sparta.hotdeal.order.application.dtos.product.res.ProductDto;
 import com.sparta.hotdeal.order.application.service.client.ProductClientService;
 import com.sparta.hotdeal.order.domain.entity.basket.Basket;
 import com.sparta.hotdeal.order.domain.entity.order.Order;
@@ -31,11 +31,11 @@ public class OrderProductService {
     private final ProductClientService productClientService;
 
     public void createOrderProductList(Order order, List<Basket> basketList,
-                                       Map<UUID, ResGetProductListForOrderDto> productMap) {
+                                       Map<UUID, ProductDto> productMap) {
 
         List<OrderProduct> orderProductList = basketList.stream()
                 .map(basket -> {
-                    ResGetProductListForOrderDto product = getProductOrThrow(productMap, basket.getProductId());
+                    ProductDto product = getProductOrThrow(productMap, basket.getProductId());
                     return OrderProduct.create(
                             order.getId(),
                             product.getProductId(),
@@ -54,33 +54,33 @@ public class OrderProductService {
     }
 
     //장바구니에 따른 상품 조회 후 Map으로 반환
-    public Map<UUID, ResGetProductListForOrderDto> getProductMap(List<Basket> basketList) {
+    public Map<UUID, ProductDto> getProductMap(List<Basket> basketList) {
         List<UUID> productIds = basketList.stream()
                 .map(Basket::getProductId)
                 .toList();
 
-        List<ResGetProductListForOrderDto> productList = productClientService.getProductListForOrder(productIds);
+        List<ProductDto> productList = productClientService.getProductListForOrder(productIds);
         return productList.stream()
-                .collect(Collectors.toMap(ResGetProductListForOrderDto::getProductId, product -> product));
+                .collect(Collectors.toMap(ProductDto::getProductId, product -> product));
     }
 
 
     //장바구니에 따른 상품 조회 후 Map으로 반환
-    public Map<UUID, ResGetProductListForOrderDto> getProductMapByOrderProduct(List<OrderProductDto> orderProductList) {
+    public Map<UUID, ProductDto> getProductMapByOrderProduct(List<OrderProductDto> orderProductList) {
         List<UUID> productIds = orderProductList.stream()
                 .map(OrderProductDto::getProductId)
                 .toList();
 
-        List<ResGetProductListForOrderDto> productList = productClientService.getProductListForOrder(productIds);
+        List<ProductDto> productList = productClientService.getProductListForOrder(productIds);
         return productList.stream()
-                .collect(Collectors.toMap(ResGetProductListForOrderDto::getProductId, product -> product));
+                .collect(Collectors.toMap(ProductDto::getProductId, product -> product));
     }
 
     //장바구니에 따른 상품 조회 후 Map으로 반환
-    public Map<UUID, ResGetProductListForOrderDto> getProductMapByProductIds(List<UUID> productIds) {
-        List<ResGetProductListForOrderDto> productList = productClientService.getProductListForOrder(productIds);
+    public Map<UUID, ProductDto> getProductMapByProductIds(List<UUID> productIds) {
+        List<ProductDto> productList = productClientService.getProductListForOrder(productIds);
         return productList.stream()
-                .collect(Collectors.toMap(ResGetProductListForOrderDto::getProductId, product -> product));
+                .collect(Collectors.toMap(ProductDto::getProductId, product -> product));
     }
 
     public Map<UUID, List<OrderProductDto>> getOrderProductsByOrderIds(List<UUID> orderIds) {
@@ -93,12 +93,12 @@ public class OrderProductService {
 
     //회사 id에 따른 구매 상품 가격 계산 (쿠폰 유효성 검사를 위해)
     public Map<UUID, Integer> calculateTotalAmountByCompany(List<Basket> basketList,
-                                                            Map<UUID, ResGetProductListForOrderDto> productMap) {
+                                                            Map<UUID, ProductDto> productMap) {
 
         Map<UUID, Integer> totalAmountByCompany = new HashMap<>();
 
         for (Basket basket : basketList) {
-            ResGetProductListForOrderDto product = getProductOrThrow(productMap, basket.getProductId());
+            ProductDto product = getProductOrThrow(productMap, basket.getProductId());
             validateProductForPurchase(product, basket.getQuantity());
 
             int productPrice = calculateProductPrice(product, basket.getQuantity());
@@ -116,14 +116,14 @@ public class OrderProductService {
                 .sum();
     }
 
-    private ResGetProductListForOrderDto getProductOrThrow(
-            Map<UUID, ResGetProductListForOrderDto> productMap,
+    private ProductDto getProductOrThrow(
+            Map<UUID, ProductDto> productMap,
             UUID productId) {
         return Optional.ofNullable(productMap.get(productId))
                 .orElseThrow(() -> new ApplicationException(ErrorCode.PRODUCT_NOT_FOUND_EXCEPTION));
     }
 
-    private void validateProductForPurchase(ResGetProductListForOrderDto product, int quantity) {
+    private void validateProductForPurchase(ProductDto product, int quantity) {
         if (!"ON_SALE".equals(product.getStatus())) {
             throw new ApplicationException(ErrorCode.PRODUCT_NOT_ON_SALE_EXCEPTION);
         } else if (product.getQuantity() < quantity) {
@@ -131,17 +131,17 @@ public class OrderProductService {
         }
     }
 
-    private int calculateProductPrice(ResGetProductListForOrderDto product, int quantity) {
+    private int calculateProductPrice(ProductDto product, int quantity) {
         int unitPrice = product.getDiscountPrice() != null ? product.getDiscountPrice() : product.getPrice();
         return unitPrice * quantity;
     }
 
     public void reduceProductQuantity(List<Basket> basketList,
-                                      Map<UUID, ResGetProductListForOrderDto> productMap) {
+                                      Map<UUID, ProductDto> productMap) {
 
         List<ReqProductReduceQuantityDto> reqProductReduceQuantityDtos = basketList.stream()
                 .map(basket -> {
-                    ResGetProductListForOrderDto product = getProductOrThrow(productMap, basket.getProductId());
+                    ProductDto product = getProductOrThrow(productMap, basket.getProductId());
                     return ReqProductReduceQuantityDto.of(product.getProductId(), basket.getQuantity());
                 })
                 .toList();

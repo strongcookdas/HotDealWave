@@ -4,7 +4,7 @@ import com.sparta.hotdeal.order.application.dtos.ResponseDto;
 import com.sparta.hotdeal.order.application.dtos.product.res.ResGetProductByIdForBasketDto;
 import com.sparta.hotdeal.order.application.dtos.product.res.ResGetProductListForBasketDto;
 import com.sparta.hotdeal.order.application.dtos.product.req.ReqProductReduceQuantityDto;
-import com.sparta.hotdeal.order.application.dtos.product.res.ResGetProductListForOrderDto;
+import com.sparta.hotdeal.order.application.dtos.product.res.ProductDto;
 import com.sparta.hotdeal.order.application.service.client.ProductClientService;
 import com.sparta.hotdeal.order.infrastructure.dtos.product.ResGetProductByIdDto;
 import com.sparta.hotdeal.order.infrastructure.dtos.product.ResGetProductListDto;
@@ -39,7 +39,7 @@ public interface ProductClient extends ProductClientService {
     }
 
     @Override
-    default List<ResGetProductListForOrderDto> getProductListForOrder(List<UUID> productIds) {
+    default List<ProductDto> getProductListForOrder(List<UUID> productIds) {
         List<ResGetProductListDto> list = this.getProductListFromAPI(productIds).getData().toList();
         return list.stream()
                 .map(ResGetProductListDto::toGetProductListForOrderDto)
