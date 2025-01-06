@@ -9,6 +9,7 @@ import com.sparta.hotdeal.product.application.exception.ApplicationException;
 import com.sparta.hotdeal.product.application.exception.ErrorCode;
 import com.sparta.hotdeal.product.domain.entity.product.Promotion;
 import com.sparta.hotdeal.product.domain.repository.product.PromotionRepository;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -87,6 +88,20 @@ public class PromotionService {
         return ResPutPromotionDto.of(promotion.getId());
     }
 
+    public void deletePromtoion(UUID promotionId, String username) {
+        Promotion promotion = promotionRepository.findById(promotionId)
+                .orElseThrow(() -> new ApplicationException(ErrorCode.PROMOTION_NOT_FOUND_EXCEPTION));
+
+        // 진행중인 타임세일인지 확인
+        LocalDateTime now = LocalDateTime.now();
+        if (now.isAfter(promotion.getStart()) && now.isBefore(promotion.getEnd())) {
+            throw new ApplicationException(ErrorCode.PROMOTION_IS_ACTIVE_EXCEPTION);
+        }
+
+        // 타임세일 삭제 처리
+        promotion.delete(username);
+    }
+
     public int calculateDiscountRate(int originPrice, int discountPrice) {
         double discountRate =
                 ((double) (originPrice - discountPrice) / originPrice)
@@ -106,5 +121,4 @@ public class PromotionService {
             throw new ApplicationException(ErrorCode.PROMOTION_INVALID_QUANTITY_EXCEPTION);
         }
     }
-
 }

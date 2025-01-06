@@ -67,6 +67,10 @@ public class PromotionController {
     public ResponseDto<Void> deletePromotion(
             @PathVariable UUID promotionId
     ) {
+        // 임시 user
+        String username = "testUser";
+        promotionService.deletePromtoion(promotionId, username);
+
         return ResponseDto.of("프로모션이 삭제되었습니다.", null);
     }
 

@@ -17,7 +17,8 @@ public enum ErrorCode {
     PROMOTION_INVALID_QUANTITY_EXCEPTION(HttpStatus.BAD_REQUEST, "P010", "상품의 재고 수량보다 많은 요청값입니다."),
     PROMOTION_INVALID_PRICE_EXCEPTION(HttpStatus.BAD_REQUEST, "P011", "상품의 기존 가격 이상인 요청값입니다."),
     PROMOTION_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "P012", "존재하지 않는 타임세일입니다."),
-    PROMOTION_DUPLICATE_EXCEPTION(HttpStatus.BAD_REQUEST, "P013", "동일한 시간대에 해당 상품에 대한 타임세일이 이미 존재합니다.");
+    PROMOTION_DUPLICATE_EXCEPTION(HttpStatus.BAD_REQUEST, "P013", "동일한 시간대에 해당 상품에 대한 타임세일이 이미 존재합니다."),
+    PROMOTION_IS_ACTIVE_EXCEPTION(HttpStatus.BAD_REQUEST, "P014", "현재 진행 중인 타임세일입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
