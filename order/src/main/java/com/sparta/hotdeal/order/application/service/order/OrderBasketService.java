@@ -1,10 +1,10 @@
 package com.sparta.hotdeal.order.application.service.order;
 
+import com.sparta.hotdeal.order.application.exception.ApplicationException;
+import com.sparta.hotdeal.order.application.exception.ErrorCode;
 import com.sparta.hotdeal.order.domain.entity.AuditingDate;
 import com.sparta.hotdeal.order.domain.entity.basket.Basket;
 import com.sparta.hotdeal.order.domain.repository.BasketRepository;
-import com.sparta.hotdeal.order.application.exception.ApplicationException;
-import com.sparta.hotdeal.order.application.exception.ErrorCode;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +23,7 @@ public class OrderBasketService {
     public List<Basket> getBasketList(List<UUID> basketIds) {
         List<Basket> baskets = basketRepository.findByIdIn(basketIds);
         if (baskets.isEmpty()) {
-            log.error("장바구니가 비어있습니다.");
-            throw new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION);
+            throw new ApplicationException(ErrorCode.BASKET_NOT_FOUND_EXCEPTION);
         }
         return baskets;
     }

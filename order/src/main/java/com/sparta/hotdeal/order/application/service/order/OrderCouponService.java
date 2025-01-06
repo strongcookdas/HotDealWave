@@ -24,8 +24,7 @@ public class OrderCouponService {
         }
         ResGetCouponForOrderDto coupon = couponClientService.getUserCoupon(couponId);
         if (!coupon.getExpirationDate().isAfter(LocalDate.now())) {
-            log.error("쿠폰이 만료되었습니다.");
-            throw new ApplicationException(ErrorCode.INVALID_VALUE_EXCEPTION);
+            throw new ApplicationException(ErrorCode.COUPON_EXPIRED_EXCEPTION);
         }
         return coupon;
     }
@@ -36,12 +35,15 @@ public class OrderCouponService {
             return;
         }
 
+        if(coupon.getIsUsed()){
+            throw new ApplicationException(ErrorCode.COUPON_ALREADY_USED_EXCEPTION);
+        }
+
         // 쿠폰이 특정 회사에 제한되지 않은 경우 (companyId가 null)
         if (coupon.getCompanyId() == null) {
-            // 모든 회사의 총 구매 금액 확인
+            // 최종 금액이 쿠폰 사용 금액대인지 체크
             if (totalAmount < coupon.getMinOrderAmount()) {
-                log.error("쿠폰을 사용할 수 있는 최소 금액이 아닙니다.");
-                throw new ApplicationException(ErrorCode.INVALID_VALUE_EXCEPTION);
+                throw new ApplicationException(ErrorCode.COUPON_MINIMUM_PRICE_EXCEPTION);
             }
             return; // 검증 완료
         }
@@ -49,13 +51,11 @@ public class OrderCouponService {
         // 쿠폰이 특정 회사에 제한된 경우
         Integer companyTotalAmount = totalAmountByCompanyMap.get(coupon.getCompanyId());
         if (companyTotalAmount == null) {
-            log.error("해당 회사에서 사용할 수 없는 쿠폰입니다.");
-            throw new ApplicationException(ErrorCode.INVALID_VALUE_EXCEPTION);
+            throw new ApplicationException(ErrorCode.COUPON_INVALID_COMPANY_EXCEPTION);
         }
 
         if (companyTotalAmount < coupon.getMinOrderAmount()) {
-            log.error("쿠폰을 사용할 수 있는 최소 금액이 아닙니다.");
-            throw new ApplicationException(ErrorCode.INVALID_VALUE_EXCEPTION);
+            throw new ApplicationException(ErrorCode.COUPON_MINIMUM_PRICE_EXCEPTION);
         }
     }
 

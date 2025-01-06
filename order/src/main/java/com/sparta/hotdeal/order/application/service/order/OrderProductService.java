@@ -29,9 +29,8 @@ public class OrderProductService {
     private final OrderProductRepository orderProductRepository;
     private final ProductClientService productClientService;
 
-    @Transactional
-    public List<OrderProduct> createOrderProductList(Order order, List<Basket> basketList,
-                                                     Map<UUID, ResGetProductListForOrderDto> productMap) {
+    public void createOrderProductList(Order order, List<Basket> basketList,
+                                       Map<UUID, ResGetProductListForOrderDto> productMap) {
 
         List<OrderProduct> orderProductList = basketList.stream()
                 .map(basket -> {
@@ -44,7 +43,7 @@ public class OrderProductService {
                     );
                 }).toList();
 
-        return orderProductRepository.saveAllOrderProduct(orderProductList);
+        orderProductRepository.saveAllOrderProduct(orderProductList);
 
     }
 
@@ -88,16 +87,14 @@ public class OrderProductService {
             Map<UUID, ResGetProductListForOrderDto> productMap,
             UUID productId) {
         return Optional.ofNullable(productMap.get(productId))
-                .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+                .orElseThrow(() -> new ApplicationException(ErrorCode.PRODUCT_NOT_FOUND_EXCEPTION));
     }
 
     private void validateProductForPurchase(ResGetProductListForOrderDto product, int quantity) {
         if (!"ON_SALE".equals(product.getStatus())) {
-            log.error("판매 중인 상품이 아닙니다.");
-            throw new ApplicationException(ErrorCode.INVALID_VALUE_EXCEPTION);
+            throw new ApplicationException(ErrorCode.PRODUCT_NOT_ON_SALE_EXCEPTION);
         } else if (product.getQuantity() < quantity) {
-            log.error("수량이 부족합니다.");
-            throw new ApplicationException(ErrorCode.INVALID_VALUE_EXCEPTION);
+            throw new ApplicationException(ErrorCode.PRODUCT_INVALID_QUANTITY_EXCEPTION);
         }
     }
 
