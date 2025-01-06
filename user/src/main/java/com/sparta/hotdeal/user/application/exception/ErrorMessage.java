@@ -15,7 +15,8 @@ public enum ErrorMessage {
     EMAIL_NOT_VERIFIED("이메일 인증을 먼저 진행해주세요."),
     USER_NOT_FOUND("회원을 찾을 수 없습니다."),
     ADDRESS_NOT_FOUND("주소를 찾을 수 없습니다."),
-    NOT_ALLOWED_CONTENT("접근 권한이 없습니다.");
+    NOT_ALLOWED_CONTENT("접근 권한이 없습니다."),
+    DELETED_ADDRESS("삭제된 주소입니다.");
 
     private final String message;
 }

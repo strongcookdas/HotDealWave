@@ -47,6 +47,8 @@ public class AddressService {
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.ADDRESS_NOT_FOUND.getMessage()));
 
+        checkDeletedAddress(address);
+
         if (!address.getUser().getUserId().equals(userId)) {
             throw new IllegalArgumentException(ErrorMessage.NOT_ALLOWED_CONTENT.getMessage());
         }
@@ -74,6 +76,8 @@ public class AddressService {
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.ADDRESS_NOT_FOUND.getMessage()));
 
+        checkDeletedAddress(address);
+
         if (!address.getUser().getUserId().equals(userId)) {
             throw new IllegalArgumentException(ErrorMessage.NOT_ALLOWED_CONTENT.getMessage());
         }
@@ -94,6 +98,8 @@ public class AddressService {
     public ResPatchDefaultAddressByIdDto updateDefaultAddress(UUID addressId, UUID userId) {
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.ADDRESS_NOT_FOUND.getMessage()));
+
+        checkDeletedAddress(address);
 
         User user = address.getUser();
 
@@ -128,5 +134,11 @@ public class AddressService {
         return ResDeleteAddressByIdDto.builder()
                 .addressId(address.getAddressId())
                 .build();
+    }
+
+    private void checkDeletedAddress(Address address) {
+        if (address.getDeletedAt() != null) {
+            throw new IllegalArgumentException(ErrorMessage.DELETED_ADDRESS.getMessage());
+        }
     }
 }
