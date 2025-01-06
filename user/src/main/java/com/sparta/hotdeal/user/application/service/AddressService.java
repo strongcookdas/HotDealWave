@@ -2,6 +2,7 @@ package com.sparta.hotdeal.user.application.service;
 
 import com.sparta.hotdeal.user.application.dtos.address.request.ReqPatchAddressByIdDto;
 import com.sparta.hotdeal.user.application.dtos.address.request.ReqPostAddressDto;
+import com.sparta.hotdeal.user.application.dtos.address.response.ResDeleteAddressByIdDto;
 import com.sparta.hotdeal.user.application.dtos.address.response.ResGetAddressByIdDto;
 import com.sparta.hotdeal.user.application.dtos.address.response.ResGetAddressesDto;
 import com.sparta.hotdeal.user.application.dtos.address.response.ResGetDefaultAddressDto;
@@ -103,6 +104,28 @@ public class AddressService {
         user.updateDefaultAddress(address);
 
         return ResPatchDefaultAddressByIdDto.builder()
+                .addressId(address.getAddressId())
+                .build();
+    }
+
+    @Transactional
+    public ResDeleteAddressByIdDto deleteAddress(UUID addressId, UUID userId) {
+        Address address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.ADDRESS_NOT_FOUND.getMessage()));
+
+        User user = address.getUser();
+
+        if (user.getUserId().equals(userId)) {
+            throw new IllegalArgumentException(ErrorMessage.NOT_ALLOWED_CONTENT.getMessage());
+        }
+
+        address.updateDeleted(userId.toString());
+
+        if (user.getDefaultAddress().getAddressId().equals(addressId)) {
+            user.updateDefaultAddress(null);
+        }
+
+        return ResDeleteAddressByIdDto.builder()
                 .addressId(address.getAddressId())
                 .build();
     }
