@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.order.presentation.dtos.order.res;
+package com.sparta.hotdeal.order.application.dtos.order.res;
 
 import java.time.LocalDate;
 import java.util.Arrays;

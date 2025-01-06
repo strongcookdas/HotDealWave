@@ -1,5 +1,6 @@
-package com.sparta.hotdeal.order.presentation.dtos.basket.res;
+package com.sparta.hotdeal.order.application.dtos.basket.res;
 
+import com.sparta.hotdeal.order.domain.entity.basket.Basket;
 import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,9 +10,9 @@ import lombok.Getter;
 public class ResPostBasketDto {
     private UUID basketId;
 
-    public static ResPostBasketDto createDummyData() {
+    public static ResPostBasketDto of(Basket basket) {
         return ResPostBasketDto.builder()
-                .basketId(UUID.randomUUID())
+                .basketId(basket.getId())
                 .build();
     }
 }
