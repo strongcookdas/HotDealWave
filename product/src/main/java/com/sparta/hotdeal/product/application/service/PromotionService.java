@@ -53,9 +53,6 @@ public class PromotionService {
 
         promotionRepository.save(promotion);
 
-        // 상품의 할인가격 수정
-        productService.updateProductDiscountPrice(productDto.getProductId(), reqPostPromotionDto.getDiscountPrice());
-
         return ResPostPromotionDto.of(promotion.getId());
     }
 
@@ -96,12 +93,6 @@ public class PromotionService {
         }
 
         promotion.update(reqPutUpdatePromotionDto, discountRate);
-
-        // 상품의 할인가격 수정
-        if (reqPutUpdatePromotionDto.getDiscountPrice() != null) {
-            productService.updateProductDiscountPrice(productDto.getProductId(),
-                    reqPutUpdatePromotionDto.getDiscountPrice());
-        }
 
         return ResPutPromotionDto.of(promotion.getId());
     }
