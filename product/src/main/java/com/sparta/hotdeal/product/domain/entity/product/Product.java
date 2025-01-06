@@ -134,4 +134,14 @@ public class Product extends AuditingDate {
     public void updateQuantity(int quantity) {
         this.quantity = quantity;
     }
+
+    public void incrementReview(int rating) {
+        this.ratingSum += rating;
+        this.reviewCnt++;
+    }
+
+    public void decrementReview(int rating) {
+        this.ratingSum -= rating;
+        this.reviewCnt--;
+    }
 }
