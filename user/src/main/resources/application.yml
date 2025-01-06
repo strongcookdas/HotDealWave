@@ -4,6 +4,28 @@ spring:
   profiles:
     active: ${ACTIVE_PROFILE}
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${EMAIL_SERVICE_USERNAME}
+    password: ${EMAIL_SERVICE_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+    auth-code-expiration-millis: 1800000
+
+service:
+  jwt:
+    access-expiration: 3600000
+    secret-key: ${JWT_SECRET_KEY}
+
 eureka:
   client:
     service-url:

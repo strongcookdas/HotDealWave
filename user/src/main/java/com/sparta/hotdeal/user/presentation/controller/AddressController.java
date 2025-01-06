@@ -1,15 +1,15 @@
 package com.sparta.hotdeal.user.presentation.controller;
 
-import com.sparta.hotdeal.user.presentation.dtos.ResponseDto;
-import com.sparta.hotdeal.user.presentation.dtos.address.request.ReqPatchAddressByIdDto;
-import com.sparta.hotdeal.user.presentation.dtos.address.request.ReqPostAddressDto;
-import com.sparta.hotdeal.user.presentation.dtos.address.response.ResDeleteAddressByIdDto;
-import com.sparta.hotdeal.user.presentation.dtos.address.response.ResGetAddressByIdDto;
-import com.sparta.hotdeal.user.presentation.dtos.address.response.ResGetAddressesDto;
-import com.sparta.hotdeal.user.presentation.dtos.address.response.ResGetDefaultAddressDto;
-import com.sparta.hotdeal.user.presentation.dtos.address.response.ResPatchAddressByIdDto;
-import com.sparta.hotdeal.user.presentation.dtos.address.response.ResPatchDefaultAddressByIdDto;
-import com.sparta.hotdeal.user.presentation.dtos.address.response.ResPostAddressDto;
+import com.sparta.hotdeal.user.application.dtos.ResponseDto;
+import com.sparta.hotdeal.user.application.dtos.address.request.ReqPatchAddressByIdDto;
+import com.sparta.hotdeal.user.application.dtos.address.request.ReqPostAddressDto;
+import com.sparta.hotdeal.user.application.dtos.address.response.ResDeleteAddressByIdDto;
+import com.sparta.hotdeal.user.application.dtos.address.response.ResGetAddressByIdDto;
+import com.sparta.hotdeal.user.application.dtos.address.response.ResGetAddressesDto;
+import com.sparta.hotdeal.user.application.dtos.address.response.ResGetDefaultAddressDto;
+import com.sparta.hotdeal.user.application.dtos.address.response.ResPatchAddressByIdDto;
+import com.sparta.hotdeal.user.application.dtos.address.response.ResPatchDefaultAddressByIdDto;
+import com.sparta.hotdeal.user.application.dtos.address.response.ResPostAddressDto;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
