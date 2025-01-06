@@ -3,12 +3,14 @@ package com.sparta.hotdeal.product.application.service;
 import com.sparta.hotdeal.product.application.dtos.req.product.ReqPostPromotionDto;
 import com.sparta.hotdeal.product.application.dtos.req.product.ReqPutPromotionDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResGetProductDto;
+import com.sparta.hotdeal.product.application.dtos.res.product.ResGetPromotionDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPostPromotionDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPutPromotionDto;
 import com.sparta.hotdeal.product.application.exception.ApplicationException;
 import com.sparta.hotdeal.product.application.exception.ErrorCode;
 import com.sparta.hotdeal.product.domain.entity.product.Promotion;
 import com.sparta.hotdeal.product.domain.repository.product.PromotionRepository;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -108,7 +110,15 @@ public class PromotionService {
         promotion.delete(username);
     }
 
-    public int calculateDiscountRate(int originPrice, int discountPrice) {
+    @Transactional(readOnly = true)
+    public ResGetPromotionDto getPromotion(UUID promotionId) {
+        Promotion promotion = promotionRepository.findById(promotionId)
+                .orElseThrow(() -> new ApplicationException(ErrorCode.PROMOTION_NOT_FOUND_EXCEPTION));
+
+        return convertToResGetPromotionDto(promotion);
+    }
+
+    private int calculateDiscountRate(int originPrice, int discountPrice) {
         double discountRate =
                 ((double) (originPrice - discountPrice) / originPrice)
                         * 100;
@@ -116,13 +126,13 @@ public class PromotionService {
         return (int) Math.round(discountRate);
     }
 
-    public void validateDiscountPrice(int originPrice, int discountPrice) {
+    private void validateDiscountPrice(int originPrice, int discountPrice) {
         if (discountPrice >= originPrice) {
             throw new ApplicationException(ErrorCode.PROMOTION_INVALID_PRICE_EXCEPTION);
         }
     }
 
-    public void validateDiscountQuantity(int originQuantity, int discountQuantity) {
+    private void validateDiscountQuantity(int originQuantity, int discountQuantity) {
         if (discountQuantity > originQuantity) {
             throw new ApplicationException(ErrorCode.PROMOTION_INVALID_QUANTITY_EXCEPTION);
         }
@@ -144,5 +154,18 @@ public class PromotionService {
         if (now.isAfter(startZoned) && now.isBefore(endZoned)) {
             throw new ApplicationException(ErrorCode.PROMOTION_IS_ACTIVE_EXCEPTION);
         }
+    }
+
+    private ResGetPromotionDto convertToResGetPromotionDto(Promotion promotion) {
+        return ResGetPromotionDto.builder()
+                .promotionId(promotion.getId())
+                .productId(promotion.getProductId())
+                .start(Timestamp.valueOf(promotion.getStart()))
+                .end(Timestamp.valueOf(promotion.getEnd()))
+                .discountRate(promotion.getDiscountRate())
+                .discountPrice(promotion.getDiscountPrice())
+                .quantity(promotion.getQuantity())
+                .remaining(promotion.getRemaining())
+                .build();
     }
 }

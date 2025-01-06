@@ -78,16 +78,17 @@ public class PromotionController {
     public ResponseDto<ResGetPromotionDto> getPromotion(
             @PathVariable UUID promotionId
     ) {
-        ResGetPromotionDto resGetPromotionDto = ResGetPromotionDto.builder()
-                .promotionId(UUID.randomUUID())
-                .productId(UUID.randomUUID())
-                .start(Timestamp.valueOf(LocalDateTime.now()))
-                .end(Timestamp.valueOf(LocalDateTime.now().plusHours(3)))
-                .discountRate(10)
-                .discountPrice(1800)
-                .quantity(8)
-                .remaining(8)
-                .build();
+//        ResGetPromotionDto resGetPromotionDto = ResGetPromotionDto.builder()
+//                .promotionId(UUID.randomUUID())
+//                .productId(UUID.randomUUID())
+//                .start(Timestamp.valueOf(LocalDateTime.now()))
+//                .end(Timestamp.valueOf(LocalDateTime.now().plusHours(3)))
+//                .discountRate(10)
+//                .discountPrice(1800)
+//                .quantity(8)
+//                .remaining(8)
+//                .build();
+        ResGetPromotionDto resGetPromotionDto = promotionService.getPromotion(promotionId);
 
         return ResponseDto.of("프로모션이 조회되었습니다.", resGetPromotionDto);
     }
