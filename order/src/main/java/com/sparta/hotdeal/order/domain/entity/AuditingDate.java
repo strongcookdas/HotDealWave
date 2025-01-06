@@ -31,8 +31,9 @@ public class AuditingDate {
 
     private String deletedBy;
 
-    public void delete(String username) {
+    public void delete(String email) {
         this.deletedAt = LocalDateTime.now();
+        this.deletedBy = email;
     }
 
     public void recover() {

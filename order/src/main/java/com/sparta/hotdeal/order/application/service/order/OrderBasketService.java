@@ -29,12 +29,10 @@ public class OrderBasketService {
     }
 
     public void deleteBasketList(List<Basket> basketList) {
-        //softDelete
-        basketList.forEach(basket -> basket.delete("username"));
+        basketList.forEach(basket -> basket.delete("email@email.com"));
     }
 
     public void recoverBasketList(List<Basket> basketList) {
-        //장바구니 복구
         basketList.forEach(AuditingDate::recover);
     }
 }
