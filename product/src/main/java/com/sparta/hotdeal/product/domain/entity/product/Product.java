@@ -18,6 +18,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Where;
 
 @Getter
 @Entity
@@ -25,6 +26,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 @Table(name = "p_product")
+@Where(clause = "deleted_at IS NULL")
 public class Product extends AuditingDate {
 
     @Id
@@ -65,11 +67,81 @@ public class Product extends AuditingDate {
     private ProductStatusEnum status;
 
     @Column
-    private Double rating;
+    private Integer ratingSum;
 
     @Column
     private Integer reviewCnt;
 
     @Column
     private Integer discountPrice;
+
+    public static Product create(
+            String name,
+            int price,
+            int quantity,
+            ProductCategoryEnum category,
+            String description,
+            File detailImgs,
+            File thumbImg,
+            UUID companyId,
+            ProductStatusEnum status
+    ) {
+        return Product.builder()
+                .name(name)
+                .price(price)
+                .quantity(quantity)
+                .category(category)
+                .description(description)
+                .detailImgs(detailImgs)
+                .thumbImg(thumbImg)
+                .companyId(companyId)
+                .status(status)
+                .build();
+    }
+
+    public void update(
+            String name,
+            Integer price,
+            Integer quantity,
+            ProductCategoryEnum category,
+            String description,
+            ProductStatusEnum status
+    ) {
+        if (name != null) {
+            this.name = name;
+        }
+        if (price != null) {
+            this.price = price;
+        }
+        if (quantity != null) {
+            this.quantity = quantity;
+        }
+        if (category != null) {
+            this.category = category;
+        }
+        if (description != null) {
+            this.description = description;
+        }
+        if (status != null) {
+            this.status = status;
+        }
+    }
+
+    public void updateStatus(ProductStatusEnum status) {
+        this.status = status;
+    }
+
+    public void updateQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public void incrementReview(int rating) {
+        this.ratingSum += rating;
+        this.reviewCnt++;
+    }
+
+    public void decrementReview(int rating) {
+        this.ratingSum -= rating;
+        this.reviewCnt--;
+    }
 }
