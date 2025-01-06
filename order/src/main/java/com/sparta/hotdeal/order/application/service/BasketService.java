@@ -12,8 +12,8 @@ import com.sparta.hotdeal.order.application.dtos.product.res.ResGetProductListFo
 import com.sparta.hotdeal.order.application.service.client.ProductClientService;
 import com.sparta.hotdeal.order.domain.entity.basket.Basket;
 import com.sparta.hotdeal.order.domain.repository.BasketRepository;
-import com.sparta.hotdeal.order.infrastructure.exception.ApplicationException;
-import com.sparta.hotdeal.order.infrastructure.exception.ErrorCode;
+import com.sparta.hotdeal.order.application.exception.ApplicationException;
+import com.sparta.hotdeal.order.application.exception.ErrorCode;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;

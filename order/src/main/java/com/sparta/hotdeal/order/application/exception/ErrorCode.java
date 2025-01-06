@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.order.infrastructure.exception;
+package com.sparta.hotdeal.order.application.exception;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

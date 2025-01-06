@@ -2,8 +2,8 @@ package com.sparta.hotdeal.order.application.service.order;
 
 import com.sparta.hotdeal.order.application.dtos.coupon.res.ResGetCouponForOrderDto;
 import com.sparta.hotdeal.order.application.service.client.CouponClientService;
-import com.sparta.hotdeal.order.infrastructure.exception.ApplicationException;
-import com.sparta.hotdeal.order.infrastructure.exception.ErrorCode;
+import com.sparta.hotdeal.order.application.exception.ApplicationException;
+import com.sparta.hotdeal.order.application.exception.ErrorCode;
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.UUID;

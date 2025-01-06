@@ -63,8 +63,6 @@ public class OrderService {
 
         order = orderRepository.save(order);
         orderProductService.createOrderProductList(order,basketList,productMap);
-
-        processPayment(totalAmount);
     }
 
 

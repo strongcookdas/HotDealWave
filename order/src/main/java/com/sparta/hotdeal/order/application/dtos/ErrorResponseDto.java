@@ -1,6 +1,6 @@
 package com.sparta.hotdeal.order.application.dtos;
 
-import com.sparta.hotdeal.order.infrastructure.exception.ErrorCode;
+import com.sparta.hotdeal.order.application.exception.ErrorCode;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
