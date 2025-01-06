@@ -1,6 +1,6 @@
 package com.sparta.hotdeal.order.application.dtos.basket.res;
 
-import com.sparta.hotdeal.order.application.dtos.product.ProductDto;
+import com.sparta.hotdeal.order.application.dtos.product.res.ResGetProductByIdForBasketDto;
 import com.sparta.hotdeal.order.domain.entity.basket.Basket;
 import java.util.UUID;
 import lombok.Builder;
@@ -26,26 +26,26 @@ public class ResGetBasketByIdDto {
         private Integer productReviewCnt;
         private String productThumbImg;
 
-        public static Product of(ProductDto productDto) {
+        public static Product of(ResGetProductByIdForBasketDto resGetProductByIdForBasketDto) {
             return Product.builder()
-                    .productId(productDto.getProductId())
-                    .productName(productDto.getName())
-                    .productQuantity(productDto.getQuantity())
-                    .productPrice(productDto.getPrice())
-                    .productStatus(productDto.getStatus())
-                    .productDiscountPrice(productDto.getDiscountPrice())
-                    .productRating(productDto.getRating())
-                    .productReviewCnt(productDto.getReviewCnt())
-                    .productThumbImg(productDto.getThumbImg())
+                    .productId(resGetProductByIdForBasketDto.getProductId())
+                    .productName(resGetProductByIdForBasketDto.getName())
+                    .productQuantity(resGetProductByIdForBasketDto.getQuantity())
+                    .productPrice(resGetProductByIdForBasketDto.getPrice())
+                    .productStatus(resGetProductByIdForBasketDto.getStatus())
+                    .productDiscountPrice(resGetProductByIdForBasketDto.getDiscountPrice())
+                    .productRating(resGetProductByIdForBasketDto.getRating())
+                    .productReviewCnt(resGetProductByIdForBasketDto.getReviewCnt())
+                    .productThumbImg(resGetProductByIdForBasketDto.getThumbImg())
                     .build();
         }
     }
 
-    public static ResGetBasketByIdDto of(Basket basket, ProductDto productDto) {
+    public static ResGetBasketByIdDto of(Basket basket, ResGetProductByIdForBasketDto resGetProductByIdForBasketDto) {
         return ResGetBasketByIdDto.builder()
                 .basketId(basket.getId())
                 .quantity(basket.getQuantity())
-                .product(Product.of(productDto))
+                .product(Product.of(resGetProductByIdForBasketDto))
                 .build();
     }
 }

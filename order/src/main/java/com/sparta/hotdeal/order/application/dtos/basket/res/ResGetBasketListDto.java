@@ -1,6 +1,6 @@
 package com.sparta.hotdeal.order.application.dtos.basket.res;
 
-import com.sparta.hotdeal.order.application.dtos.product.ProductListDto;
+import com.sparta.hotdeal.order.application.dtos.product.res.ResGetProductListForBasketDto;
 import com.sparta.hotdeal.order.domain.entity.basket.Basket;
 import java.util.UUID;
 import lombok.Builder;
@@ -27,26 +27,26 @@ public class ResGetBasketListDto {
         private String productThumbImg;
 
 
-        public static Product of(ProductListDto productListDto) {
+        public static Product of(ResGetProductListForBasketDto resGetProductListForBasketDto) {
             return Product.builder()
-                    .productId(productListDto.getProductId())
-                    .productName(productListDto.getName())
-                    .productQuantity(productListDto.getQuantity())
-                    .productPrice(productListDto.getPrice())
-                    .productStatus(productListDto.getStatus())
-                    .productDiscountPrice(productListDto.getDiscountPrice())
-                    .productRating(productListDto.getRating())
-                    .productReviewCnt(productListDto.getReviewCnt())
-                    .productThumbImg(productListDto.getThumbImg())
+                    .productId(resGetProductListForBasketDto.getProductId())
+                    .productName(resGetProductListForBasketDto.getName())
+                    .productQuantity(resGetProductListForBasketDto.getQuantity())
+                    .productPrice(resGetProductListForBasketDto.getPrice())
+                    .productStatus(resGetProductListForBasketDto.getStatus())
+                    .productDiscountPrice(resGetProductListForBasketDto.getDiscountPrice())
+                    .productRating(resGetProductListForBasketDto.getRating())
+                    .productReviewCnt(resGetProductListForBasketDto.getReviewCnt())
+                    .productThumbImg(resGetProductListForBasketDto.getThumbImg())
                     .build();
         }
     }
 
-    public static ResGetBasketListDto of(Basket basket, ProductListDto productListDto) {
+    public static ResGetBasketListDto of(Basket basket, ResGetProductListForBasketDto resGetProductListForBasketDto) {
         return ResGetBasketListDto.builder()
                 .basketId(basket.getId())
                 .quantity(basket.getQuantity())
-                .product(Product.of(productListDto))
+                .product(Product.of(resGetProductListForBasketDto))
                 .build();
     }
 }

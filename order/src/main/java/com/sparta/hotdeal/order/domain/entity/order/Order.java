@@ -35,7 +35,22 @@ public class Order extends AuditingDate {
     private OrderStatus status;
 
     @Column(nullable = false)
-    private Integer totalAmount;
+    private Long totalAmount;
 
     private UUID couponId;
+
+    public static Order create(
+            UUID addressId,
+            UUID userId,
+            Long totalAmount,
+            UUID couponId
+    ) {
+        return Order.builder()
+                .addressId(addressId)
+                .userId(userId)
+                .totalAmount(totalAmount)
+                .status(OrderStatus.CREATE)
+                .couponId(couponId)
+                .build();
+    }
 }

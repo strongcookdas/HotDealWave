@@ -1,6 +1,6 @@
 package com.sparta.hotdeal.order.application.dtos;
 
-import com.sparta.hotdeal.order.infrastructure.exception.ErrorCode;
+import com.sparta.hotdeal.order.application.exception.ErrorCode;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,7 +10,7 @@ import lombok.Getter;
 public class ErrorResponseDto {
 
     private LocalDateTime timestamp;
-    private Integer code;
+    private String code;
     private String message;
 
     public ErrorResponseDto(ErrorCode errorcode) {
