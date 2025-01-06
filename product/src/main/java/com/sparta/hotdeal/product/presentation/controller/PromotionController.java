@@ -7,16 +7,11 @@ import com.sparta.hotdeal.product.application.dtos.res.product.ResGetPromotionDt
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPostPromotionDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPutPromotionDto;
 import com.sparta.hotdeal.product.application.service.PromotionService;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import com.sparta.hotdeal.product.domain.entity.product.PromotionStatusEnum;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -99,40 +94,44 @@ public class PromotionController {
             @RequestParam(defaultValue = "10") int page_size,
             @RequestParam(defaultValue = "createdAt") String sort_by,
             @RequestParam(defaultValue = "asc") String direction,
-            @RequestParam(required = false) String search
+            @RequestParam(required = false) List<UUID> productIds,
+            @RequestParam(required = false) PromotionStatusEnum status
     ) {
-        ResGetPromotionDto resGetPromotionDto1 = ResGetPromotionDto.builder()
-                .promotionId(UUID.randomUUID())
-                .productId(UUID.randomUUID())
-                .start(Timestamp.valueOf(LocalDateTime.now()))
-                .end(Timestamp.valueOf(LocalDateTime.now().plusHours(3)))
-                .discountRate(10)
-                .discountPrice(1800)
-                .quantity(8)
-                .remaining(8)
-                .build();
+//        ResGetPromotionDto resGetPromotionDto1 = ResGetPromotionDto.builder()
+//                .promotionId(UUID.randomUUID())
+//                .productId(UUID.randomUUID())
+//                .start(Timestamp.valueOf(LocalDateTime.now()))
+//                .end(Timestamp.valueOf(LocalDateTime.now().plusHours(3)))
+//                .discountRate(10)
+//                .discountPrice(1800)
+//                .quantity(8)
+//                .remaining(8)
+//                .build();
+//
+//        ResGetPromotionDto resGetPromotionDto2 = ResGetPromotionDto.builder()
+//                .promotionId(UUID.randomUUID())
+//                .productId(UUID.randomUUID())
+//                .start(Timestamp.valueOf(LocalDateTime.now()))
+//                .end(Timestamp.valueOf(LocalDateTime.now().plusHours(1)))
+//                .discountRate(10)
+//                .discountPrice(1800)
+//                .quantity(8)
+//                .remaining(8)
+//                .build();
+//
+//        List<ResGetPromotionDto> promotionList = List.of(resGetPromotionDto1, resGetPromotionDto2);
+//
+//        // Pageable 생성
+//        Pageable pageable = PageRequest.of(page_number - 1, page_size,
+//                "asc".equalsIgnoreCase(direction) ? Sort.by(sort_by).ascending() : Sort.by(sort_by).descending());
+//
+//        // Page 객체 생성
+//        Page<ResGetPromotionDto> promotionPage = new PageImpl<>(promotionList, pageable, promotionList.size());
 
-        ResGetPromotionDto resGetPromotionDto2 = ResGetPromotionDto.builder()
-                .promotionId(UUID.randomUUID())
-                .productId(UUID.randomUUID())
-                .start(Timestamp.valueOf(LocalDateTime.now()))
-                .end(Timestamp.valueOf(LocalDateTime.now().plusHours(1)))
-                .discountRate(10)
-                .discountPrice(1800)
-                .quantity(8)
-                .remaining(8)
-                .build();
-
-        List<ResGetPromotionDto> promotionList = List.of(resGetPromotionDto1, resGetPromotionDto2);
-
-        // Pageable 생성
-        Pageable pageable = PageRequest.of(page_number - 1, page_size,
-                "asc".equalsIgnoreCase(direction) ? Sort.by(sort_by).ascending() : Sort.by(sort_by).descending());
-
-        // Page 객체 생성
-        Page<ResGetPromotionDto> promotionPage = new PageImpl<>(promotionList, pageable, promotionList.size());
+        Page<ResGetPromotionDto> promotionPage = promotionService.getAllPromotions(page_number, page_size, sort_by,
+                direction, productIds, status);
 
         // ResponseDto로 감싸서 반환
-        return ResponseDto.of("상품이 조회되었습니다.", promotionPage);
+        return ResponseDto.of("타임 세일이 조회되었습니다.", promotionPage);
     }
 }

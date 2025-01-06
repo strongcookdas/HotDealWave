@@ -9,14 +9,22 @@ import com.sparta.hotdeal.product.application.dtos.res.product.ResPutPromotionDt
 import com.sparta.hotdeal.product.application.exception.ApplicationException;
 import com.sparta.hotdeal.product.application.exception.ErrorCode;
 import com.sparta.hotdeal.product.domain.entity.product.Promotion;
+import com.sparta.hotdeal.product.domain.entity.product.PromotionStatusEnum;
 import com.sparta.hotdeal.product.domain.repository.product.PromotionRepository;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -118,6 +126,22 @@ public class PromotionService {
         return convertToResGetPromotionDto(promotion);
     }
 
+    @Transactional(readOnly = true)
+    public Page<ResGetPromotionDto> getAllPromotions(int pageNumber, int pageSize, String sortBy, String direction,
+                                                     List<UUID> productIds, PromotionStatusEnum status) {
+
+        Sort sort = direction.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, sort);
+
+        Page<Promotion> promotions = promotionRepository.findAllPromotions(pageable, productIds, status);
+
+        List<ResGetPromotionDto> resGetPromotionDtos = promotions.stream()
+                .map(this::convertToResGetPromotionDto)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(resGetPromotionDtos, pageable, promotions.getTotalElements());
+    }
+
     private int calculateDiscountRate(int originPrice, int discountPrice) {
         double discountRate =
                 ((double) (originPrice - discountPrice) / originPrice)
@@ -166,6 +190,8 @@ public class PromotionService {
                 .discountPrice(promotion.getDiscountPrice())
                 .quantity(promotion.getQuantity())
                 .remaining(promotion.getRemaining())
+                .status(promotion.getStatus())
                 .build();
     }
+
 }
