@@ -144,4 +144,8 @@ public class Product extends AuditingDate {
         this.ratingSum -= rating;
         this.reviewCnt--;
     }
+
+    public void updateDiscountPrice(int discountPrice) {
+        this.discountPrice = discountPrice;
+    }
 }

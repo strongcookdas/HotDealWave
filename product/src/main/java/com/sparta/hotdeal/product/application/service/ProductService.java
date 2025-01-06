@@ -218,4 +218,11 @@ public class ProductService {
                 .build();
     }
 
+    public void updateProductDiscountPrice(UUID productId, int discountPrice) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+
+        product.updateDiscountPrice(discountPrice);
+    }
+
 }
