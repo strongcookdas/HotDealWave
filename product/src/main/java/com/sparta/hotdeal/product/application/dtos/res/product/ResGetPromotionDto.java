@@ -1,5 +1,6 @@
 package com.sparta.hotdeal.product.application.dtos.res.product;
 
+import com.sparta.hotdeal.product.domain.entity.product.PromotionStatusEnum;
 import java.sql.Timestamp;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -20,4 +21,5 @@ public class ResGetPromotionDto {
     private Integer discountPrice;
     private Integer quantity;
     private Integer remaining;
+    private PromotionStatusEnum status;
 }

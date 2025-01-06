@@ -52,10 +52,13 @@ public class Promotion extends AuditingDate {
     @Column(nullable = false)
     private Integer remaining;
 
+    @Column(nullable = false)
+    private PromotionStatusEnum status;
+
     public static Promotion create(
             ReqPostPromotionDto reqPostPromotionDto
             , Integer roundedDiscountRate) {
-        return com.sparta.hotdeal.product.domain.entity.product.Promotion.builder()
+        return Promotion.builder()
                 .productId(reqPostPromotionDto.getProductId())
                 .start(reqPostPromotionDto.getStart())
                 .end(reqPostPromotionDto.getEnd())
@@ -63,6 +66,7 @@ public class Promotion extends AuditingDate {
                 .discountPrice(reqPostPromotionDto.getDiscountPrice())
                 .quantity(reqPostPromotionDto.getQuantity())
                 .remaining(reqPostPromotionDto.getQuantity())
+                .status(PromotionStatusEnum.PENDING)
                 .build();
     }
 
@@ -84,6 +88,10 @@ public class Promotion extends AuditingDate {
             this.quantity = reqPutPromotionDto.getQuantity();
             this.remaining = reqPutPromotionDto.getQuantity();
         }
+    }
+
+    public void updateStatus(PromotionStatusEnum status) {
+        this.status = status;
     }
 
     public void updateRemaining(int remaining) {
