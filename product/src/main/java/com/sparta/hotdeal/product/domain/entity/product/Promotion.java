@@ -52,12 +52,13 @@ public class Promotion extends AuditingDate {
     private Integer remaining;
 
     public static Promotion create(
-            ReqPostPromotionDto reqPostPromotionDto) {
+            ReqPostPromotionDto reqPostPromotionDto
+            , Integer roundedDiscountRate) {
         return Promotion.builder()
                 .productId(reqPostPromotionDto.getProductId())
                 .start(reqPostPromotionDto.getStart().toLocalDateTime())
                 .end(reqPostPromotionDto.getEnd().toLocalDateTime())
-                .discountRate(reqPostPromotionDto.getDiscountRate())
+                .discountRate(roundedDiscountRate)
                 .discountPrice(reqPostPromotionDto.getDiscountPrice())
                 .quantity(reqPostPromotionDto.getQuantity())
                 .remaining(reqPostPromotionDto.getQuantity())

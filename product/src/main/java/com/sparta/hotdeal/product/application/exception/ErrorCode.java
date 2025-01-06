@@ -13,7 +13,9 @@ public enum ErrorCode {
     FORBIDDEN_EXCEPTION(HttpStatus.FORBIDDEN, "P006", "인가되지 않는 요청입니다."),
     ALREADY_EXIST_EXCEPTION(HttpStatus.BAD_REQUEST, "P007", "이미 존재하는 상품입니다."),
     INVALID_SORT_EXCEPTION(HttpStatus.BAD_REQUEST, "P008", "올바르지 않은 정렬 값입니다."),
-    USER_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "P009", "존재하지 않는 사용자입니다.");
+    USER_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "P009", "존재하지 않는 사용자입니다."),
+    PROMOTION_INVALID_QUANTITY_EXCEPTION(HttpStatus.BAD_REQUEST, "P010", "상품의 재고 수량보다 많은 요청값입니다."),
+    PROMOTION_INVALID_PRICE_EXCEPTION(HttpStatus.BAD_REQUEST, "P011", "상품의 기존 가격 이상인 요청값입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

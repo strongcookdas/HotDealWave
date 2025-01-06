@@ -1,15 +1,17 @@
 package com.sparta.hotdeal.product.presentation.controller;
 
+import com.sparta.hotdeal.product.application.dtos.req.product.ReqPostPromotionDto;
+import com.sparta.hotdeal.product.application.dtos.req.product.ReqPutPromotionDto;
 import com.sparta.hotdeal.product.application.dtos.res.ResponseDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResGetPromotionDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPostPromotionDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPutPromotionDto;
-import com.sparta.hotdeal.product.application.dtos.req.product.ReqPostPromotionDto;
-import com.sparta.hotdeal.product.application.dtos.req.product.ReqPutPromotionDto;
+import com.sparta.hotdeal.product.application.service.PromotionService;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -30,16 +32,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/promotions")
+@RequiredArgsConstructor
 public class PromotionController {
+
+    private final PromotionService promotionService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<ResPostPromotionDto> createPromotion(
             @RequestBody ReqPostPromotionDto reqPostCreatePromotionDto
     ) {
-        ResPostPromotionDto resPostPromotionDto = ResPostPromotionDto.builder()
-                .promotionId(UUID.randomUUID())
-                .build();
+//        ResPostPromotionDto resPostPromotionDto = ResPostPromotionDto.builder()
+//                .promotionId(UUID.randomUUID())
+//                .build();
+        ResPostPromotionDto resPostPromotionDto = promotionService.createPromotion(reqPostCreatePromotionDto);
 
         return ResponseDto.of("프로모션이 생성되었습니다.", resPostPromotionDto);
     }
