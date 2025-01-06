@@ -82,6 +82,11 @@ public class Promotion extends AuditingDate {
         }
         if (reqPutPromotionDto.getQuantity() != null) {
             this.quantity = reqPutPromotionDto.getQuantity();
+            this.remaining = reqPutPromotionDto.getQuantity();
         }
+    }
+
+    public void updateRemaining(int remaining) {
+        this.remaining = remaining;
     }
 }
