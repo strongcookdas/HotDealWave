@@ -2,6 +2,7 @@ package com.sparta.hotdeal.user.application.service;
 
 import com.sparta.hotdeal.user.application.dtos.address.request.ReqPostAddressDto;
 import com.sparta.hotdeal.user.application.dtos.address.response.ResGetAddressByIdDto;
+import com.sparta.hotdeal.user.application.dtos.address.response.ResGetDefaultAddressDto;
 import com.sparta.hotdeal.user.application.dtos.address.response.ResPostAddressDto;
 import com.sparta.hotdeal.user.application.exception.ErrorMessage;
 import com.sparta.hotdeal.user.domain.entity.Address;
@@ -43,5 +44,14 @@ public class AddressService {
         }
 
         return ResGetAddressByIdDto.from(address);
+    }
+
+    public ResGetDefaultAddressDto getDefaultAddress(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.USER_NOT_FOUND.getMessage()));
+
+        Address address = user.getDefaultAddress();
+
+        return ResGetDefaultAddressDto.from(address);
     }
 }
