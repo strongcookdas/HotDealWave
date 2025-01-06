@@ -4,6 +4,7 @@ import com.sparta.hotdeal.order.application.dtos.address.res.ResGetAddressByIdFo
 import com.sparta.hotdeal.order.application.dtos.coupon.res.ResGetCouponForOrderDto;
 import com.sparta.hotdeal.order.application.dtos.order.req.ReqPostOrderDto;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrderByIdDto;
+import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrderListDto;
 import com.sparta.hotdeal.order.application.dtos.order_product.OrderProductDto;
 import com.sparta.hotdeal.order.application.dtos.product.res.ResGetProductListForOrderDto;
 import com.sparta.hotdeal.order.application.dtos.user.ResGetUserByIdForOrderDto;
@@ -18,6 +19,8 @@ import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -94,6 +97,33 @@ public class OrderService {
 
         //조합 후 반환
         return ResGetOrderByIdDto.of(order, address, orderProductDtoList, productMap, user);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ResGetOrderListDto> getOrderList(UUID userId, Pageable pageable) {
+        //주문 내역 조회
+        Page<Order> orderPage = orderRepository.findAllByUserId(userId, pageable);
+
+        //각 주문의 OrderProduct 데이터 가져오기
+        List<UUID> orderIds = orderPage.stream()
+                .map(Order::getId)
+                .toList();
+        Map<UUID, List<OrderProductDto>> orderProductMap = orderProductService.getOrderProductsByOrderIds(orderIds);
+
+        //각 주문의 Product 가져오기
+        List<UUID> productIds = orderProductMap.values().stream()
+                .flatMap(List::stream)
+                .map(OrderProductDto::getProductId)
+                .toList();
+
+        Map<UUID, ResGetProductListForOrderDto> productMap =orderProductService.getProductMapByProductIds(productIds);
+
+        // 4. ResGetOrderListDto 생성
+        return orderPage.map(order -> ResGetOrderListDto.of(
+                order,
+                orderProductMap.get(order.getId()),
+                productMap
+        ));
     }
 
 }

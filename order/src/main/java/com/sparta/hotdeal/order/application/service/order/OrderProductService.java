@@ -64,6 +64,7 @@ public class OrderProductService {
                 .collect(Collectors.toMap(ResGetProductListForOrderDto::getProductId, product -> product));
     }
 
+
     //장바구니에 따른 상품 조회 후 Map으로 반환
     public Map<UUID, ResGetProductListForOrderDto> getProductMapByOrderProduct(List<OrderProductDto> orderProductList) {
         List<UUID> productIds = orderProductList.stream()
@@ -73,6 +74,21 @@ public class OrderProductService {
         List<ResGetProductListForOrderDto> productList = productClientService.getProductListForOrder(productIds);
         return productList.stream()
                 .collect(Collectors.toMap(ResGetProductListForOrderDto::getProductId, product -> product));
+    }
+
+    //장바구니에 따른 상품 조회 후 Map으로 반환
+    public Map<UUID, ResGetProductListForOrderDto> getProductMapByProductIds(List<UUID> productIds) {
+        List<ResGetProductListForOrderDto> productList = productClientService.getProductListForOrder(productIds);
+        return productList.stream()
+                .collect(Collectors.toMap(ResGetProductListForOrderDto::getProductId, product -> product));
+    }
+
+    public Map<UUID, List<OrderProductDto>> getOrderProductsByOrderIds(List<UUID> orderIds) {
+        List<OrderProduct> orderProducts = orderProductRepository.findAllByOrderIdIn(orderIds);
+
+        return orderProducts.stream()
+                .map(OrderProductDto::of)
+                .collect(Collectors.groupingBy(OrderProductDto::getOrderId));
     }
 
     //회사 id에 따른 구매 상품 가격 계산 (쿠폰 유효성 검사를 위해)

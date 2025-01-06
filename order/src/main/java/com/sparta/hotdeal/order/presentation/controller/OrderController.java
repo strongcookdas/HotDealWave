@@ -5,7 +5,7 @@ import com.sparta.hotdeal.order.application.dtos.order.req.ReqPatchOrderDto;
 import com.sparta.hotdeal.order.application.dtos.order.req.ReqPostOrderDto;
 import com.sparta.hotdeal.order.application.dtos.order.res.OrderResponseMessage;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrderByIdDto;
-import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrdersDto;
+import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrderListDto;
 import com.sparta.hotdeal.order.application.service.order.OrderService;
 import com.sparta.hotdeal.order.infrastructure.custom.RequestUserDetails;
 import java.util.List;
@@ -44,15 +44,10 @@ public class OrderController {
     }
 
     @GetMapping
-    public ResponseDto<Page<ResGetOrdersDto>> getOrders(Pageable pageable) {
-        List<ResGetOrdersDto> dummyList = ResGetOrdersDto.createDummyList();
+    public ResponseDto<Page<ResGetOrderListDto>> getOrders(@AuthenticationPrincipal RequestUserDetails userDetails,
+                                                           Pageable pageable) {
 
-        // 페이징 처리
-        int start = (int) pageable.getOffset();
-        int end = Math.min(start + pageable.getPageSize(), dummyList.size());
-        Page<ResGetOrdersDto> page = new PageImpl<>(dummyList.subList(start, end), pageable, dummyList.size());
-
-        return ResponseDto.of("주문 목록 조회 성공", page);
+        return ResponseDto.of("주문 목록 조회 성공", orderService.getOrderList(userDetails.getUserId(), pageable));
     }
 
     @GetMapping("/{orderId}")
