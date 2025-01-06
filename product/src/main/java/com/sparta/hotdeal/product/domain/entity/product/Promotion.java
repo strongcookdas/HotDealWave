@@ -1,14 +1,12 @@
 package com.sparta.hotdeal.product.domain.entity.product;
 
+import com.sparta.hotdeal.product.application.dtos.req.product.ReqPostPromotionDto;
 import com.sparta.hotdeal.product.domain.entity.AuditingDate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -32,9 +30,8 @@ public class Promotion extends AuditingDate {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+    @Column(nullable = false)
+    private UUID productId;
 
     @Column(nullable = false)
     private LocalDateTime start;
@@ -53,4 +50,17 @@ public class Promotion extends AuditingDate {
 
     @Column(nullable = false)
     private Integer remaining;
+
+    public static Promotion create(
+            ReqPostPromotionDto reqPostPromotionDto) {
+        return Promotion.builder()
+                .productId(reqPostPromotionDto.getProductId())
+                .start(reqPostPromotionDto.getStart().toLocalDateTime())
+                .end(reqPostPromotionDto.getEnd().toLocalDateTime())
+                .discountRate(reqPostPromotionDto.getDiscountRate())
+                .discountPrice(reqPostPromotionDto.getDiscountPrice())
+                .quantity(reqPostPromotionDto.getQuantity())
+                .remaining(reqPostPromotionDto.getQuantity())
+                .build();
+    }
 }
