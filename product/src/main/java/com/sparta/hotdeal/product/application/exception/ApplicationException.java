@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.product.infrastructure.exception;
+package com.sparta.hotdeal.product.application.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

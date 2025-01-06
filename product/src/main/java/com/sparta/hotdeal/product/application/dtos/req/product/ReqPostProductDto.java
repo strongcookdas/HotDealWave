@@ -1,6 +1,7 @@
 package com.sparta.hotdeal.product.application.dtos.req.product;
 
 import com.sparta.hotdeal.product.domain.entity.product.ProductCategoryEnum;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -22,9 +23,11 @@ public class ReqPostProductDto {
     private String name;
 
     @Positive(message = "가격은 1 이상으로 입력해주세요.")
+    @Max(value = 2100000000, message = "가격은 2100000000 이하로 입력해주세요.")
     private Integer price;
 
     @Positive(message = "수량은 1 이상으로 입력해주세요.")
+    @Max(value = 2100000000, message = "수량은 2100000000 이하로 입력해주세요.")
     private Integer quantity;
 
     @NotNull(message = "카테고리를 입력해주세요.")

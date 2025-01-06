@@ -9,6 +9,8 @@ import com.sparta.hotdeal.product.application.dtos.res.product.ResPatchReducePro
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPatchRestoreProductQuantityDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPostProductDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPutProductDto;
+import com.sparta.hotdeal.product.application.exception.ApplicationException;
+import com.sparta.hotdeal.product.application.exception.ErrorCode;
 import com.sparta.hotdeal.product.application.service.client.CompanyClientService;
 import com.sparta.hotdeal.product.domain.entity.product.File;
 import com.sparta.hotdeal.product.domain.entity.product.Product;
@@ -16,8 +18,6 @@ import com.sparta.hotdeal.product.domain.entity.product.ProductStatusEnum;
 import com.sparta.hotdeal.product.domain.entity.product.SubFile;
 import com.sparta.hotdeal.product.domain.repository.product.ProductRepository;
 import com.sparta.hotdeal.product.infrastructure.dtos.ResGetCompanyByIdDto;
-import com.sparta.hotdeal.product.infrastructure.exception.ApplicationException;
-import com.sparta.hotdeal.product.infrastructure.exception.ErrorCode;
 import com.sparta.hotdeal.product.infrastructure.repository.ProductRepositoryCustomImpl;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
