@@ -99,7 +99,7 @@ public class AuthService {
                         ErrorMessage.WRONG_EMAIL_OR_PASSWORD.getMessage()));
 
         return ResPostLoginDto.builder()
-                .accessToken(jwtUtil.createToken(user.getUserId(), user.getRole()))
+                .accessToken(jwtUtil.createToken(user.getUserId(), user.getEmail(), user.getRole()))
                 .refreshToken(null)
                 .build();
     }
