@@ -1,8 +1,6 @@
-package com.sparta.hotdeal.company.infrastructure.exception.handler;
+package com.sparta.hotdeal.company.application.exception;
 
 import com.sparta.hotdeal.company.application.dtos.ErrorResponseDto;
-import com.sparta.hotdeal.company.infrastructure.exception.ApplicationException;
-import com.sparta.hotdeal.company.infrastructure.exception.ErrorCode;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
