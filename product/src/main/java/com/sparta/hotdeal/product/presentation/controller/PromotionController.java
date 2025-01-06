@@ -55,9 +55,10 @@ public class PromotionController {
             @PathVariable UUID promotionId,
             @RequestBody ReqPutPromotionDto reqPutUpdatePromotionDto
     ) {
-        ResPutPromotionDto resPutPromotionDto = ResPutPromotionDto.builder()
-                .promotionId(UUID.randomUUID())
-                .build();
+//        ResPutPromotionDto resPutPromotionDto = ResPutPromotionDto.builder()
+//                .promotionId(UUID.randomUUID())
+//                .build();
+        ResPutPromotionDto resPutPromotionDto = promotionService.updatePromotion(promotionId, reqPutUpdatePromotionDto);
 
         return ResponseDto.of("프로모션이 수정되었습니다.", resPutPromotionDto);
     }

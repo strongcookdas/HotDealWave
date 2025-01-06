@@ -12,4 +12,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ResPutPromotionDto {
     private UUID promotionId;
+
+    public static ResPutPromotionDto of(UUID promotionId) {
+        return ResPutPromotionDto.builder()
+                .promotionId(promotionId)
+                .build();
+    }
 }

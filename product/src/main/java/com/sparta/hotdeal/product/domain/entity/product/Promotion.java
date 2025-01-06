@@ -1,6 +1,7 @@
 package com.sparta.hotdeal.product.domain.entity.product;
 
 import com.sparta.hotdeal.product.application.dtos.req.product.ReqPostPromotionDto;
+import com.sparta.hotdeal.product.application.dtos.req.product.ReqPutPromotionDto;
 import com.sparta.hotdeal.product.domain.entity.AuditingDate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -54,7 +55,7 @@ public class Promotion extends AuditingDate {
     public static Promotion create(
             ReqPostPromotionDto reqPostPromotionDto
             , Integer roundedDiscountRate) {
-        return Promotion.builder()
+        return com.sparta.hotdeal.product.domain.entity.product.Promotion.builder()
                 .productId(reqPostPromotionDto.getProductId())
                 .start(reqPostPromotionDto.getStart().toLocalDateTime())
                 .end(reqPostPromotionDto.getEnd().toLocalDateTime())
@@ -63,5 +64,24 @@ public class Promotion extends AuditingDate {
                 .quantity(reqPostPromotionDto.getQuantity())
                 .remaining(reqPostPromotionDto.getQuantity())
                 .build();
+    }
+
+    public void update(ReqPutPromotionDto reqPutPromotionDto, int discountRate) {
+        if (reqPutPromotionDto.getProductId() != null) {
+            this.productId = reqPutPromotionDto.getProductId();
+        }
+        if (reqPutPromotionDto.getStart() != null) {
+            this.start = reqPutPromotionDto.getStart().toLocalDateTime();
+        }
+        if (reqPutPromotionDto.getEnd() != null) {
+            this.end = reqPutPromotionDto.getEnd().toLocalDateTime();
+        }
+        if (reqPutPromotionDto.getDiscountPrice() != null) {
+            this.discountPrice = reqPutPromotionDto.getDiscountPrice();
+            this.discountRate = discountRate;
+        }
+        if (reqPutPromotionDto.getQuantity() != null) {
+            this.quantity = reqPutPromotionDto.getQuantity();
+        }
     }
 }

@@ -1,12 +1,15 @@
 package com.sparta.hotdeal.product.application.service;
 
 import com.sparta.hotdeal.product.application.dtos.req.product.ReqPostPromotionDto;
+import com.sparta.hotdeal.product.application.dtos.req.product.ReqPutPromotionDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResGetProductDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPostPromotionDto;
+import com.sparta.hotdeal.product.application.dtos.res.product.ResPutPromotionDto;
 import com.sparta.hotdeal.product.application.exception.ApplicationException;
 import com.sparta.hotdeal.product.application.exception.ErrorCode;
 import com.sparta.hotdeal.product.domain.entity.product.Promotion;
 import com.sparta.hotdeal.product.domain.repository.product.PromotionRepository;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,14 +29,10 @@ public class PromotionService {
 
         // 입력 값 검증
         // 상품 가격보다 작은지
-        if (reqPostPromotionDto.getDiscountPrice() >= productDto.getPrice()) {
-            throw new ApplicationException(ErrorCode.PROMOTION_INVALID_PRICE_EXCEPTION);
-        }
+        validateDiscountPrice(productDto.getPrice(), reqPostPromotionDto.getDiscountPrice());
 
         // 상품 수량보다 적은지
-        if (reqPostPromotionDto.getQuantity() > productDto.getQuantity()) {
-            throw new ApplicationException(ErrorCode.PROMOTION_INVALID_QUANTITY_EXCEPTION);
-        }
+        validateDiscountQuantity(productDto.getQuantity(), reqPostPromotionDto.getQuantity());
 
         // 할인율 계산
         int discountRate = calculateDiscountRate(productDto.getPrice(), reqPostPromotionDto.getDiscountPrice());
@@ -45,6 +44,31 @@ public class PromotionService {
         return ResPostPromotionDto.of(promotion.getId());
     }
 
+    public ResPutPromotionDto updatePromotion(UUID promotionId, ReqPutPromotionDto reqPutUpdatePromotionDto) {
+        // 타임세일 조회
+        Promotion promotion = promotionRepository.findById(promotionId)
+                .orElseThrow(() -> new ApplicationException(ErrorCode.PROMOTION_NOT_FOUND_EXCEPTION));
+
+        // 상품 조회
+        UUID productId = reqPutUpdatePromotionDto.getProductId() == null ? promotion.getProductId()
+                : reqPutUpdatePromotionDto.getProductId();
+        ResGetProductDto productDto = productService.getProduct(productId);
+
+        int discountRate = promotion.getDiscountRate();
+        if (reqPutUpdatePromotionDto.getDiscountPrice() != null) {
+            validateDiscountPrice(productDto.getPrice(), reqPutUpdatePromotionDto.getDiscountPrice());
+            discountRate = calculateDiscountRate(productDto.getPrice(), reqPutUpdatePromotionDto.getDiscountPrice());
+        }
+
+        if (reqPutUpdatePromotionDto.getQuantity() != null) {
+            validateDiscountQuantity(productDto.getQuantity(), reqPutUpdatePromotionDto.getQuantity());
+        }
+
+        promotion.update(reqPutUpdatePromotionDto, discountRate);
+
+        return ResPutPromotionDto.of(promotion.getId());
+    }
+
     public int calculateDiscountRate(int originPrice, int discountPrice) {
         double discountRate =
                 ((double) (originPrice - discountPrice) / originPrice)
@@ -52,4 +76,17 @@ public class PromotionService {
 
         return (int) Math.round(discountRate);
     }
+
+    public void validateDiscountPrice(int originPrice, int discountPrice) {
+        if (discountPrice >= originPrice) {
+            throw new ApplicationException(ErrorCode.PROMOTION_INVALID_PRICE_EXCEPTION);
+        }
+    }
+
+    public void validateDiscountQuantity(int originQuantity, int discountQuantity) {
+        if (discountQuantity > originQuantity) {
+            throw new ApplicationException(ErrorCode.PROMOTION_INVALID_QUANTITY_EXCEPTION);
+        }
+    }
+
 }
