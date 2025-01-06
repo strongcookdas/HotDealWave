@@ -1,16 +1,13 @@
 package com.sparta.hotdeal.order.application.service.order;
 
 import com.sparta.hotdeal.order.application.dtos.order_product.OrderProductDto;
-import com.sparta.hotdeal.order.application.dtos.product.req.ReqProductReduceQuantityDto;
-import com.sparta.hotdeal.order.application.dtos.product.res.ProductDto;
-import com.sparta.hotdeal.order.application.service.client.ProductClientService;
+import com.sparta.hotdeal.order.application.dtos.product.ProductDto;
+import com.sparta.hotdeal.order.application.exception.ApplicationException;
+import com.sparta.hotdeal.order.application.exception.ErrorCode;
 import com.sparta.hotdeal.order.domain.entity.basket.Basket;
 import com.sparta.hotdeal.order.domain.entity.order.Order;
 import com.sparta.hotdeal.order.domain.entity.order.OrderProduct;
 import com.sparta.hotdeal.order.domain.repository.OrderProductRepository;
-import com.sparta.hotdeal.order.application.exception.ApplicationException;
-import com.sparta.hotdeal.order.application.exception.ErrorCode;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -28,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrderProductService {
 
     private final OrderProductRepository orderProductRepository;
-    private final ProductClientService productClientService;
 
     public void createOrderProductList(Order order, List<Basket> basketList,
                                        Map<UUID, ProductDto> productMap) {
@@ -53,36 +49,6 @@ public class OrderProductService {
         return orderProductList.stream().map(OrderProductDto::of).toList();
     }
 
-    //장바구니에 따른 상품 조회 후 Map으로 반환
-    public Map<UUID, ProductDto> getProductMap(List<Basket> basketList) {
-        List<UUID> productIds = basketList.stream()
-                .map(Basket::getProductId)
-                .toList();
-
-        List<ProductDto> productList = productClientService.getProductListForOrder(productIds);
-        return productList.stream()
-                .collect(Collectors.toMap(ProductDto::getProductId, product -> product));
-    }
-
-
-    //장바구니에 따른 상품 조회 후 Map으로 반환
-    public Map<UUID, ProductDto> getProductMapByOrderProduct(List<OrderProductDto> orderProductList) {
-        List<UUID> productIds = orderProductList.stream()
-                .map(OrderProductDto::getProductId)
-                .toList();
-
-        List<ProductDto> productList = productClientService.getProductListForOrder(productIds);
-        return productList.stream()
-                .collect(Collectors.toMap(ProductDto::getProductId, product -> product));
-    }
-
-    //장바구니에 따른 상품 조회 후 Map으로 반환
-    public Map<UUID, ProductDto> getProductMapByProductIds(List<UUID> productIds) {
-        List<ProductDto> productList = productClientService.getProductListForOrder(productIds);
-        return productList.stream()
-                .collect(Collectors.toMap(ProductDto::getProductId, product -> product));
-    }
-
     public Map<UUID, List<OrderProductDto>> getOrderProductsByOrderIds(List<UUID> orderIds) {
         List<OrderProduct> orderProducts = orderProductRepository.findAllByOrderIdIn(orderIds);
 
@@ -91,61 +57,10 @@ public class OrderProductService {
                 .collect(Collectors.groupingBy(OrderProductDto::getOrderId));
     }
 
-    //회사 id에 따른 구매 상품 가격 계산 (쿠폰 유효성 검사를 위해)
-    public Map<UUID, Integer> calculateTotalAmountByCompany(List<Basket> basketList,
-                                                            Map<UUID, ProductDto> productMap) {
-
-        Map<UUID, Integer> totalAmountByCompany = new HashMap<>();
-
-        for (Basket basket : basketList) {
-            ProductDto product = getProductOrThrow(productMap, basket.getProductId());
-            validateProductForPurchase(product, basket.getQuantity());
-
-            int productPrice = calculateProductPrice(product, basket.getQuantity());
-            totalAmountByCompany.merge(product.getCompanyId(), productPrice, Integer::sum);
-        }
-
-        return totalAmountByCompany;
-    }
-
-    //Map을 활용한 총 금액 계산
-    public long calculateTotalAmountFromCompanyMap(Map<UUID, Integer> totalAmountByCompany) {
-        // Map의 값들(Integer)을 합산하여 총 금액 계산
-        return totalAmountByCompany.values().stream()
-                .mapToLong(Integer::longValue) // Integer 값을 long으로 변환
-                .sum();
-    }
-
     private ProductDto getProductOrThrow(
             Map<UUID, ProductDto> productMap,
             UUID productId) {
         return Optional.ofNullable(productMap.get(productId))
                 .orElseThrow(() -> new ApplicationException(ErrorCode.PRODUCT_NOT_FOUND_EXCEPTION));
-    }
-
-    private void validateProductForPurchase(ProductDto product, int quantity) {
-        if (!"ON_SALE".equals(product.getStatus())) {
-            throw new ApplicationException(ErrorCode.PRODUCT_NOT_ON_SALE_EXCEPTION);
-        } else if (product.getQuantity() < quantity) {
-            throw new ApplicationException(ErrorCode.PRODUCT_INVALID_QUANTITY_EXCEPTION);
-        }
-    }
-
-    private int calculateProductPrice(ProductDto product, int quantity) {
-        int unitPrice = product.getDiscountPrice() != null ? product.getDiscountPrice() : product.getPrice();
-        return unitPrice * quantity;
-    }
-
-    public void reduceProductQuantity(List<Basket> basketList,
-                                      Map<UUID, ProductDto> productMap) {
-
-        List<ReqProductReduceQuantityDto> reqProductReduceQuantityDtos = basketList.stream()
-                .map(basket -> {
-                    ProductDto product = getProductOrThrow(productMap, basket.getProductId());
-                    return ReqProductReduceQuantityDto.of(product.getProductId(), basket.getQuantity());
-                })
-                .toList();
-
-        productClientService.reduceProductQuantity(reqProductReduceQuantityDtos);
     }
 }

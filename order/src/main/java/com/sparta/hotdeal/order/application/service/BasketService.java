@@ -10,6 +10,7 @@ import com.sparta.hotdeal.order.application.dtos.basket.res.ResPostBasketDto;
 import com.sparta.hotdeal.order.application.dtos.product.res.ResGetProductByIdForBasketDto;
 import com.sparta.hotdeal.order.application.dtos.product.res.ResGetProductListForBasketDto;
 import com.sparta.hotdeal.order.application.service.client.ProductClientService;
+import com.sparta.hotdeal.order.domain.entity.AuditingDate;
 import com.sparta.hotdeal.order.domain.entity.basket.Basket;
 import com.sparta.hotdeal.order.domain.repository.BasketRepository;
 import com.sparta.hotdeal.order.application.exception.ApplicationException;
@@ -94,5 +95,22 @@ public class BasketService { //판매중인 상품이 아닌 경우에 대해서
                 .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
 
         return ResGetBasketListDto.of(basket, product);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Basket> getBasketList(List<UUID> basketIds) {
+        List<Basket> baskets = basketRepository.findByIdIn(basketIds);
+        if (baskets.isEmpty()) {
+            throw new ApplicationException(ErrorCode.BASKET_NOT_FOUND_EXCEPTION);
+        }
+        return baskets;
+    }
+
+    public void deleteBasketList(List<Basket> basketList) {
+        basketList.forEach(basket -> basket.delete("email@email.com"));
+    }
+
+    public void recoverBasketList(List<Basket> basketList) {
+        basketList.forEach(AuditingDate::recover);
     }
 }

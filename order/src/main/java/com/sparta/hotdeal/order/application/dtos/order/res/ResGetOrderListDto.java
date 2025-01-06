@@ -1,7 +1,7 @@
 package com.sparta.hotdeal.order.application.dtos.order.res;
 
 import com.sparta.hotdeal.order.application.dtos.order_product.OrderProductDto;
-import com.sparta.hotdeal.order.application.dtos.product.res.ProductDto;
+import com.sparta.hotdeal.order.application.dtos.product.ProductDto;
 import com.sparta.hotdeal.order.domain.entity.order.Order;
 import com.sparta.hotdeal.order.domain.entity.order.OrderStatus;
 import java.time.LocalDateTime;

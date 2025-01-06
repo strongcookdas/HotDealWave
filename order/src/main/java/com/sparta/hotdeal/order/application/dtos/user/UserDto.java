@@ -6,25 +6,25 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ResGetUserByIdForOrderDto {
+public class UserDto {
     private UUID userId;
     private String email;
     private String nickname;
 
-    public ResGetUserByIdForOrderDto create(
+    public UserDto create(
             UUID userId,
             String email,
             String nickname
     ) {
-        return ResGetUserByIdForOrderDto.builder()
+        return UserDto.builder()
                 .userId(userId)
                 .email(email)
                 .nickname(nickname)
                 .build();
     }
 
-    public static ResGetUserByIdForOrderDto createDummy() {
-        return ResGetUserByIdForOrderDto.builder()
+    public static UserDto createDummy() {
+        return UserDto.builder()
                 .userId(UUID.fromString("8fbd655f-dc52-4bf9-ab23-ef89e923db44"))
                 .email("email@email.com")
                 .nickname("nickname")

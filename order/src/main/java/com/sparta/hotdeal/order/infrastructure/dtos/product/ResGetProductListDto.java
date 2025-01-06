@@ -1,7 +1,7 @@
 package com.sparta.hotdeal.order.infrastructure.dtos.product;
 
 import com.sparta.hotdeal.order.application.dtos.product.res.ResGetProductListForBasketDto;
-import com.sparta.hotdeal.order.application.dtos.product.res.ProductDto;
+import com.sparta.hotdeal.order.application.dtos.product.ProductDto;
 import java.util.List;
 import java.util.UUID;
 import lombok.AccessLevel;

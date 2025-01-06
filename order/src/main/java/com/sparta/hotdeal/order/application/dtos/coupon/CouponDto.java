@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.order.application.dtos.coupon.res;
+package com.sparta.hotdeal.order.application.dtos.coupon;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -8,7 +8,7 @@ import lombok.Getter;
 
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
-public class ResGetCouponForOrderDto {
+public class CouponDto {
     private UUID couponId;
     private Integer discountAmount;
     private Integer minOrderAmount;
@@ -16,12 +16,12 @@ public class ResGetCouponForOrderDto {
     private UUID companyId;
     private Boolean isUsed;
 
-    public static ResGetCouponForOrderDto of() {
-        return ResGetCouponForOrderDto.builder().build();
+    public static CouponDto of() {
+        return CouponDto.builder().build();
     }
 
-    public static ResGetCouponForOrderDto createDummy() {
-        return ResGetCouponForOrderDto.builder()
+    public static CouponDto createDummy() {
+        return CouponDto.builder()
                 .couponId(UUID.fromString("147b6a8d-c7d4-4d6f-875c-48a651670c9d"))
                 .discountAmount(2000)
                 .minOrderAmount(20000)

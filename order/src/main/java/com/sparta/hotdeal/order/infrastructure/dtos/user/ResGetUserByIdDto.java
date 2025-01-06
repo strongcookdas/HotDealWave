@@ -1,6 +1,6 @@
 package com.sparta.hotdeal.order.infrastructure.dtos.user;
 
-import com.sparta.hotdeal.order.application.dtos.user.ResGetUserByIdForOrderDto;
+import com.sparta.hotdeal.order.application.dtos.user.UserDto;
 import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,8 +13,8 @@ public class ResGetUserByIdDto {
     private String nickname;
     private UUID defaultAddressId;
 
-    public ResGetUserByIdForOrderDto toUserByIdForOrderDto() {
-        return ResGetUserByIdForOrderDto.builder()
+    public UserDto toUserByIdForOrderDto() {
+        return UserDto.builder()
                 .userId(userId)
                 .email(email)
                 .nickname(nickname)

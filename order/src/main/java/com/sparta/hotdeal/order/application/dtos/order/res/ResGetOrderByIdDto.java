@@ -1,9 +1,9 @@
 package com.sparta.hotdeal.order.application.dtos.order.res;
 
-import com.sparta.hotdeal.order.application.dtos.address.res.ResGetAddressByIdForOrderDto;
+import com.sparta.hotdeal.order.application.dtos.address.AddressDto;
 import com.sparta.hotdeal.order.application.dtos.order_product.OrderProductDto;
-import com.sparta.hotdeal.order.application.dtos.product.res.ProductDto;
-import com.sparta.hotdeal.order.application.dtos.user.ResGetUserByIdForOrderDto;
+import com.sparta.hotdeal.order.application.dtos.product.ProductDto;
+import com.sparta.hotdeal.order.application.dtos.user.UserDto;
 import com.sparta.hotdeal.order.domain.entity.order.Order;
 import com.sparta.hotdeal.order.domain.entity.order.OrderStatus;
 import java.time.LocalDateTime;
@@ -21,7 +21,6 @@ public class ResGetOrderByIdDto {
     private LocalDateTime createdAt;
     private List<Product> productList;
     private String username;
-    private String userPhone;
     private Address address;
     private Long totalAmount;
     private Integer discountAmount;
@@ -56,7 +55,7 @@ public class ResGetOrderByIdDto {
         private String streetNum;
         private String detailAddr;
 
-        public static Address of(ResGetAddressByIdForOrderDto address) {
+        public static Address of(AddressDto address) {
             return Address.builder()
                     .addressId(address.getAddressId())
                     .zipNum(address.getZipNum())
@@ -75,7 +74,6 @@ public class ResGetOrderByIdDto {
                 .orderId(orderId)
                 .createdAt(LocalDateTime.now())
                 .username("john_doe")
-                .userPhone("010-1234-5678")
                 .address(Address.builder()
                         .addressId(UUID.randomUUID())
                         .zipNum("12345")
@@ -103,10 +101,10 @@ public class ResGetOrderByIdDto {
                 .build();
     }
 
-    public static ResGetOrderByIdDto of(Order order, ResGetAddressByIdForOrderDto address,
+    public static ResGetOrderByIdDto of(Order order, AddressDto address,
                                         List<OrderProductDto> orderProductDtoList,
                                         Map<UUID, ProductDto> productMap,
-                                        ResGetUserByIdForOrderDto user
+                                        UserDto user
     ) {
         return ResGetOrderByIdDto.builder()
                 .orderId(order.getId())
