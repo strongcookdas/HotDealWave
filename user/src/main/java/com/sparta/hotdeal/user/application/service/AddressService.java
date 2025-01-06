@@ -2,6 +2,7 @@ package com.sparta.hotdeal.user.application.service;
 
 import com.sparta.hotdeal.user.application.dtos.address.request.ReqPostAddressDto;
 import com.sparta.hotdeal.user.application.dtos.address.response.ResGetAddressByIdDto;
+import com.sparta.hotdeal.user.application.dtos.address.response.ResGetAddressesDto;
 import com.sparta.hotdeal.user.application.dtos.address.response.ResGetDefaultAddressDto;
 import com.sparta.hotdeal.user.application.dtos.address.response.ResPostAddressDto;
 import com.sparta.hotdeal.user.application.exception.ErrorMessage;
@@ -12,6 +13,9 @@ import com.sparta.hotdeal.user.domain.repository.UserRepository;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,5 +57,11 @@ public class AddressService {
         Address address = user.getDefaultAddress();
 
         return ResGetDefaultAddressDto.from(address);
+    }
+
+    public PagedModel<ResGetAddressesDto> getAddresses(Pageable pageable, UUID userId) {
+        Page<Address> addresses = addressRepository.findAllByUserUserId(userId, pageable);
+
+        return new PagedModel<>(addresses.map(ResGetAddressesDto::from));
     }
 }
