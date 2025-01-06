@@ -13,7 +13,6 @@ public class ReqPostPromotionDto {
     private UUID productId;
     private Timestamp start;
     private Timestamp end;
-    private Integer discountRate;
     private Integer discountPrice;
     private Integer quantity;
 }
