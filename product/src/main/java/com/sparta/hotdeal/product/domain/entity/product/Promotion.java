@@ -57,8 +57,8 @@ public class Promotion extends AuditingDate {
             , Integer roundedDiscountRate) {
         return com.sparta.hotdeal.product.domain.entity.product.Promotion.builder()
                 .productId(reqPostPromotionDto.getProductId())
-                .start(reqPostPromotionDto.getStart().toLocalDateTime())
-                .end(reqPostPromotionDto.getEnd().toLocalDateTime())
+                .start(reqPostPromotionDto.getStart())
+                .end(reqPostPromotionDto.getEnd())
                 .discountRate(roundedDiscountRate)
                 .discountPrice(reqPostPromotionDto.getDiscountPrice())
                 .quantity(reqPostPromotionDto.getQuantity())
@@ -71,10 +71,10 @@ public class Promotion extends AuditingDate {
             this.productId = reqPutPromotionDto.getProductId();
         }
         if (reqPutPromotionDto.getStart() != null) {
-            this.start = reqPutPromotionDto.getStart().toLocalDateTime();
+            this.start = reqPutPromotionDto.getStart();
         }
         if (reqPutPromotionDto.getEnd() != null) {
-            this.end = reqPutPromotionDto.getEnd().toLocalDateTime();
+            this.end = reqPutPromotionDto.getEnd();
         }
         if (reqPutPromotionDto.getDiscountPrice() != null) {
             this.discountPrice = reqPutPromotionDto.getDiscountPrice();

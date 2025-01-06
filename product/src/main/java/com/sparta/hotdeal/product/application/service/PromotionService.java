@@ -28,6 +28,13 @@ public class PromotionService {
         ResGetProductDto productDto = productService.getProduct(reqPostPromotionDto.getProductId());
 
         // 입력 값 검증
+        if (promotionRepository.existsByProductIdAndStartBeforeAndEndAfter(
+                reqPostPromotionDto.getProductId(),
+                reqPostPromotionDto.getEnd(),
+                reqPostPromotionDto.getStart())) {
+            throw new ApplicationException(ErrorCode.PROMOTION_DUPLICATE_EXCEPTION);
+        }
+
         // 상품 가격보다 작은지
         validateDiscountPrice(productDto.getPrice(), reqPostPromotionDto.getDiscountPrice());
 
@@ -40,6 +47,8 @@ public class PromotionService {
         Promotion promotion = Promotion.create(reqPostPromotionDto, discountRate);
 
         promotionRepository.save(promotion);
+
+        // 상품의 할인가격 수정
 
         return ResPostPromotionDto.of(promotion.getId());
     }
@@ -54,6 +63,13 @@ public class PromotionService {
                 : reqPutUpdatePromotionDto.getProductId();
         ResGetProductDto productDto = productService.getProduct(productId);
 
+        if (promotionRepository.existsByProductIdAndStartBeforeAndEndAfter(
+                productDto.getProductId(),
+                reqPutUpdatePromotionDto.getEnd(),
+                reqPutUpdatePromotionDto.getStart())) {
+            throw new ApplicationException(ErrorCode.PROMOTION_DUPLICATE_EXCEPTION);
+        }
+
         int discountRate = promotion.getDiscountRate();
         if (reqPutUpdatePromotionDto.getDiscountPrice() != null) {
             validateDiscountPrice(productDto.getPrice(), reqPutUpdatePromotionDto.getDiscountPrice());
@@ -65,6 +81,8 @@ public class PromotionService {
         }
 
         promotion.update(reqPutUpdatePromotionDto, discountRate);
+
+        // 상품의 할인가격 수정
 
         return ResPutPromotionDto.of(promotion.getId());
     }
