@@ -59,4 +59,8 @@ public class User extends Audit{
     public void updatePassword(String password) {
         this.password = password;
     }
+
+    public void updateDefaultAddress(Address address) {
+        this.defaultAddress = address;
+    }
 }

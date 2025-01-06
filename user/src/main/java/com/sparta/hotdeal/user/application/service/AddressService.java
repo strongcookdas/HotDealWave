@@ -6,6 +6,7 @@ import com.sparta.hotdeal.user.application.dtos.address.response.ResGetAddressBy
 import com.sparta.hotdeal.user.application.dtos.address.response.ResGetAddressesDto;
 import com.sparta.hotdeal.user.application.dtos.address.response.ResGetDefaultAddressDto;
 import com.sparta.hotdeal.user.application.dtos.address.response.ResPatchAddressByIdDto;
+import com.sparta.hotdeal.user.application.dtos.address.response.ResPatchDefaultAddressByIdDto;
 import com.sparta.hotdeal.user.application.dtos.address.response.ResPostAddressDto;
 import com.sparta.hotdeal.user.application.exception.ErrorMessage;
 import com.sparta.hotdeal.user.domain.entity.Address;
@@ -33,7 +34,7 @@ public class AddressService {
     @Transactional
     public ResPostAddressDto createAddress(ReqPostAddressDto requestDto, UUID userId) {
         User user = userRepository.findById(userId)
-                .orElse(null);
+                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.USER_NOT_FOUND.getMessage()));
         Address address = addressRepository.save(requestDto.toEntity(user));
 
         return ResPostAddressDto.builder()
@@ -84,6 +85,24 @@ public class AddressService {
                 requestDto.getDetailAddr());
 
         return ResPatchAddressByIdDto.builder()
+                .addressId(address.getAddressId())
+                .build();
+    }
+
+    @Transactional
+    public ResPatchDefaultAddressByIdDto updateDefaultAddress(UUID addressId, UUID userId) {
+        Address address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.ADDRESS_NOT_FOUND.getMessage()));
+
+        User user = address.getUser();
+
+        if (user.getUserId().equals(userId)) {
+            throw new IllegalArgumentException(ErrorMessage.NOT_ALLOWED_CONTENT.getMessage());
+        }
+
+        user.updateDefaultAddress(address);
+
+        return ResPatchDefaultAddressByIdDto.builder()
                 .addressId(address.getAddressId())
                 .build();
     }
