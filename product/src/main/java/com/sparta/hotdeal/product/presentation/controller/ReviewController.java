@@ -1,9 +1,9 @@
 package com.sparta.hotdeal.product.presentation.controller;
 
-import com.sparta.hotdeal.product.application.dtos.ResponseDto;
-import com.sparta.hotdeal.product.application.dtos.review.ResGetReviewByIdDto;
-import com.sparta.hotdeal.product.presentation.dtos.review.ReqPostReviewDto;
-import com.sparta.hotdeal.product.presentation.dtos.review.ReqPutReviewDto;
+import com.sparta.hotdeal.product.application.dtos.res.ResponseDto;
+import com.sparta.hotdeal.product.application.dtos.res.review.ResGetReviewByIdDto;
+import com.sparta.hotdeal.product.application.dtos.req.review.ReqPostReviewDto;
+import com.sparta.hotdeal.product.application.dtos.req.review.ReqPutReviewDto;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.http.HttpStatus;

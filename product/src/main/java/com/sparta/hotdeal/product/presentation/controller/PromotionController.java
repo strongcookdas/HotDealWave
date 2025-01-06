@@ -1,11 +1,11 @@
 package com.sparta.hotdeal.product.presentation.controller;
 
-import com.sparta.hotdeal.product.application.dtos.ResponseDto;
-import com.sparta.hotdeal.product.application.dtos.product.ResGetPromotionDto;
-import com.sparta.hotdeal.product.application.dtos.product.ResPostPromotionDto;
-import com.sparta.hotdeal.product.application.dtos.product.ResPutPromotionDto;
-import com.sparta.hotdeal.product.presentation.dtos.product.ReqPostPromotionDto;
-import com.sparta.hotdeal.product.presentation.dtos.product.ReqPutPromotionDto;
+import com.sparta.hotdeal.product.application.dtos.res.ResponseDto;
+import com.sparta.hotdeal.product.application.dtos.res.product.ResGetPromotionDto;
+import com.sparta.hotdeal.product.application.dtos.res.product.ResPostPromotionDto;
+import com.sparta.hotdeal.product.application.dtos.res.product.ResPutPromotionDto;
+import com.sparta.hotdeal.product.application.dtos.req.product.ReqPostPromotionDto;
+import com.sparta.hotdeal.product.application.dtos.req.product.ReqPutPromotionDto;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
