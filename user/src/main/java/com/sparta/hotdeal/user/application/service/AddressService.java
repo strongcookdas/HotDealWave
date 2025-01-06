@@ -1,9 +1,11 @@
 package com.sparta.hotdeal.user.application.service;
 
+import com.sparta.hotdeal.user.application.dtos.address.request.ReqPatchAddressByIdDto;
 import com.sparta.hotdeal.user.application.dtos.address.request.ReqPostAddressDto;
 import com.sparta.hotdeal.user.application.dtos.address.response.ResGetAddressByIdDto;
 import com.sparta.hotdeal.user.application.dtos.address.response.ResGetAddressesDto;
 import com.sparta.hotdeal.user.application.dtos.address.response.ResGetDefaultAddressDto;
+import com.sparta.hotdeal.user.application.dtos.address.response.ResPatchAddressByIdDto;
 import com.sparta.hotdeal.user.application.dtos.address.response.ResPostAddressDto;
 import com.sparta.hotdeal.user.application.exception.ErrorMessage;
 import com.sparta.hotdeal.user.domain.entity.Address;
@@ -63,5 +65,26 @@ public class AddressService {
         Page<Address> addresses = addressRepository.findAllByUserUserId(userId, pageable);
 
         return new PagedModel<>(addresses.map(ResGetAddressesDto::from));
+    }
+
+    @Transactional
+    public ResPatchAddressByIdDto updateAddress(ReqPatchAddressByIdDto requestDto, UUID addressId, UUID userId) {
+        Address address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.ADDRESS_NOT_FOUND.getMessage()));
+
+        if (!address.getUser().getUserId().equals(userId)) {
+            throw new IllegalArgumentException(ErrorMessage.NOT_ALLOWED_CONTENT.getMessage());
+        }
+
+        address.updateAddress(requestDto.getZipNum(),
+                requestDto.getCity(),
+                requestDto.getDistrict(),
+                requestDto.getStreetName(),
+                requestDto.getStreetNum(),
+                requestDto.getDetailAddr());
+
+        return ResPatchAddressByIdDto.builder()
+                .addressId(address.getAddressId())
+                .build();
     }
 }

@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Builder
 @Table(name = "p_address")
-public class Address extends Audit{
+public class Address extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID addressId;
@@ -47,4 +47,14 @@ public class Address extends Audit{
 
     @Column(nullable = false)
     private String detailAddr;
+
+    public void updateAddress(String zipNum, String city, String district, String streetName, String streetNum,
+                              String detailAddr) {
+        this.zipNum = zipNum;
+        this.city = city;
+        this.district = district;
+        this.streetName = streetName;
+        this.streetNum = streetNum;
+        this.detailAddr = detailAddr;
+    }
 }
