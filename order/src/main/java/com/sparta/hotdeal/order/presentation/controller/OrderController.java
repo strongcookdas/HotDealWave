@@ -56,8 +56,9 @@ public class OrderController {
     }
 
     @GetMapping("/{orderId}")
-    public ResponseDto<ResGetOrderByIdDto> getOrderById(@PathVariable UUID orderId) {
-        return ResponseDto.of("주문 상세 조회 성공", ResGetOrderByIdDto.createDummy(orderId));
+    public ResponseDto<ResGetOrderByIdDto> getOrderById(@AuthenticationPrincipal RequestUserDetails userDetails,
+                                                        @PathVariable UUID orderId) {
+        return ResponseDto.of("주문 상세 조회 성공", orderService.getOrderDetail(userDetails.getUserId(), orderId));
     }
 
     @PatchMapping("/{orderId}/status")

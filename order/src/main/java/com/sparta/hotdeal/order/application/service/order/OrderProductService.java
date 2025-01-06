@@ -1,5 +1,6 @@
 package com.sparta.hotdeal.order.application.service.order;
 
+import com.sparta.hotdeal.order.application.dtos.order_product.OrderProductDto;
 import com.sparta.hotdeal.order.application.dtos.product.req.ReqProductReduceQuantityDto;
 import com.sparta.hotdeal.order.application.dtos.product.res.ResGetProductListForOrderDto;
 import com.sparta.hotdeal.order.application.service.client.ProductClientService;
@@ -47,10 +48,26 @@ public class OrderProductService {
 
     }
 
+    public List<OrderProductDto> getOrderProductList(UUID orderId) {
+        List<OrderProduct> orderProductList = orderProductRepository.findAllByOrderId(orderId);
+        return orderProductList.stream().map(OrderProductDto::of).toList();
+    }
+
     //장바구니에 따른 상품 조회 후 Map으로 반환
     public Map<UUID, ResGetProductListForOrderDto> getProductMap(List<Basket> basketList) {
         List<UUID> productIds = basketList.stream()
                 .map(Basket::getProductId)
+                .toList();
+
+        List<ResGetProductListForOrderDto> productList = productClientService.getProductListForOrder(productIds);
+        return productList.stream()
+                .collect(Collectors.toMap(ResGetProductListForOrderDto::getProductId, product -> product));
+    }
+
+    //장바구니에 따른 상품 조회 후 Map으로 반환
+    public Map<UUID, ResGetProductListForOrderDto> getProductMapByOrderProduct(List<OrderProductDto> orderProductList) {
+        List<UUID> productIds = orderProductList.stream()
+                .map(OrderProductDto::getProductId)
                 .toList();
 
         List<ResGetProductListForOrderDto> productList = productClientService.getProductListForOrder(productIds);

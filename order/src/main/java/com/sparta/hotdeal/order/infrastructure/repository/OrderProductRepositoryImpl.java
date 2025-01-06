@@ -7,8 +7,16 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface OrderProductRepositoryImpl extends JpaRepository<OrderProduct, UUID>, OrderProductRepository {
+
+    List<OrderProduct> findAllByOrderIdAndDeletedAtIsNull(UUID orderId);
+
     @Override
-    default List<OrderProduct> saveAllOrderProduct(List<OrderProduct> orderProductList){
+    default List<OrderProduct> saveAllOrderProduct(List<OrderProduct> orderProductList) {
         return saveAllAndFlush(orderProductList);
+    }
+
+    @Override
+    default List<OrderProduct> findAllByOrderId(UUID orderId) {
+        return findAllByOrderIdAndDeletedAtIsNull(orderId);
     }
 }
