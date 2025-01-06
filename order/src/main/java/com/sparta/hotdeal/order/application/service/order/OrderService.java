@@ -13,7 +13,6 @@ import com.sparta.hotdeal.order.application.exception.ErrorCode;
 import com.sparta.hotdeal.order.application.port.CouponClientPort;
 import com.sparta.hotdeal.order.application.port.ProductClientPort;
 import com.sparta.hotdeal.order.application.port.UserClientPort;
-import com.sparta.hotdeal.order.application.service.BasketService;
 import com.sparta.hotdeal.order.domain.entity.basket.Basket;
 import com.sparta.hotdeal.order.domain.entity.order.Order;
 import com.sparta.hotdeal.order.domain.repository.OrderRepository;
@@ -40,11 +39,11 @@ public class OrderService {
 
     private final OrderProductService orderProductService;
     private final OrderDetailService orderDetailService;
-    private final BasketService basketService;
+    private final OrderBasketService orderBasketService;
 
     public void createOrder(UUID userId, ReqPostOrderDto req) {
         //1. 장바구니 조회
-        List<Basket> basketList = basketService.getBasketList(req.getBasketList());
+        List<Basket> basketList = orderBasketService.getBasketList(req.getBasketList());
 
         //2. 상품 정보 조회
         List<UUID> productIds = basketList.stream().map(Basket::getProductId).toList();
@@ -69,7 +68,7 @@ public class OrderService {
         productClientPort.reduceProductQuantity(basketList, productMap);
 
         //7. 장바구니 삭제
-        basketService.deleteBasketList(basketList);
+        orderBasketService.deleteBasketList(basketList);
 
         //8. 주문 저장 및 주문-상품 저장
         AddressDto address = userClientPort.getAddress(req.getAddressId());

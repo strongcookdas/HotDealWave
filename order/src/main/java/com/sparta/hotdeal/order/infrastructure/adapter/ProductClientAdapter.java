@@ -1,7 +1,8 @@
 package com.sparta.hotdeal.order.infrastructure.adapter;
 
-import com.sparta.hotdeal.order.application.dtos.product.req.ReqProductReduceQuantityDto;
 import com.sparta.hotdeal.order.application.dtos.product.ProductDto;
+import com.sparta.hotdeal.order.application.dtos.product.req.ReqProductReduceQuantityDto;
+import com.sparta.hotdeal.order.application.dtos.product.ProductByIdtDto;
 import com.sparta.hotdeal.order.application.port.ProductClientPort;
 import com.sparta.hotdeal.order.domain.entity.basket.Basket;
 import com.sparta.hotdeal.order.infrastructure.client.ProductClient;
@@ -41,5 +42,10 @@ public class ProductClientAdapter implements ProductClientPort {
                     return ReqProductReduceQuantityDto.of(product.getProductId(), basket.getQuantity());
                 })
                 .toList();
+    }
+
+    @Override
+    public ProductByIdtDto getProduct(UUID productId) {
+        return productClient.getProductFromAPI(productId).getData().toDto();
     }
 }

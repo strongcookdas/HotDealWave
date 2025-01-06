@@ -1,6 +1,5 @@
 package com.sparta.hotdeal.order.infrastructure.dtos.product;
 
-import com.sparta.hotdeal.order.application.dtos.product.res.ResGetProductListForBasketDto;
 import com.sparta.hotdeal.order.application.dtos.product.ProductDto;
 import java.util.List;
 import java.util.UUID;
@@ -24,21 +23,6 @@ public class ResGetProductListDto {
     private double rating;
     private Integer reviewCnt;
     private Integer discountPrice;
-
-    public ResGetProductListForBasketDto toDto() {
-        return ResGetProductListForBasketDto.create(
-                productId,
-                name,
-                price,
-                category,
-                thumbImg,
-                discountPrice,
-                status,
-                rating,
-                reviewCnt,
-                quantity
-        );
-    }
 
     public ProductDto toGetProductListForOrderDto() {
         return ProductDto.create(

@@ -1,6 +1,6 @@
 package com.sparta.hotdeal.order.application.dtos.basket.res;
 
-import com.sparta.hotdeal.order.application.dtos.product.res.ResGetProductListForBasketDto;
+import com.sparta.hotdeal.order.application.dtos.product.ProductDto;
 import com.sparta.hotdeal.order.domain.entity.basket.Basket;
 import java.util.UUID;
 import lombok.Builder;
@@ -27,7 +27,7 @@ public class ResGetBasketListDto {
         private String productThumbImg;
 
 
-        public static Product of(ResGetProductListForBasketDto resGetProductListForBasketDto) {
+        public static Product of(ProductDto resGetProductListForBasketDto) {
             return Product.builder()
                     .productId(resGetProductListForBasketDto.getProductId())
                     .productName(resGetProductListForBasketDto.getName())
@@ -42,7 +42,7 @@ public class ResGetBasketListDto {
         }
     }
 
-    public static ResGetBasketListDto of(Basket basket, ResGetProductListForBasketDto resGetProductListForBasketDto) {
+    public static ResGetBasketListDto of(Basket basket, ProductDto resGetProductListForBasketDto) {
         return ResGetBasketListDto.builder()
                 .basketId(basket.getId())
                 .quantity(basket.getQuantity())
