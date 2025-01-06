@@ -10,7 +10,7 @@ import lombok.Getter;
 public class ErrorResponseDto {
 
     private LocalDateTime timestamp;
-    private Integer code;
+    private String code;
     private String message;
 
     public ErrorResponseDto(ErrorCode errorcode) {
