@@ -24,6 +24,24 @@ public class ResGetProductByIdDto {
     private Integer reviewCnt;
     private Integer discountPrice;
 
+    public static ResGetProductByIdDto createDummyData(UUID productId) {
+        return ResGetProductByIdDto.builder()
+                .productId(productId)
+                .name("product")
+                .price(10000)
+                .quantity(100)
+                .category("category")
+                .companyId(UUID.randomUUID())
+                .description("description")
+                .detailImgs(List.of("image1", "image2"))
+                .thumbImg("image")
+                .status("ON_SALE")
+                .rating(3.5)
+                .reviewCnt(5)
+                .discountPrice(null)
+                .build();
+    }
+
     public ProductByIdtDto toDto() {
         return ProductByIdtDto.create(
                 productId,

@@ -6,6 +6,7 @@ import com.sparta.hotdeal.order.application.dtos.product.req.ReqProductReduceQua
 import com.sparta.hotdeal.order.application.port.ProductClientPort;
 import com.sparta.hotdeal.order.domain.entity.basket.Basket;
 import com.sparta.hotdeal.order.infrastructure.client.ProductClient;
+import com.sparta.hotdeal.order.infrastructure.dtos.product.ResGetProductByIdDto;
 import com.sparta.hotdeal.order.infrastructure.dtos.product.ResGetProductListDto;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +48,7 @@ public class ProductClientAdapter implements ProductClientPort {
 
     @Override
     public ProductByIdtDto getProduct(UUID productId) {
-        return productClient.getProductFromAPI(productId).getData().toDto();
+//        return productClient.getProductFromAPI(productId).getData().toDto();
+        return ResGetProductByIdDto.createDummyData(productId).toDto();
     }
 }
