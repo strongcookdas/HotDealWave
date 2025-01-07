@@ -17,7 +17,9 @@ public enum ErrorCode {
     INVALID_COUPON_COMPANY(HttpStatus.BAD_REQUEST, "CO009", "해당 회사 제품에 사용할 수 없는 쿠폰입니다."),
     MIN_ORDER_AMOUNT_NOT_MET(HttpStatus.BAD_REQUEST, "CO010", "최소 주문 금액 조건을 충족하지 못했습니다."),
     COUPON_NOT_USED(HttpStatus.BAD_REQUEST, "CO011", "쿠폰이 사용된 상태가 아닙니다."),
-    UNAUTHORIZED_ACCESS(HttpStatus.FORBIDDEN, "CO012", "권한이 없습니다.");
+    UNAUTHORIZED_ACCESS(HttpStatus.FORBIDDEN, "CO012", "권한이 없습니다."),
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "CO013", "예기치 못한 오류가 발생했습니다."),
+    INVALID_VALUE_EXCEPTION(HttpStatus.BAD_REQUEST, "CO014", "올바르지 않은 요청 값입니다.");
 
     private final HttpStatus status;
     private final String code;
