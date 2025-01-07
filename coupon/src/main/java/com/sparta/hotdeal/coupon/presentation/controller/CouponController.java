@@ -48,7 +48,7 @@ public class CouponController {
 
         List<ResGetUserCouponsDto> responseDto = couponService.getUserCoupons(userId, isUsed);
 
-        return ResponseDto.of("사용자 쿠폰 조회 성공", responseDto);
+        return ResponseDto.of("사용자 쿠폰 목록 조회 성공", responseDto);
     }
 
     @GetMapping("/{couponId}")

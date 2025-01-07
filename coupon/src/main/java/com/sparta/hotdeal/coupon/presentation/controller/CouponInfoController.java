@@ -22,25 +22,25 @@ public class CouponInfoController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<ResPostCouponInfosDto> createCoupon(@RequestBody ReqPostCouponInfosDto reqDto) {
         ResPostCouponInfosDto responseDto = couponInfoService.createCoupon(reqDto);
-        return ResponseDto.of("쿠폰 생성 성공", responseDto);
+        return ResponseDto.of("쿠폰 정보 생성 성공", responseDto);
     }
 
     @PutMapping("/{couponInfoId}")
     public ResponseDto<Void> updateCoupon(@PathVariable UUID couponInfoId, @RequestBody ReqPutCouponInfosByIdDto reqDto) {
         couponInfoService.updateCoupon(couponInfoId, reqDto);
-        return ResponseDto.of("쿠폰 수정 성공", null);
+        return ResponseDto.of("쿠폰 정보 수정 성공", null);
     }
 
     @PatchMapping("/{couponInfoId}/status")
     public ResponseDto<Void> updateCouponStatus(@PathVariable UUID couponInfoId, @RequestBody ReqPatchCouponInfosByIdStatusDto reqDto) {
         couponInfoService.updateCouponStatus(couponInfoId, reqDto.getStatus());
-        return ResponseDto.of("쿠폰 상태 변경 성공", null);
+        return ResponseDto.of("쿠폰 정보의 상태 변경 성공", null);
     }
 
     @GetMapping("/{couponInfoId}")
     public ResponseDto<ResGetCouponInfosByIdDto> getCouponDetail(@PathVariable UUID couponInfoId) {
         ResGetCouponInfosByIdDto responseDto = couponInfoService.getCouponDetail(couponInfoId);
-        return ResponseDto.of("쿠폰 상세 조회 성공", responseDto);
+        return ResponseDto.of("쿠폰 정보 상세 조회 성공", responseDto);
     }
 
     @GetMapping
@@ -68,7 +68,7 @@ public class CouponInfoController {
                         .build())
                 .build();
 
-        return ResponseDto.of("쿠폰 목록 조회 성공", responseDto);
+        return ResponseDto.of("쿠폰 정보 목록 조회 성공", responseDto);
     }
 
 }
