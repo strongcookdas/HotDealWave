@@ -5,15 +5,13 @@ import com.sparta.hotdeal.order.application.dtos.order.req.ReqPatchOrderDto;
 import com.sparta.hotdeal.order.application.dtos.order.req.ReqPostOrderDto;
 import com.sparta.hotdeal.order.application.dtos.order.res.OrderResponseMessage;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrderByIdDto;
-import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrdersDto;
+import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrderListDto;
 import com.sparta.hotdeal.order.application.service.order.OrderService;
 import com.sparta.hotdeal.order.infrastructure.custom.RequestUserDetails;
-import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -44,20 +42,16 @@ public class OrderController {
     }
 
     @GetMapping
-    public ResponseDto<Page<ResGetOrdersDto>> getOrders(Pageable pageable) {
-        List<ResGetOrdersDto> dummyList = ResGetOrdersDto.createDummyList();
+    public ResponseDto<Page<ResGetOrderListDto>> getOrders(@AuthenticationPrincipal RequestUserDetails userDetails,
+                                                           Pageable pageable) {
 
-        // 페이징 처리
-        int start = (int) pageable.getOffset();
-        int end = Math.min(start + pageable.getPageSize(), dummyList.size());
-        Page<ResGetOrdersDto> page = new PageImpl<>(dummyList.subList(start, end), pageable, dummyList.size());
-
-        return ResponseDto.of("주문 목록 조회 성공", page);
+        return ResponseDto.of("주문 목록 조회 성공", orderService.getOrderList(userDetails.getUserId(), pageable));
     }
 
     @GetMapping("/{orderId}")
-    public ResponseDto<ResGetOrderByIdDto> getOrderById(@PathVariable UUID orderId) {
-        return ResponseDto.of("주문 상세 조회 성공", ResGetOrderByIdDto.createDummy(orderId));
+    public ResponseDto<ResGetOrderByIdDto> getOrderById(@AuthenticationPrincipal RequestUserDetails userDetails,
+                                                        @PathVariable UUID orderId) {
+        return ResponseDto.of("주문 상세 조회 성공", orderService.getOrderDetail(userDetails.getUserId(), orderId));
     }
 
     @PatchMapping("/{orderId}/status")

@@ -1,6 +1,6 @@
 package com.sparta.hotdeal.order.infrastructure.dtos.product;
 
-import com.sparta.hotdeal.order.application.dtos.product.res.ResGetProductByIdForBasketDto;
+import com.sparta.hotdeal.order.application.dtos.product.ProductByIdtDto;
 import java.util.List;
 import java.util.UUID;
 import lombok.AccessLevel;
@@ -24,8 +24,8 @@ public class ResGetProductByIdDto {
     private Integer reviewCnt;
     private Integer discountPrice;
 
-    public ResGetProductByIdForBasketDto toDto() {
-        return ResGetProductByIdForBasketDto.create(
+    public ProductByIdtDto toDto() {
+        return ProductByIdtDto.create(
                 productId,
                 name,
                 price,

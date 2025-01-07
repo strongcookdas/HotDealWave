@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.order.application.dtos.product.res;
+package com.sparta.hotdeal.order.application.dtos.product;
 
 import java.util.UUID;
 import lombok.AccessLevel;
@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
-public class ResGetProductListForBasketDto {
+public class ProductDto {
     private UUID productId;
     private String name;
     private Integer price;
@@ -18,8 +18,9 @@ public class ResGetProductListForBasketDto {
     private double rating;
     private Integer reviewCnt;
     private Integer quantity;
+    private UUID companyId;
 
-    public static ResGetProductListForBasketDto create(
+    public static ProductDto create(
             UUID productId,
             String name,
             Integer price,
@@ -29,9 +30,10 @@ public class ResGetProductListForBasketDto {
             String status,
             double rating,
             Integer reviewCnt,
-            Integer quantity
+            Integer quantity,
+            UUID companyId
     ) {
-        return ResGetProductListForBasketDto.builder()
+        return ProductDto.builder()
                 .productId(productId)
                 .name(name)
                 .price(price)
@@ -42,6 +44,7 @@ public class ResGetProductListForBasketDto {
                 .rating(rating)
                 .reviewCnt(reviewCnt)
                 .quantity(quantity)
+                .companyId(companyId)
                 .build();
     }
 }
