@@ -1,21 +1,18 @@
 package com.sparta.hotdeal.coupon.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
 @Getter
-@Builder
 @AllArgsConstructor
+@Builder
 @NoArgsConstructor
 @Table(name = "p_coupon")
-public class Coupon {
+public class Coupon extends AuditingDate {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
