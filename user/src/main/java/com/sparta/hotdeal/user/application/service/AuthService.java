@@ -48,7 +48,9 @@ public class AuthService {
         checkNickname(requestDto.getNickname());
         checkRole(requestDto.getRole());
 
-        User user = requestDto.toEntity(passwordEncoder);
+        String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
+
+        User user = requestDto.toEntity(encodedPassword);
         user.updateCreatedByAndUpdateBy(user.getEmail());
         userRepository.save(user);
 

@@ -4,7 +4,6 @@ import com.sparta.hotdeal.user.domain.entity.User;
 import com.sparta.hotdeal.user.domain.entity.UserRole;
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Getter
 @Builder
@@ -14,10 +13,10 @@ public class ReqPostSignUpDto {
     private String nickname;
     private UserRole role;
 
-    public User toEntity(PasswordEncoder passwordEncoder) {
+    public User toEntity(String encodedPassword) {
         return User.builder()
                 .email(email)
-                .password(passwordEncoder.encode(password))
+                .password(encodedPassword)
                 .nickname(nickname)
                 .role(role)
                 .build();
