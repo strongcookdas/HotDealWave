@@ -41,6 +41,8 @@ public class BasketController {
     public ResponseDto<ResPostBasketDto> createBasket(@AuthenticationPrincipal RequestUserDetails userDetails,
                                                       @RequestBody @Valid ReqPostBasketDto req) {
         log.info("userId : {}", userDetails.getUserId());
+        log.info("userEmail : {}", userDetails.getEmail());
+        log.info("userRole : {}", userDetails.getRole());
         return ResponseDto.of("장바구니가 추가되었습니다.", basketService.createBasket(userDetails.getUserId(), req));
     }
 
@@ -48,6 +50,8 @@ public class BasketController {
     public ResponseDto<ResGetBasketByIdDto> getBasketDetail(@AuthenticationPrincipal RequestUserDetails userDetails,
                                                             @PathVariable UUID basketId) {
         log.info("userId : {}", userDetails.getUserId());
+        log.info("userEmail : {}", userDetails.getEmail());
+        log.info("userRole : {}", userDetails.getRole());
         return ResponseDto.of("장바구니 단건 조회 성공",
                 basketService.getBasketDetail(userDetails.getUserId(), basketId));
     }
@@ -56,6 +60,8 @@ public class BasketController {
     public ResponseDto<Page<ResGetBasketListDto>> getBasketList(@AuthenticationPrincipal RequestUserDetails userDetails,
                                                                 Pageable pageable) { //pageable 에 대한 설정 논의 필요
         log.info("userId : {}", userDetails.getUserId());
+        log.info("userEmail : {}", userDetails.getEmail());
+        log.info("userRole : {}", userDetails.getRole());
         return ResponseDto.of("장바구니 조회 성공", basketService.getBasketList(userDetails.getUserId(), pageable));
     }
 
@@ -64,6 +70,8 @@ public class BasketController {
                                                        @PathVariable UUID basketId,
                                                        @RequestBody @Valid ReqPatchBasketDto req) {
         log.info("userId : {}", userDetails.getUserId());
+        log.info("userEmail : {}", userDetails.getEmail());
+        log.info("userRole : {}", userDetails.getRole());
         return ResponseDto.of("장바구니 상품 수량이 수정되었습니다.",
                 basketService.updateBasket(
                         userDetails.getUserId(),
@@ -74,6 +82,10 @@ public class BasketController {
     @DeleteMapping("/{basketId}")
     public ResponseDto<ResDeleteBasketDto> deleteBasket(@AuthenticationPrincipal RequestUserDetails userDetails,
                                                         @PathVariable UUID basketId) {
+
+        log.info("userId : {}", userDetails.getUserId());
+        log.info("userEmail : {}", userDetails.getEmail());
+        log.info("userRole : {}", userDetails.getRole());
         return ResponseDto.of("해당 장바구니가 삭제되었습니다.",
                 basketService.deleteBasket(userDetails.getUserId(), basketId));
     }
