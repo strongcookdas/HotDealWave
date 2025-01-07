@@ -120,6 +120,17 @@ public class CouponService {
 
         coupon.recoverCoupon();
     }
+
+    @Transactional
+    public void deleteCoupon(UUID couponId, String email) {
+        Coupon coupon = couponRepository.findByIdAndIsDeletedFalse(couponId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_COUPON));
+
+        coupon.delete(email);
+    }
+
+
+
     public Coupon findByIdOrThrow(UUID couponId) {
         return couponRepository.findByIdAndIsDeletedFalse(couponId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_COUPON));

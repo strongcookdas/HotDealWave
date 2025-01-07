@@ -10,12 +10,14 @@ public class RequestUserDetails implements UserDetails {
     // UserDetails에 필요한 정보가 무엇이 있는지 논의가 필요
     @Getter
     private final UUID userId;
-    private final String username;
+
+    @Getter
+    private final String email;
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public RequestUserDetails(String userId, String username, Collection<? extends GrantedAuthority> authorities) {
+    public RequestUserDetails(String userId, String email, Collection<? extends GrantedAuthority> authorities) {
         this.userId = UUID.fromString(userId);
-        this.username = username;
+        this.email = email;
         this.authorities = authorities;
     }
 
@@ -31,7 +33,7 @@ public class RequestUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return username;
+        return "";
     }
 
     public String getRole() {

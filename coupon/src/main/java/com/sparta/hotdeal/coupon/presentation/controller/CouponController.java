@@ -7,6 +7,7 @@ import com.sparta.hotdeal.coupon.application.service.CouponService;
 import com.sparta.hotdeal.coupon.infrastructure.custom.RequestUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -67,9 +68,12 @@ public class CouponController {
         return ResponseDto.of("쿠폰 회복 성공", null);
     }
 
+    @Secured({"ROLE_MASTER", "ROLE_MANAGER"})
     @DeleteMapping("/{couponId}")
-    public ResponseDto<Void> deleteCoupon(@PathVariable UUID couponId) {
-        return ResponseDto.of("쿠폰 삭제 성공", null);
+    public ResponseDto<Void> deleteCoupon(@PathVariable UUID couponId,
+                                          @AuthenticationPrincipal RequestUserDetails userDetails) {
+        couponService.deleteCoupon(couponId, userDetails.getEmail());
+        return ResponseDto.of("사용자 쿠폰 삭제 성공", null);
     }
 
     @GetMapping("/daily/statistics")
