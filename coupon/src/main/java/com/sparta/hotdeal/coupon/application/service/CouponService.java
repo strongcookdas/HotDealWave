@@ -2,9 +2,11 @@ package com.sparta.hotdeal.coupon.application.service;
 
 import com.sparta.hotdeal.coupon.application.dto.req.ReqPostCouponValidateDto;
 import com.sparta.hotdeal.coupon.application.dto.req.ReqPostCouponsIssueDto;
+import com.sparta.hotdeal.coupon.application.dto.res.ResGetUserCouponsDto;
 import com.sparta.hotdeal.coupon.application.dto.res.ResPostCouponValidateDto;
 import com.sparta.hotdeal.coupon.application.exception.CustomException;
 import com.sparta.hotdeal.coupon.application.exception.ErrorCode;
+import com.sparta.hotdeal.coupon.application.mapper.CouponMapper;
 import com.sparta.hotdeal.coupon.domain.entity.Coupon;
 import com.sparta.hotdeal.coupon.domain.entity.CouponInfo;
 import com.sparta.hotdeal.coupon.domain.entity.CouponStatus;
@@ -14,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -127,6 +130,12 @@ public class CouponService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_COUPON));
 
         coupon.delete(email);
+    }
+
+    public List<ResGetUserCouponsDto> getUserCoupons(UUID userId, boolean isUsed) {
+        List<Coupon> coupons = couponRepository.findByUserIdAndIsDeletedFalseAndIsUsed(userId, isUsed);
+
+        return CouponMapper.toResGetUserCouponsDtoList(coupons);
     }
 
 

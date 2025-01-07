@@ -3,6 +3,8 @@ package com.sparta.hotdeal.coupon.presentation.controller;
 import com.sparta.hotdeal.coupon.application.dto.req.*;
 import com.sparta.hotdeal.coupon.application.dto.res.*;
 import com.sparta.hotdeal.coupon.application.dto.ResponseDto;
+import com.sparta.hotdeal.coupon.application.exception.CustomException;
+import com.sparta.hotdeal.coupon.application.exception.ErrorCode;
 import com.sparta.hotdeal.coupon.application.service.CouponService;
 import com.sparta.hotdeal.coupon.infrastructure.custom.RequestUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -31,22 +33,22 @@ public class CouponController {
     }
 
     @GetMapping
-    public ResponseDto<List<ResGetUserCouponsDto>> getUserCoupons() {
-        List<ResGetUserCouponsDto> responseDto = List.of(
-                ResGetUserCouponsDto.builder()
-                        .couponId(UUID.randomUUID())
-                        .name("신규 가입 쿠폰")
-                        .discountAmount(5000)
-                        .minOrderAmount(10000)
-                        .expirationDate(LocalDate.now().plusDays(30))
-                        .isUsed(false)
-                        .usedDate(null)
-                        .dailyIssuedDate(LocalDate.now())
-                        .build()
-        );
+    public ResponseDto<List<ResGetUserCouponsDto>> getUserCoupons(
+            @RequestParam(defaultValue = "false") boolean isUsed,
+            @RequestParam UUID userId,
+            @AuthenticationPrincipal RequestUserDetails userDetails) {
+
+        if (userDetails.getRole().equals("CUSTOMER") || userDetails.getRole().equals("SELLER")) {
+            if (!userDetails.getUserId().equals(userId)) {
+                throw new CustomException(ErrorCode.UNAUTHORIZED_ACCESS);
+            }
+        }
+
+        List<ResGetUserCouponsDto> responseDto = couponService.getUserCoupons(userId, isUsed);
 
         return ResponseDto.of("사용자 쿠폰 조회 성공", responseDto);
     }
+
 
     @PostMapping("/{couponId}/validate")
     public ResponseDto<ResPostCouponValidateDto> validateCoupon(@PathVariable UUID couponId,
@@ -76,6 +78,7 @@ public class CouponController {
         return ResponseDto.of("사용자 쿠폰 삭제 성공", null);
     }
 
+    // 추후 구현
     @GetMapping("/daily/statistics")
     public ResponseDto<ResGetDailyCouponStatisticsDto> getDailyCouponStatistics(@RequestParam String date) {
         ResGetDailyCouponStatisticsDto responseDto = ResGetDailyCouponStatisticsDto.builder()
@@ -87,6 +90,7 @@ public class CouponController {
         return ResponseDto.of("데일리 쿠폰 통계 조회 성공", responseDto);
     }
 
+    // 추후 구현
     @PostMapping("/daily/issue")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<Void> issueDailyCoupon() {
