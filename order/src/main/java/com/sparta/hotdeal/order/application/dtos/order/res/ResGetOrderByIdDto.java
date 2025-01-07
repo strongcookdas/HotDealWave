@@ -1,8 +1,15 @@
 package com.sparta.hotdeal.order.application.dtos.order.res;
 
-import java.time.LocalDate;
+import com.sparta.hotdeal.order.application.dtos.address.AddressDto;
+import com.sparta.hotdeal.order.application.dtos.order_product.OrderProductDto;
+import com.sparta.hotdeal.order.application.dtos.product.ProductDto;
+import com.sparta.hotdeal.order.application.dtos.user.UserDto;
+import com.sparta.hotdeal.order.domain.entity.order.Order;
+import com.sparta.hotdeal.order.domain.entity.order.OrderStatus;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,12 +18,13 @@ import lombok.Getter;
 @Builder
 public class ResGetOrderByIdDto {
     private UUID orderId;
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
     private List<Product> productList;
     private String username;
-    private String userPhone;
     private Address address;
-    private Integer totalPrice;
+    private Long totalAmount;
+    private Integer discountAmount;
+    private OrderStatus orderStatus;
 
     @Getter
     @Builder
@@ -25,9 +33,15 @@ public class ResGetOrderByIdDto {
         private String productName;
         private Integer productQuantity;
         private Integer productPrice;
-        private String orderStatus;
-        private String deliveryStatus;
-        private LocalDate deliveryDate;
+
+        public static Product of(ProductDto product, OrderProductDto orderProduct) {
+            return Product.builder()
+                    .productId(product.getProductId())
+                    .productName(product.getName())
+                    .productQuantity(product.getQuantity())
+                    .productPrice(orderProduct.getPrice())
+                    .build();
+        }
     }
 
     @Getter
@@ -40,15 +54,26 @@ public class ResGetOrderByIdDto {
         private String streetName;
         private String streetNum;
         private String detailAddr;
+
+        public static Address of(AddressDto address) {
+            return Address.builder()
+                    .addressId(address.getAddressId())
+                    .zipNum(address.getZipNum())
+                    .city(address.getCity())
+                    .district(address.getDistrict())
+                    .streetName(address.getStreetName())
+                    .streetNum(address.getStreetNum())
+                    .detailAddr(address.getDetailAddr())
+                    .build();
+        }
     }
 
     // 더미 데이터 생성 메서드
     public static ResGetOrderByIdDto createDummy(UUID orderId) {
         return ResGetOrderByIdDto.builder()
                 .orderId(orderId)
-                .createdAt(LocalDate.of(2025, 1, 1))
+                .createdAt(LocalDateTime.now())
                 .username("john_doe")
-                .userPhone("010-1234-5678")
                 .address(Address.builder()
                         .addressId(UUID.randomUUID())
                         .zipNum("12345")
@@ -64,21 +89,36 @@ public class ResGetOrderByIdDto {
                                 .productName("Product A")
                                 .productQuantity(1)
                                 .productPrice(20000)
-                                .orderStatus("COMPLETE")
-                                .deliveryStatus("COMPLETE")
-                                .deliveryDate(LocalDate.of(2025, 1, 2))
                                 .build(),
                         Product.builder()
                                 .productId(UUID.randomUUID())
                                 .productName("Product B")
                                 .productQuantity(2)
                                 .productPrice(30000)
-                                .orderStatus("COMPLETE")
-                                .deliveryStatus("COMPLETE")
-                                .deliveryDate(LocalDate.of(2025, 1, 3))
                                 .build()
                 ))
-                .totalPrice(80000)
+                .totalAmount(80000L)
+                .build();
+    }
+
+    public static ResGetOrderByIdDto of(Order order, AddressDto address,
+                                        List<OrderProductDto> orderProductDtoList,
+                                        Map<UUID, ProductDto> productMap,
+                                        UserDto user
+    ) {
+        return ResGetOrderByIdDto.builder()
+                .orderId(order.getId())
+                .createdAt(order.getCreatedAt())
+                .username(user.getNickname())
+                .orderStatus(order.getStatus())
+                .totalAmount(order.getTotalAmount())
+                .discountAmount(order.getCouponDiscountAmount())
+                .address(Address.of(address))
+                .productList(orderProductDtoList.stream()
+                        .map(orderProductDto -> Product.of(
+                                productMap.get(orderProductDto.getProductId()),
+                                orderProductDto)
+                        ).toList())
                 .build();
     }
 }

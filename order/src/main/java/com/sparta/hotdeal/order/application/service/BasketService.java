@@ -7,18 +7,17 @@ import com.sparta.hotdeal.order.application.dtos.basket.res.ResGetBasketByIdDto;
 import com.sparta.hotdeal.order.application.dtos.basket.res.ResGetBasketListDto;
 import com.sparta.hotdeal.order.application.dtos.basket.res.ResPatchBasketDto;
 import com.sparta.hotdeal.order.application.dtos.basket.res.ResPostBasketDto;
-import com.sparta.hotdeal.order.application.dtos.product.res.ResGetProductByIdForBasketDto;
-import com.sparta.hotdeal.order.application.dtos.product.res.ResGetProductListForBasketDto;
-import com.sparta.hotdeal.order.application.service.client.ProductClientService;
-import com.sparta.hotdeal.order.domain.entity.basket.Basket;
-import com.sparta.hotdeal.order.domain.repository.BasketRepository;
+import com.sparta.hotdeal.order.application.dtos.product.ProductDto;
+import com.sparta.hotdeal.order.application.dtos.product.ProductByIdtDto;
 import com.sparta.hotdeal.order.application.exception.ApplicationException;
 import com.sparta.hotdeal.order.application.exception.ErrorCode;
+import com.sparta.hotdeal.order.application.port.ProductClientPort;
+import com.sparta.hotdeal.order.domain.entity.basket.Basket;
+import com.sparta.hotdeal.order.domain.repository.BasketRepository;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,12 +30,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class BasketService { //판매중인 상품이 아닌 경우에 대해서 고민이 필요
 
     private final BasketRepository basketRepository;
-    private final ProductClientService productClientService;
+    private final ProductClientPort productClientPort;
 
     public ResPostBasketDto createBasket(UUID userId, ReqPostBasketDto req) {
         //product 유효성
-        ResGetProductByIdForBasketDto resGetProductByIdForBasketDto = productClientService.getProduct(req.getProductId());
-        Basket basket = Basket.create(resGetProductByIdForBasketDto.getProductId(), userId, req.getQuantity());
+        ProductByIdtDto productByIdtDto = productClientPort.getProduct(req.getProductId());
+        Basket basket = Basket.create(productByIdtDto.getProductId(), userId, req.getQuantity());
         basket = basketRepository.save(basket);
         return ResPostBasketDto.of(basket);
     }
@@ -44,9 +43,12 @@ public class BasketService { //판매중인 상품이 아닌 경우에 대해서
     @Transactional(readOnly = true)
     public Page<ResGetBasketListDto> getBasketList(UUID userId, Pageable pageable) {
         Page<Basket> basketPage = basketRepository.findAllByUserId(userId, pageable);
+        List<UUID> productIds = basketPage.stream()
+                .map(Basket::getProductId)
+                .toList();
 
         //ProductListDto를 Map<UUID, ProductListDto>로 변환
-        Map<UUID, ResGetProductListForBasketDto> productMap = getProductMap(basketPage.getContent());
+        Map<UUID, ProductDto> productMap = productClientPort.getProductAll(productIds);
 
         return basketPage.map(basket -> toResGetBasketListDto(basket, productMap));
     }
@@ -56,9 +58,9 @@ public class BasketService { //판매중인 상품이 아닌 경우에 대해서
         Basket basket = basketRepository.findByIdAndUserId(basketId, userId)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
 
-        ResGetProductByIdForBasketDto resGetProductByIdForBasketDto = productClientService.getProduct(basket.getProductId());
+        ProductByIdtDto productByIdtDto = productClientPort.getProduct(basket.getProductId());
 
-        return ResGetBasketByIdDto.of(basket, resGetProductByIdForBasketDto);
+        return ResGetBasketByIdDto.of(basket, productByIdtDto);
     }
 
     public ResPatchBasketDto updateBasket(UUID userId, UUID basketId, ReqPatchBasketDto req) {
@@ -78,19 +80,9 @@ public class BasketService { //판매중인 상품이 아닌 경우에 대해서
         return ResDeleteBasketDto.of(basket);
     }
 
-    private Map<UUID, ResGetProductListForBasketDto> getProductMap(List<Basket> basketList) {
-        List<UUID> productIds = basketList.stream()
-                .map(Basket::getProductId)
-                .toList();
-
-        List<ResGetProductListForBasketDto> productList = productClientService.getProductList(productIds);
-
-        return productList.stream()
-                .collect(Collectors.toMap(ResGetProductListForBasketDto::getProductId, product -> product));
-    }
-
-    private ResGetBasketListDto toResGetBasketListDto(Basket basket, Map<UUID, ResGetProductListForBasketDto> productMap) {
-        ResGetProductListForBasketDto product = Optional.ofNullable(productMap.get(basket.getProductId()))
+    private ResGetBasketListDto toResGetBasketListDto(Basket basket,
+                                                      Map<UUID, ProductDto> productMap) {
+        ProductDto product = Optional.ofNullable(productMap.get(basket.getProductId()))
                 .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
 
         return ResGetBasketListDto.of(basket, product);

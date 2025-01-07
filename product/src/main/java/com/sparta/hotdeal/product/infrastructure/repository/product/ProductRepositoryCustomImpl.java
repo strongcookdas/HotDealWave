@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.product.infrastructure.repository;
+package com.sparta.hotdeal.product.infrastructure.repository.product;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;

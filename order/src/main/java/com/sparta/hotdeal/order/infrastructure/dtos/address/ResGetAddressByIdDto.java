@@ -1,6 +1,6 @@
 package com.sparta.hotdeal.order.infrastructure.dtos.address;
 
-import com.sparta.hotdeal.order.application.dtos.address.res.ResGetAddressByIdForOrderDto;
+import com.sparta.hotdeal.order.application.dtos.address.AddressDto;
 import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,8 +16,8 @@ public class ResGetAddressByIdDto {
     private String streetNum;
     private String detailAddr;
 
-    public ResGetAddressByIdForOrderDto toAddressForOrderDto() {
-        return ResGetAddressByIdForOrderDto.create(
+    public AddressDto toAddressForOrderDto() {
+        return AddressDto.create(
                 addressId,
                 zipNum,
                 city,

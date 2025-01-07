@@ -8,17 +8,14 @@ import com.sparta.hotdeal.order.domain.repository.BasketRepository;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
-@Slf4j(topic = "[Order-Basket]")
 public class OrderBasketService {
-    private final BasketRepository basketRepository;
 
+    private final BasketRepository basketRepository;
     @Transactional(readOnly = true)
     public List<Basket> getBasketList(List<UUID> basketIds) {
         List<Basket> baskets = basketRepository.findByIdIn(basketIds);
@@ -29,12 +26,10 @@ public class OrderBasketService {
     }
 
     public void deleteBasketList(List<Basket> basketList) {
-        //softDelete
-        basketList.forEach(basket -> basket.delete("username"));
+        basketList.forEach(basket -> basket.delete("email@email.com"));
     }
 
     public void recoverBasketList(List<Basket> basketList) {
-        //장바구니 복구
         basketList.forEach(AuditingDate::recover);
     }
 }
