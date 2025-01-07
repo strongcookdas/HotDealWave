@@ -1,6 +1,8 @@
 package com.sparta.hotdeal.coupon.application.service;
 
+import com.sparta.hotdeal.coupon.application.dto.req.ReqPostCouponValidateDto;
 import com.sparta.hotdeal.coupon.application.dto.req.ReqPostCouponsIssueDto;
+import com.sparta.hotdeal.coupon.application.dto.res.ResPostCouponValidateDto;
 import com.sparta.hotdeal.coupon.application.exception.CustomException;
 import com.sparta.hotdeal.coupon.application.exception.ErrorCode;
 import com.sparta.hotdeal.coupon.domain.entity.Coupon;
@@ -58,6 +60,44 @@ public class CouponService {
                 .usedDate(null)
                 .build();
         couponRepository.save(coupon);
+    }
+
+    public ResPostCouponValidateDto validateCoupon(UUID couponId, ReqPostCouponValidateDto reqDto) {
+        Coupon coupon = couponRepository.findById(couponId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_COUPONINFO));
+        CouponInfo couponInfo = couponInfoService.findByIdOrThrow(coupon.getCouponInfo().getId());
+
+        if (coupon.isUsed()) {
+            throw new CustomException(ErrorCode.COUPON_ALREADY_USED);
+        }
+
+        if (couponInfo.getExpirationDate() != null && couponInfo.getExpirationDate().isBefore(LocalDate.now())) {
+            throw new CustomException(ErrorCode.COUPON_EXPIRED);
+        }
+
+        int applicableTotalPrice;
+        if (couponInfo.getCompanyId() == null) {
+            applicableTotalPrice = reqDto.getProducts().stream()
+                    .mapToInt(ReqPostCouponValidateDto.Product::getPrice)
+                    .sum();
+        } else {
+            applicableTotalPrice = reqDto.getProducts().stream()
+                    .filter(product -> product.getCompanyId().equals(couponInfo.getCompanyId()))
+                    .mapToInt(ReqPostCouponValidateDto.Product::getPrice)
+                    .sum();
+
+            if (applicableTotalPrice == 0) {
+                throw new CustomException(ErrorCode.INVALID_COUPON_COMPANY);
+            }
+        }
+
+        if (applicableTotalPrice < couponInfo.getMinOrderAmount()) {
+            throw new CustomException(ErrorCode.MIN_ORDER_AMOUNT_NOT_MET);
+        }
+
+        return ResPostCouponValidateDto.builder()
+                .isValid(true)
+                .build();
     }
 }
 

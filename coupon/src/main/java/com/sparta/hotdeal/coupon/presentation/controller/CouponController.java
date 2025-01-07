@@ -48,13 +48,12 @@ public class CouponController {
     }
 
     @PostMapping("/{couponId}/validate")
-    public ResponseDto<ResPostCouponValidateDto> validateCoupon(@PathVariable UUID couponId, @RequestBody ReqPostCouponValidateDto reqDto) {
-        ResPostCouponValidateDto responseDto = ResPostCouponValidateDto.builder()
-                .isValid(true)
-                .build();
-
+    public ResponseDto<ResPostCouponValidateDto> validateCoupon(@PathVariable UUID couponId,
+                                                                @RequestBody ReqPostCouponValidateDto reqDto) {
+        ResPostCouponValidateDto responseDto = couponService.validateCoupon(couponId, reqDto);
         return ResponseDto.of("쿠폰 유효성 검사 성공", responseDto);
     }
+
 
     @PostMapping("/{couponId}/use")
     public ResponseDto<Void> useCoupon(@PathVariable UUID couponId) {
