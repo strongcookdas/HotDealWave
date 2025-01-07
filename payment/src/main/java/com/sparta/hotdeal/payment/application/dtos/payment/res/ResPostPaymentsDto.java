@@ -1,6 +1,6 @@
 package com.sparta.hotdeal.payment.application.dtos.payment.res;
 
-import com.sparta.hotdeal.payment.application.dtos.kakaopay.res.KakaoPayReadyDto;
+import com.sparta.hotdeal.payment.application.dtos.kakaopay.KakaoPayReadyDto;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

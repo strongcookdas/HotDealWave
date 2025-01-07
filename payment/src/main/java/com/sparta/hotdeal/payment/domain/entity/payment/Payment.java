@@ -40,4 +40,8 @@ public class Payment extends AuditingDate {
 
     @Column(nullable = false)
     private String tid;
+
+    public void updateStatus(PaymentStatus status){
+        this.status = status;
+    }
 }

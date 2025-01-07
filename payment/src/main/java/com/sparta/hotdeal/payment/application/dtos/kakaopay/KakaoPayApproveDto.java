@@ -1,12 +1,12 @@
-package com.sparta.hotdeal.payment.application.dtos.payment.res;
+package com.sparta.hotdeal.payment.application.dtos.kakaopay;
 
-import com.sparta.hotdeal.payment.application.dtos.kakaopay.KakaoPayApproveDto;
+import com.sparta.hotdeal.payment.application.dtos.payment.res.ResPostPaymentConfirmDto;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
-public class ResPostPaymentConfirmDto {
+public class KakaoPayApproveDto {
     private String aid;                // 요청 고유 번호
     private String tid;                // 결제 고유 번호
     private String cid;                // 가맹점 코드

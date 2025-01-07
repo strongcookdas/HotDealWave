@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.payment.application.dtos.kakaopay.res;
+package com.sparta.hotdeal.payment.application.dtos.kakaopay;
 
 import lombok.Builder;
 import lombok.Getter;

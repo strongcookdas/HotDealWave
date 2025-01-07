@@ -7,6 +7,7 @@ import com.sparta.hotdeal.payment.application.dtos.payment.res.ResGetPaymentById
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResGetPaymentsDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResPostPaymentConfirmDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResPostPaymentsDto;
+import com.sparta.hotdeal.payment.application.service.PaymentService;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -25,14 +26,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/payments")
 public class PaymentController {
+    private final PaymentService paymentService;
+
     @PostMapping
     public ResponseDto<ResPostPaymentsDto> readyPayment(@RequestBody ReqPostPaymentDto req) {
-        return ResponseDto.of("결제 요청이 처리되었습니다.", ResPostPaymentsDto.createDummyData());
+        return ResponseDto.of("결제 요청이 처리되었습니다.", paymentService.readyPayment(req));
     }
 
     @PostMapping("/confirm")
     public ResponseDto<ResPostPaymentConfirmDto> confirmPayment(@RequestBody ReqPostPaymentConfirmDto req) {
-        return ResponseDto.of("결제 승인 처리되었습니다.", ResPostPaymentConfirmDto.createDummy());
+        return ResponseDto.of("결제 승인 처리되었습니다.", paymentService.approvePayment(UUID.randomUUID(), req));
     }
 
     @GetMapping
