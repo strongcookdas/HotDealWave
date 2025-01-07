@@ -1,7 +1,7 @@
-package com.sparta.hotdeal.product.domain.entity.product;
+package com.sparta.hotdeal.product.domain.entity.promotion;
 
-import com.sparta.hotdeal.product.application.dtos.req.product.ReqPostPromotionDto;
-import com.sparta.hotdeal.product.application.dtos.req.product.ReqPutPromotionDto;
+import com.sparta.hotdeal.product.application.dtos.req.promotion.ReqPostPromotionDto;
+import com.sparta.hotdeal.product.application.dtos.req.promotion.ReqPutPromotionDto;
 import com.sparta.hotdeal.product.domain.entity.AuditingDate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

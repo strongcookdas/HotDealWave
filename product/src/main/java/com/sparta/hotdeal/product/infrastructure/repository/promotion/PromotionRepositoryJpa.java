@@ -1,6 +1,6 @@
 package com.sparta.hotdeal.product.infrastructure.repository.promotion;
 
-import com.sparta.hotdeal.product.domain.entity.product.Promotion;
+import com.sparta.hotdeal.product.domain.entity.promotion.Promotion;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;

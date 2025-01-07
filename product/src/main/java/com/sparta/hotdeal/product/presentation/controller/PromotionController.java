@@ -1,13 +1,13 @@
 package com.sparta.hotdeal.product.presentation.controller;
 
-import com.sparta.hotdeal.product.application.dtos.req.product.ReqPostPromotionDto;
-import com.sparta.hotdeal.product.application.dtos.req.product.ReqPutPromotionDto;
+import com.sparta.hotdeal.product.application.dtos.req.promotion.ReqPostPromotionDto;
+import com.sparta.hotdeal.product.application.dtos.req.promotion.ReqPutPromotionDto;
 import com.sparta.hotdeal.product.application.dtos.res.ResponseDto;
-import com.sparta.hotdeal.product.application.dtos.res.product.ResGetPromotionDto;
-import com.sparta.hotdeal.product.application.dtos.res.product.ResPostPromotionDto;
-import com.sparta.hotdeal.product.application.dtos.res.product.ResPutPromotionDto;
+import com.sparta.hotdeal.product.application.dtos.res.promotion.ResGetPromotionDto;
+import com.sparta.hotdeal.product.application.dtos.res.promotion.ResPostPromotionDto;
+import com.sparta.hotdeal.product.application.dtos.res.promotion.ResPutPromotionDto;
 import com.sparta.hotdeal.product.application.service.PromotionService;
-import com.sparta.hotdeal.product.domain.entity.product.PromotionStatusEnum;
+import com.sparta.hotdeal.product.domain.entity.promotion.PromotionStatusEnum;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;

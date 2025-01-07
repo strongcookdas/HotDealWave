@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.product.infrastructure.repository;
+package com.sparta.hotdeal.product.infrastructure.repository.product;
 
 import com.sparta.hotdeal.product.domain.entity.product.Product;
 import java.util.List;

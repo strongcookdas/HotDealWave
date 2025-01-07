@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.product.domain.entity.product;
+package com.sparta.hotdeal.product.domain.entity.promotion;
 
 public enum PromotionStatusEnum {
     PENDING,

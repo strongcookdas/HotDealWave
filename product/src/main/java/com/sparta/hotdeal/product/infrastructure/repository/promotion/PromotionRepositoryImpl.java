@@ -1,7 +1,7 @@
 package com.sparta.hotdeal.product.infrastructure.repository.promotion;
 
-import com.sparta.hotdeal.product.domain.entity.product.Promotion;
-import com.sparta.hotdeal.product.domain.entity.product.PromotionStatusEnum;
+import com.sparta.hotdeal.product.domain.entity.promotion.Promotion;
+import com.sparta.hotdeal.product.domain.entity.promotion.PromotionStatusEnum;
 import com.sparta.hotdeal.product.domain.repository.product.PromotionRepository;
 import java.time.LocalDateTime;
 import java.util.List;

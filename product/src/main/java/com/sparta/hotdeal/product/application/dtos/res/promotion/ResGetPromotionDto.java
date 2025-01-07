@@ -1,6 +1,6 @@
-package com.sparta.hotdeal.product.application.dtos.res.product;
+package com.sparta.hotdeal.product.application.dtos.res.promotion;
 
-import com.sparta.hotdeal.product.domain.entity.product.PromotionStatusEnum;
+import com.sparta.hotdeal.product.domain.entity.promotion.PromotionStatusEnum;
 import java.sql.Timestamp;
 import java.util.UUID;
 import lombok.AllArgsConstructor;

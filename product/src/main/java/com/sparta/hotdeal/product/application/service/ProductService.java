@@ -18,7 +18,7 @@ import com.sparta.hotdeal.product.domain.entity.product.ProductStatusEnum;
 import com.sparta.hotdeal.product.domain.entity.product.SubFile;
 import com.sparta.hotdeal.product.domain.repository.product.ProductRepository;
 import com.sparta.hotdeal.product.infrastructure.dtos.ResGetCompanyByIdDto;
-import com.sparta.hotdeal.product.infrastructure.repository.ProductRepositoryCustomImpl;
+import com.sparta.hotdeal.product.infrastructure.repository.product.ProductRepositoryCustomImpl;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;

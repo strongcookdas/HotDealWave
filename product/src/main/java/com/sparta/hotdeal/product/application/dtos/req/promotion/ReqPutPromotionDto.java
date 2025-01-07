@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.product.application.dtos.req.product;
+package com.sparta.hotdeal.product.application.dtos.req.promotion;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

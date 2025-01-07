@@ -1,15 +1,15 @@
 package com.sparta.hotdeal.product.application.service;
 
-import com.sparta.hotdeal.product.application.dtos.req.product.ReqPostPromotionDto;
-import com.sparta.hotdeal.product.application.dtos.req.product.ReqPutPromotionDto;
+import com.sparta.hotdeal.product.application.dtos.req.promotion.ReqPostPromotionDto;
+import com.sparta.hotdeal.product.application.dtos.req.promotion.ReqPutPromotionDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResGetProductDto;
-import com.sparta.hotdeal.product.application.dtos.res.product.ResGetPromotionDto;
-import com.sparta.hotdeal.product.application.dtos.res.product.ResPostPromotionDto;
-import com.sparta.hotdeal.product.application.dtos.res.product.ResPutPromotionDto;
+import com.sparta.hotdeal.product.application.dtos.res.promotion.ResGetPromotionDto;
+import com.sparta.hotdeal.product.application.dtos.res.promotion.ResPostPromotionDto;
+import com.sparta.hotdeal.product.application.dtos.res.promotion.ResPutPromotionDto;
 import com.sparta.hotdeal.product.application.exception.ApplicationException;
 import com.sparta.hotdeal.product.application.exception.ErrorCode;
-import com.sparta.hotdeal.product.domain.entity.product.Promotion;
-import com.sparta.hotdeal.product.domain.entity.product.PromotionStatusEnum;
+import com.sparta.hotdeal.product.domain.entity.promotion.Promotion;
+import com.sparta.hotdeal.product.domain.entity.promotion.PromotionStatusEnum;
 import com.sparta.hotdeal.product.domain.repository.product.PromotionRepository;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
