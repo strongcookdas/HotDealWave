@@ -1,6 +1,6 @@
-package com.sparta.hotdeal.product.application.dtos.req.product;
+package com.sparta.hotdeal.product.application.dtos.req.promotion;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,9 +11,8 @@ import lombok.NoArgsConstructor;
 @Getter
 public class ReqPutPromotionDto {
     private UUID productId;
-    private Timestamp start;
-    private Timestamp end;
-    private Integer discountRate;
+    private LocalDateTime start;
+    private LocalDateTime end;
     private Integer discountPrice;
     private Integer quantity;
 }
