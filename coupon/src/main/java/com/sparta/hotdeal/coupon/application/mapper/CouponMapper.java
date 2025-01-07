@@ -23,4 +23,18 @@ public class CouponMapper {
                         .build())
                 .collect(Collectors.toList());
     }
+
+    // 사용자의 쿠폰 상세 조회 시
+    public static ResGetUserCouponsDto toResGetUserCouponsDto(Coupon coupon) {
+        return ResGetUserCouponsDto.builder()
+                .couponId(coupon.getId())
+                .name(coupon.getCouponInfo().getName())
+                .discountAmount(coupon.getCouponInfo().getDiscountAmount())
+                .minOrderAmount(coupon.getCouponInfo().getMinOrderAmount())
+                .expirationDate(coupon.getCouponInfo().getExpirationDate())
+                .isUsed(coupon.isUsed())
+                .usedDate(coupon.getUsedDate())
+                .dailyIssuedDate(coupon.getDailyIssuedDate())
+                .build();
+    }
 }

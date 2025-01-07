@@ -138,6 +138,11 @@ public class CouponService {
         return CouponMapper.toResGetUserCouponsDtoList(coupons);
     }
 
+    public ResGetUserCouponsDto getUserCouponDetail(UUID couponId) {
+        Coupon coupon = findByIdOrThrow(couponId);
+
+        return CouponMapper.toResGetUserCouponsDto(coupon);
+    }
 
 
     public Coupon findByIdOrThrow(UUID couponId) {

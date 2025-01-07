@@ -1,8 +1,11 @@
 package com.sparta.hotdeal.coupon.presentation.controller;
 
-import com.sparta.hotdeal.coupon.application.dto.req.*;
-import com.sparta.hotdeal.coupon.application.dto.res.*;
 import com.sparta.hotdeal.coupon.application.dto.ResponseDto;
+import com.sparta.hotdeal.coupon.application.dto.req.ReqPostCouponValidateDto;
+import com.sparta.hotdeal.coupon.application.dto.req.ReqPostCouponsIssueDto;
+import com.sparta.hotdeal.coupon.application.dto.res.ResGetDailyCouponStatisticsDto;
+import com.sparta.hotdeal.coupon.application.dto.res.ResGetUserCouponsDto;
+import com.sparta.hotdeal.coupon.application.dto.res.ResPostCouponValidateDto;
 import com.sparta.hotdeal.coupon.application.exception.CustomException;
 import com.sparta.hotdeal.coupon.application.exception.ErrorCode;
 import com.sparta.hotdeal.coupon.application.service.CouponService;
@@ -13,7 +16,6 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -47,6 +49,12 @@ public class CouponController {
         List<ResGetUserCouponsDto> responseDto = couponService.getUserCoupons(userId, isUsed);
 
         return ResponseDto.of("사용자 쿠폰 조회 성공", responseDto);
+    }
+
+    @GetMapping("/{couponId}")
+    public ResponseDto<ResGetUserCouponsDto> getUserCouponDetail(@PathVariable UUID couponId) {
+        ResGetUserCouponsDto responseDto = couponService.getUserCouponDetail(couponId);
+        return ResponseDto.of("사용자 쿠폰 상세 조회 성공", responseDto);
     }
 
 
