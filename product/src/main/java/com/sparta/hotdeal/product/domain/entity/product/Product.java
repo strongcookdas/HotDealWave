@@ -67,7 +67,7 @@ public class Product extends AuditingDate {
     private ProductStatusEnum status;
 
     @Column
-    private Integer ratingSum;
+    private Double ratingSum;
 
     @Column
     private Integer reviewCnt;
@@ -135,12 +135,12 @@ public class Product extends AuditingDate {
         this.quantity = quantity;
     }
 
-    public void incrementReview(int rating) {
+    public void incrementReview(double rating) {
         this.ratingSum += rating;
         this.reviewCnt++;
     }
 
-    public void decrementReview(int rating) {
+    public void decrementReview(double rating) {
         this.ratingSum -= rating;
         this.reviewCnt--;
     }
