@@ -57,6 +57,7 @@ public class CouponController {
 
     @PostMapping("/{couponId}/use")
     public ResponseDto<Void> useCoupon(@PathVariable UUID couponId) {
+        couponService.useCoupon(couponId);
         return ResponseDto.of("쿠폰 사용 성공", null);
     }
 

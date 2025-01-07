@@ -99,5 +99,17 @@ public class CouponService {
                 .isValid(true)
                 .build();
     }
+
+    @Transactional
+    public void useCoupon(UUID couponId) {
+        Coupon coupon = couponRepository.findById(couponId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_COUPONINFO));
+
+        if (coupon.isUsed()) {
+            throw new CustomException(ErrorCode.COUPON_ALREADY_USED);
+        }
+
+        coupon.useCoupon();
+    }
 }
 
