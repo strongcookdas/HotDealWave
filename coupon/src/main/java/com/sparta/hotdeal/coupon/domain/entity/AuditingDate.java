@@ -39,6 +39,12 @@ public class AuditingDate {
         this.deletedBy = email;
     }
 
+    public void systemDelete() {
+        this.isDeleted = true;
+        this.deletedAt = LocalDateTime.now();
+        this.deletedBy = "SYSTEM";
+    }
+
     public void recover() {
         this.isDeleted = false;
         this.deletedAt = null;

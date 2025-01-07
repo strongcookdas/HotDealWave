@@ -1,6 +1,7 @@
 package com.sparta.hotdeal.coupon.domain.repository;
 
 import com.sparta.hotdeal.coupon.domain.entity.Coupon;
+import com.sparta.hotdeal.coupon.domain.entity.CouponInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -13,4 +14,6 @@ public interface CouponRepository extends JpaRepository<Coupon, UUID> {
     Optional<Coupon> findByIdAndIsDeletedFalse(UUID couponId);
 
     List<Coupon> findByUserIdAndIsDeletedFalseAndIsUsed(UUID userId, boolean isUsed);
+
+    List<Coupon> findAllByCouponInfoAndIsDeletedFalse(CouponInfo couponInfo);
 }
