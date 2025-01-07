@@ -3,7 +3,11 @@ package com.sparta.hotdeal.coupon.presentation.controller;
 import com.sparta.hotdeal.coupon.application.dto.req.*;
 import com.sparta.hotdeal.coupon.application.dto.res.*;
 import com.sparta.hotdeal.coupon.application.dto.ResponseDto;
+import com.sparta.hotdeal.coupon.application.service.CouponService;
+import com.sparta.hotdeal.coupon.infrastructure.custom.RequestUserDetails;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -12,11 +16,16 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/coupons")
+@RequiredArgsConstructor
 public class CouponController {
+
+    private final CouponService couponService;
 
     @PostMapping("/issue")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseDto<Void> issueFirstComeFirstServeCoupon(@RequestBody ReqPostCouponsIssueDto reqDto) {
+    public ResponseDto<Void> issueFirstComeFirstServeCoupon(@AuthenticationPrincipal RequestUserDetails userDetails,
+                                                            @RequestBody ReqPostCouponsIssueDto reqDto) {
+        couponService.issueFirstComeFirstServeCoupon(userDetails.getUserId(), reqDto);
         return ResponseDto.of("선착순 쿠폰 발급 성공", null);
     }
 
