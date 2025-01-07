@@ -42,7 +42,7 @@ public class ReviewController {
                 .review("리뷰텍스트 테스트")
                 .rating(0.5)
                 .nickname("테스트 닉네임")
-                .images(List.of("img1", "img2"))
+                .reviewImgs(List.of("img1", "img2"))
                 .build();
         return ResponseDto.of("리뷰가 조회되었습니다.", resGetReviewByIdDto);
     }
@@ -53,7 +53,7 @@ public class ReviewController {
                 .review("리뷰텍스트 테스트")
                 .rating(0.5)
                 .nickname("테스트 닉네임")
-                .images(List.of("img1", "img2"))
+                .reviewImgs(List.of("img1", "img2"))
                 .build();
 
         List<ResGetReviewByIdDto> responseDtos = new ArrayList<>();
