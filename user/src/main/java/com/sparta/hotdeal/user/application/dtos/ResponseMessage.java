@@ -14,7 +14,14 @@ public enum ResponseMessage {
     GET_USER_SUCCESS("회원정보조회 성공"),
     UPDATE_USER_SUCCESS("회원정보수정 성공"),
     UPDATE_USER_PASSWORD_SUCCESS("비밀번호수정 성공"),
-    DELETE_USER_SUCCESS("회원탈퇴 성공");
+    DELETE_USER_SUCCESS("회원탈퇴 성공"),
+    CREATE_ADDRESS_SUCCESS("배송지 등록 성공"),
+    GET_ADDRESS_SUCCESS("배송지 조회 성공"),
+    GET_DEFAULT_ADDRESS_SUCCESS("기본 배송지 조회 성공"),
+    GET_ADDRESS_LIST_SUCCESS("배송지 목록 조회 성공"),
+    UPDATE_ADDRESS_SUCCESS("배송지 수정 성공"),
+    UPDATE_DEFAULT_ADDRESS_SUCCESS("기본 배송지 설정 성공"),
+    DELETE_ADDRESS_SUCCESS("배송지 삭제 성공");
 
     private final String message;
 }
