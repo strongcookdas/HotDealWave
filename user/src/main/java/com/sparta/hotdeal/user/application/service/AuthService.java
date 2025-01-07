@@ -49,7 +49,7 @@ public class AuthService {
         checkRole(requestDto.getRole());
 
         User user = requestDto.toEntity(passwordEncoder);
-        user.updateCreatedByAndUpdateBy(user.getUserId().toString());
+        user.updateCreatedByAndUpdateBy(user.getEmail());
         userRepository.save(user);
 
         return ResPostSignUpDto.builder()
