@@ -1,12 +1,12 @@
 package com.sparta.hotdeal.payment.presentation.controller;
 
-import com.sparta.hotdeal.payment.presentation.dtos.ResponseDto;
-import com.sparta.hotdeal.payment.presentation.dtos.payment.req.ReqPostPaymentConfirmDto;
-import com.sparta.hotdeal.payment.presentation.dtos.payment.req.ReqPostPaymentDto;
-import com.sparta.hotdeal.payment.presentation.dtos.payment.res.ResGetPaymentByIdDto;
-import com.sparta.hotdeal.payment.presentation.dtos.payment.res.ResGetPaymentsDto;
-import com.sparta.hotdeal.payment.presentation.dtos.payment.res.ResPostPaymentConfirmDto;
-import com.sparta.hotdeal.payment.presentation.dtos.payment.res.ResPostPaymentsDto;
+import com.sparta.hotdeal.payment.application.dtos.ResponseDto;
+import com.sparta.hotdeal.payment.application.dtos.payment.req.ReqPostPaymentConfirmDto;
+import com.sparta.hotdeal.payment.application.dtos.payment.req.ReqPostPaymentDto;
+import com.sparta.hotdeal.payment.application.dtos.payment.res.ResGetPaymentByIdDto;
+import com.sparta.hotdeal.payment.application.dtos.payment.res.ResGetPaymentsDto;
+import com.sparta.hotdeal.payment.application.dtos.payment.res.ResPostPaymentConfirmDto;
+import com.sparta.hotdeal.payment.application.dtos.payment.res.ResPostPaymentsDto;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/payments")
 public class PaymentController {
     @PostMapping
-    public ResponseDto<ResPostPaymentsDto> createPayments(@RequestBody ReqPostPaymentDto req) {
+    public ResponseDto<ResPostPaymentsDto> readyPayment(@RequestBody ReqPostPaymentDto req) {
         return ResponseDto.of("결제 요청이 처리되었습니다.", ResPostPaymentsDto.createDummyData());
     }
 

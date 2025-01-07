@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.payment.presentation.dtos.payment.res;
+package com.sparta.hotdeal.payment.application.dtos.payment.res;
 
 import java.util.ArrayList;
 import java.util.List;
