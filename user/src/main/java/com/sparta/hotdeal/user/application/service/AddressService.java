@@ -66,7 +66,7 @@ public class AddressService {
     }
 
     public PagedModel<ResGetAddressesDto> getAddresses(Pageable pageable, UUID userId) {
-        Page<Address> addresses = addressRepository.findAllByUserUserId(userId, pageable);
+        Page<Address> addresses = addressRepository.findAllByUserUserIdAndDeletedAtIsNull(userId, pageable);
 
         return new PagedModel<>(addresses.map(ResGetAddressesDto::from));
     }

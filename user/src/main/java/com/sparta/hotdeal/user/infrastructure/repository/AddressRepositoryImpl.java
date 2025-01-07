@@ -8,5 +8,5 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AddressRepositoryImpl extends JpaRepository<Address, UUID>, AddressRepository {
-    Page<Address> findAllByUserUserId(UUID userId, Pageable pageable);
+    Page<Address> findAllByUserUserIdAndDeletedAtIsNull(UUID userId, Pageable pageable);
 }

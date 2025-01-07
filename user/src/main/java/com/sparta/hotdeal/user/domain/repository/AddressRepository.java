@@ -9,5 +9,5 @@ import org.springframework.data.domain.Pageable;
 public interface AddressRepository {
     Address save(Address address);
     Optional<Address> findById(UUID addressId);
-    Page<Address> findAllByUserUserId(UUID userId, Pageable pageable);
+    Page<Address> findAllByUserUserIdAndDeletedAtIsNull(UUID userId, Pageable pageable);
 }
