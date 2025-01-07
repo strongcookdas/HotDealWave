@@ -14,7 +14,8 @@ public enum ErrorCode {
     COUPON_ALREADY_USED(HttpStatus.BAD_REQUEST, "CO006", "이미 사용된 쿠폰입니다."),
     COUPON_EXPIRED(HttpStatus.BAD_REQUEST, "CO007", "쿠폰이 만료되었습니다."),
     INVALID_COUPON_COMPANY(HttpStatus.BAD_REQUEST, "CO008", "해당 회사 제품에 사용할 수 없는 쿠폰입니다."),
-    MIN_ORDER_AMOUNT_NOT_MET(HttpStatus.BAD_REQUEST, "CO009", "최소 주문 금액 조건을 충족하지 못했습니다.");
+    MIN_ORDER_AMOUNT_NOT_MET(HttpStatus.BAD_REQUEST, "CO009", "최소 주문 금액 조건을 충족하지 못했습니다."),
+    COUPON_NOT_USED(HttpStatus.BAD_REQUEST, "CO010", "쿠폰이 사용된 상태가 아닙니다.");
 
     private final HttpStatus status;
     private final String code;

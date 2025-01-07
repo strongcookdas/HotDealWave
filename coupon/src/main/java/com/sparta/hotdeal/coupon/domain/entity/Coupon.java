@@ -42,4 +42,9 @@ public class Coupon {
         this.isUsed = true;
         this.usedDate = LocalDate.now();
     }
+
+    public void recoverCoupon() {
+        this.isUsed = false;
+        this.usedDate = null;
+    }
 }

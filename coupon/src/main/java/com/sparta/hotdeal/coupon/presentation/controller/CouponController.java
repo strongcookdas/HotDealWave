@@ -63,6 +63,7 @@ public class CouponController {
 
     @PostMapping("/{couponId}/recover")
     public ResponseDto<Void> recoverCoupon(@PathVariable UUID couponId) {
+        couponService.recoverCoupon(couponId);
         return ResponseDto.of("쿠폰 회복 성공", null);
     }
 

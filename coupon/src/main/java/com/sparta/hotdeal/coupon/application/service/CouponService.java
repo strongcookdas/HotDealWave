@@ -111,5 +111,17 @@ public class CouponService {
 
         coupon.useCoupon();
     }
+
+    @Transactional
+    public void recoverCoupon(UUID couponId) {
+        Coupon coupon = couponRepository.findById(couponId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_COUPONINFO));
+
+        if (!coupon.isUsed()) {
+            throw new CustomException(ErrorCode.COUPON_NOT_USED);
+        }
+
+        coupon.recoverCoupon();
+    }
 }
 
