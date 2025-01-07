@@ -29,7 +29,7 @@ public class SecurityConfig {
                                 "/swagger-resources/**", // Swagger 설정 리소스
                                 "/webjars/**"           // Swagger 정적 리소스
                         ).permitAll()
-                        .anyRequest().authenticated() // 모든 요청 인증 필요 헤더가 없으면 403 리턴하기 위해
+                        .anyRequest().authenticated() // 모든 요청 인증 필요 헤더가 없으면 401 리턴하기 위해
                 )
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(new CustomAuthenticationHandler()) // 인증 실패 시 처리
@@ -39,8 +39,9 @@ public class SecurityConfig {
 //        http
 //                .csrf(AbstractHttpConfigurer::disable)
 //                .formLogin(AbstractHttpConfigurer::disable)
-//                .httpBasic(Customizer.withDefaults())
-//                .httpBasic(AbstractHttpConfigurer::disable);
+//                .authorizeHttpRequests(authorize -> authorize
+//                        .anyRequest().permitAll()
+//                );
 
         return http.build();
     }
