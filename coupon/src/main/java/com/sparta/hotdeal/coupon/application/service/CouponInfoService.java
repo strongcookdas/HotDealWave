@@ -68,7 +68,7 @@ public class CouponInfoService {
     }
 
     public CouponInfo findByIdOrThrow(UUID couponInfoId) {
-        return couponInfoRepository.findById(couponInfoId)
+        return couponInfoRepository.findByIdAndIsDeletedFalse(couponInfoId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_COUPONINFO));
     }
 }

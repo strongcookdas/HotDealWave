@@ -63,8 +63,7 @@ public class CouponService {
     }
 
     public ResPostCouponValidateDto validateCoupon(UUID couponId, ReqPostCouponValidateDto reqDto) {
-        Coupon coupon = couponRepository.findById(couponId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_COUPONINFO));
+        Coupon coupon = findByIdOrThrow(couponId);
         CouponInfo couponInfo = couponInfoService.findByIdOrThrow(coupon.getCouponInfo().getId());
 
         if (coupon.isUsed()) {
@@ -102,8 +101,7 @@ public class CouponService {
 
     @Transactional
     public void useCoupon(UUID couponId) {
-        Coupon coupon = couponRepository.findById(couponId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_COUPONINFO));
+        Coupon coupon = findByIdOrThrow(couponId);
 
         if (coupon.isUsed()) {
             throw new CustomException(ErrorCode.COUPON_ALREADY_USED);
@@ -114,8 +112,7 @@ public class CouponService {
 
     @Transactional
     public void recoverCoupon(UUID couponId) {
-        Coupon coupon = couponRepository.findById(couponId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_COUPONINFO));
+        Coupon coupon = findByIdOrThrow(couponId);
 
         if (!coupon.isUsed()) {
             throw new CustomException(ErrorCode.COUPON_NOT_USED);
@@ -123,5 +120,10 @@ public class CouponService {
 
         coupon.recoverCoupon();
     }
+    public Coupon findByIdOrThrow(UUID couponId) {
+        return couponRepository.findByIdAndIsDeletedFalse(couponId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_COUPON));
+    }
+
 }
 
