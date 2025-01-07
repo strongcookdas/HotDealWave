@@ -51,4 +51,21 @@ public class CouponInfo {
     @Column(name = "company_id")
     private UUID companyId;
 
+    public void updateStatus(CouponStatus status) {
+        this.status = status;
+    }
+
+    public void update(String name, int quantity, int discountAmount, int minOrderAmount, LocalDate expirationDate, CouponType couponType, UUID companyId) {
+        this.name = name;
+        this.quantity = quantity;
+        this.discountAmount = discountAmount;
+        this.minOrderAmount = minOrderAmount;
+        this.expirationDate = expirationDate;
+        this.couponType = couponType;
+        this.companyId = companyId;
+    }
+
+    public void incrementIssuedCount() {
+        this.issuedCount++;
+    }
 }

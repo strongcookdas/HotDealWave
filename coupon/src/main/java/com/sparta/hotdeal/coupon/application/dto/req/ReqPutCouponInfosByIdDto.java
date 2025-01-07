@@ -1,5 +1,6 @@
 package com.sparta.hotdeal.coupon.application.dto.req;
 
+import com.sparta.hotdeal.coupon.domain.entity.CouponType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,6 +17,6 @@ public class ReqPutCouponInfosByIdDto {
     private int discountAmount;
     private int minOrderAmount;
     private LocalDate expirationDate;
-    private String couponType; // Enum as String
+    private CouponType couponType;
     private UUID companyId;
 }
