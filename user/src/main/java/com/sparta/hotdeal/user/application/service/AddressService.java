@@ -72,7 +72,7 @@ public class AddressService {
     }
 
     @Transactional
-    public ResPatchAddressByIdDto updateAddress(ReqPatchAddressByIdDto requestDto, UUID addressId, UUID userId) {
+    public ResPatchAddressByIdDto updateAddress(UUID addressId, ReqPatchAddressByIdDto requestDto, UUID userId) {
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.ADDRESS_NOT_FOUND.getMessage()));
 
