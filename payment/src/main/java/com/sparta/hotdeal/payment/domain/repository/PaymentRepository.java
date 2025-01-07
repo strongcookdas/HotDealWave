@@ -7,4 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PaymentRepository {
     Optional<Payment> findByTid(String tid);
+
+    Payment save(Payment payment);
 }

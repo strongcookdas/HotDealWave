@@ -25,6 +25,14 @@ public class PaymentService {
 
     public ResPostPaymentsDto readyPayment(ReqPostPaymentDto reqPostPaymentDto) {
         KakaoPayReadyDto kakaoPayReadyDto = kakaoPayClientPort.ready(reqPostPaymentDto);
+        Payment payment = Payment.create(
+                reqPostPaymentDto.getOrderId(),
+                PaymentStatus.PENDING,
+                reqPostPaymentDto.getTotalAmount(),
+                0,
+                kakaoPayReadyDto.getTid()
+        );
+        paymentRepository.save(payment);
         return ResPostPaymentsDto.of(kakaoPayReadyDto);
     }
 

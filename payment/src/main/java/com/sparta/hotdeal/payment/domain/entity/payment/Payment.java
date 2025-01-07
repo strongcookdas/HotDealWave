@@ -41,7 +41,23 @@ public class Payment extends AuditingDate {
     @Column(nullable = false)
     private String tid;
 
-    public void updateStatus(PaymentStatus status){
+    public static Payment create(
+            UUID orderId,
+            PaymentStatus status,
+            Integer amount,
+            Integer refundAmount,
+            String tid
+    ) {
+        return Payment.builder()
+                .orderId(orderId)
+                .status(status)
+                .amount(amount)
+                .refundAmount(refundAmount)
+                .tid(tid)
+                .build();
+    }
+
+    public void updateStatus(PaymentStatus status) {
         this.status = status;
     }
 }
