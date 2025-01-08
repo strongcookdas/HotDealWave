@@ -1,5 +1,6 @@
 package com.sparta.hotdeal.product.application.service;
 
+import com.sparta.hotdeal.product.application.dtos.req.product.ReqPatchProductQuantityDto;
 import com.sparta.hotdeal.product.application.dtos.req.product.ReqPatchProductStatusDto;
 import com.sparta.hotdeal.product.application.dtos.req.product.ReqPostProductDto;
 import com.sparta.hotdeal.product.application.dtos.req.product.ReqPutProductDto;
@@ -18,9 +19,9 @@ import com.sparta.hotdeal.product.domain.entity.product.ProductStatusEnum;
 import com.sparta.hotdeal.product.domain.entity.product.SubFile;
 import com.sparta.hotdeal.product.domain.repository.product.ProductRepository;
 import com.sparta.hotdeal.product.infrastructure.dtos.ResGetCompanyByIdDto;
-import com.sparta.hotdeal.product.infrastructure.repository.product.ProductRepositoryCustomImpl;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -43,9 +44,9 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final CompanyClientService companyClientService;
-    private final ProductRepositoryCustomImpl productRepositoryCustomImpl;
     private final FileService fileService;
     private final SubFileService subFileService;
+    private final PromotionService promotionService;
 
     public ResPostProductDto createProduct(ReqPostProductDto productDto) {
         // company 검증
@@ -76,7 +77,7 @@ public class ProductService {
     public ResPutProductDto updateProduct(UUID productId, ReqPutProductDto reqPutUpdateProductDto, String username) {
 
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+                .orElseThrow(() -> new ApplicationException(ErrorCode.PRODUCT_NOT_FOUND_EXCEPTION));
 
         // 파일 객체 가져오기 (기존 파일 그대로 사용)
         File detailImgsFile = product.getDetailImgs();
@@ -111,7 +112,7 @@ public class ProductService {
                                                         ReqPatchProductStatusDto reqPatchUpdateProductStatusDto) {
 
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+                .orElseThrow(() -> new ApplicationException(ErrorCode.PRODUCT_NOT_FOUND_EXCEPTION));
 
         product.updateStatus(reqPatchUpdateProductStatusDto.getStatus());
 
@@ -120,7 +121,7 @@ public class ProductService {
 
     public void deleteProduct(UUID productId, String username) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+                .orElseThrow(() -> new ApplicationException(ErrorCode.PRODUCT_NOT_FOUND_EXCEPTION));
 
         // 파일 삭제 처리
         File detailImgsFile = product.getDetailImgs();
@@ -137,38 +138,21 @@ public class ProductService {
         product.delete(username);
     }
 
-    public ResPatchReduceProductQuantityDto reduceQuantity(UUID productId, int quantity, Boolean promotion) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
-
-        int newQuantity = product.getQuantity() - quantity;
-
-        // TODO: 프로모션 상품인 경우
-
-        product.updateQuantity(newQuantity);
-
-        return ResPatchReduceProductQuantityDto.of(product.getId());
+    public List<ResPatchReduceProductQuantityDto> reduceQuantity(
+            List<ReqPatchProductQuantityDto> reqPatchProductQuantityDto) {
+        return processProductQuantity(reqPatchProductQuantityDto, false); // 재고 차감
     }
 
-    public ResPatchRestoreProductQuantityDto restoreQuantity(UUID productId, int quantity, Boolean promotion) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
-
-        int originQuantity = product.getQuantity() + quantity;
-
-        // TODO: 프로모션 상품인 경우
-
-        product.updateQuantity(originQuantity);
-
-        return ResPatchRestoreProductQuantityDto.of(product.getId());
-
+    public List<ResPatchRestoreProductQuantityDto> restoreQuantity(
+            List<ReqPatchProductQuantityDto> reqPatchProductQuantityDto) {
+        return processProductQuantity(reqPatchProductQuantityDto, true); // 재고 복구
     }
 
     @Transactional(readOnly = true)
     public ResGetProductDto getProduct(UUID productId) {
         // 상품 조회
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+                .orElseThrow(() -> new ApplicationException(ErrorCode.PRODUCT_NOT_FOUND_EXCEPTION));
 
         return convertToResGetProductDto(product);
     }
@@ -220,9 +204,67 @@ public class ProductService {
 
     public void updateProductDiscountPrice(UUID productId, int discountPrice) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+                .orElseThrow(() -> new ApplicationException(ErrorCode.PRODUCT_NOT_FOUND_EXCEPTION));
 
         product.updateDiscountPrice(discountPrice);
+    }
+
+    // 공통된 상품 수량 처리 메서드
+    private <T> List<T> processProductQuantity(
+            List<ReqPatchProductQuantityDto> reqPatchProductQuantityDto,
+            boolean isRestore) {
+
+        // 상품 ID 목록 추출
+        List<UUID> productIds = reqPatchProductQuantityDto.stream()
+                .map(ReqPatchProductQuantityDto::getProductId)
+                .collect(Collectors.toList());
+
+        // 상품들 조회
+        List<Product> products = productRepository.findAllByIdIn(productIds);
+
+        // 상품이 없으면 예외 처리
+        if (products.size() != reqPatchProductQuantityDto.size()) {
+            throw new ApplicationException(ErrorCode.PRODUCT_NOT_FOUND_EXCEPTION);
+        }
+
+        // 할인 중인 상품을 분리
+        List<Product> discountedProducts = products.stream()
+                .filter(product -> product.getDiscountPrice() != null)
+                .collect(Collectors.toList());
+
+        // 할인 중인 상품에 대한 별도 요청 처리
+        processDiscountedProducts(discountedProducts);
+
+        List<T> resPatchProductQuantityDtos = new ArrayList<>();
+
+        // 상품 수량 처리
+        for (ReqPatchProductQuantityDto dto : reqPatchProductQuantityDto) {
+            Product product = findProductById(dto.getProductId(), products);
+            int quantityChange = isRestore ? dto.getQuantity() : -dto.getQuantity(); // 재고 복구 시 수량을 더함
+            int newQuantity = product.getQuantity() + quantityChange;
+            product.updateQuantity(newQuantity);
+
+            // 결과 DTO 생성 후 추가
+            if (isRestore) {
+                resPatchProductQuantityDtos.add((T) ResPatchRestoreProductQuantityDto.of(product.getId()));
+            } else {
+                resPatchProductQuantityDtos.add((T) ResPatchReduceProductQuantityDto.of(product.getId()));
+            }
+        }
+
+        return resPatchProductQuantityDtos;
+    }
+
+    private Product findProductById(UUID productId, List<Product> products) {
+        return products.stream()
+                .filter(product -> product.getId().equals(productId))
+                .findFirst()
+                .orElseThrow(() -> new ApplicationException(ErrorCode.PRODUCT_NOT_FOUND_EXCEPTION));
+    }
+
+    private void processDiscountedProducts(List<Product> discountedProducts) {
+        // 할인 중인 상품들에 대해 추가 작업 (예: 할인 처리, 외부 API 호출 등)
+        // 이곳에서 외부 API 호출 또는 로직을 작성할 수 있습니다.
     }
 
 }

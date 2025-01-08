@@ -1,5 +1,6 @@
 package com.sparta.hotdeal.product.presentation.controller;
 
+import com.sparta.hotdeal.product.application.dtos.req.product.ReqPatchProductQuantityDto;
 import com.sparta.hotdeal.product.application.dtos.req.product.ReqPatchProductStatusDto;
 import com.sparta.hotdeal.product.application.dtos.req.product.ReqPostProductDto;
 import com.sparta.hotdeal.product.application.dtos.req.product.ReqPutProductDto;
@@ -94,32 +95,28 @@ public class ProductController {
         return ResponseDto.of("상품이 삭제되었습니다.", null);
     }
 
-    @PatchMapping("/{productId}/reduceQuantity")
-    public ResponseDto<ResPatchReduceProductQuantityDto> reduceQuantity(
-            @PathVariable UUID productId,
-            @RequestParam int quantity,
-            @RequestParam Boolean promotion
+    @PatchMapping("/reduceQuantity")
+    public ResponseDto<List<ResPatchReduceProductQuantityDto>> reduceQuantity(
+            @RequestBody List<ReqPatchProductQuantityDto> reqPatchProductQuantityDto
     ) {
 //        ResPatchReduceProductQuantityDto resPatchReduceProductQuantityDto = ResPatchReduceProductQuantityDto.builder()
 //                .productId(UUID.randomUUID())
 //                .build();
-        ResPatchReduceProductQuantityDto resPatchReduceProductQuantityDto = productService.reduceQuantity(productId,
-                quantity, promotion);
+        List<ResPatchReduceProductQuantityDto> resPatchReduceProductQuantityDto = productService.reduceQuantity(
+                reqPatchProductQuantityDto);
 
         return ResponseDto.of("상품이 수정되었습니다.", resPatchReduceProductQuantityDto);
     }
 
-    @PatchMapping("/{productId}/restoreQuantity")
-    public ResponseDto<ResPatchRestoreProductQuantityDto> restoreQuantity(
-            @PathVariable UUID productId,
-            @RequestParam int quantity,
-            @RequestParam Boolean promotion
+    @PatchMapping("/restoreQuantity")
+    public ResponseDto<List<ResPatchRestoreProductQuantityDto>> restoreQuantity(
+            @RequestBody List<ReqPatchProductQuantityDto> reqPatchProductQuantityDto
     ) {
 //        ResPatchRestoreProductQuantityDto resPatchRestoreProductQuantityDto = ResPatchRestoreProductQuantityDto.builder()
 //                .productId(UUID.randomUUID())
 //                .build();
-        ResPatchRestoreProductQuantityDto resPatchRestoreProductQuantityDto = productService.restoreQuantity(productId,
-                quantity, promotion);
+        List<ResPatchRestoreProductQuantityDto> resPatchRestoreProductQuantityDto = productService.restoreQuantity(
+                reqPatchProductQuantityDto);
 
         return ResponseDto.of("상품이 수정되었습니다.", resPatchRestoreProductQuantityDto);
     }
