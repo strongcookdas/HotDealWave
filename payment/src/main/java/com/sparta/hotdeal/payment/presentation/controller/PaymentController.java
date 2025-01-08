@@ -4,7 +4,7 @@ import com.sparta.hotdeal.payment.application.dtos.ResponseDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.req.ReqPostPaymentConfirmDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.req.ReqPostPaymentDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResGetPaymentByIdDto;
-import com.sparta.hotdeal.payment.application.dtos.payment.res.ResGetPaymentsDto;
+import com.sparta.hotdeal.payment.application.dtos.payment.res.ResGetPaymentForListDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResPostPaymentConfirmDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResPostPaymentsDto;
 import com.sparta.hotdeal.payment.application.service.PaymentService;
@@ -30,7 +30,7 @@ public class PaymentController {
 
     @PostMapping
     public ResponseDto<ResPostPaymentsDto> readyPayment(@RequestBody ReqPostPaymentDto req) {
-        return ResponseDto.of("결제 요청이 처리되었습니다.", paymentService.readyPayment(req));
+        return ResponseDto.of("결제 요청이 처리되었습니다.", paymentService.readyPayment(UUID.randomUUID(), req));
     }
 
     @PostMapping("/confirm")
@@ -39,15 +39,8 @@ public class PaymentController {
     }
 
     @GetMapping
-    public ResponseDto<Page<ResGetPaymentsDto>> getPayments(Pageable pageable) {
-        List<ResGetPaymentsDto> dummyList = ResGetPaymentsDto.createDummyList();
-        // 페이징 처리
-        int start = (int) pageable.getOffset();
-        int end = Math.min(start + pageable.getPageSize(), dummyList.size());
-        org.springframework.data.domain.Page<ResGetPaymentsDto> page = new PageImpl<>(dummyList.subList(start, end),
-                pageable, dummyList.size());
-
-        return ResponseDto.of("결제 내역 조회 성공", page);
+    public ResponseDto<Page<ResGetPaymentForListDto>> getPayments(Pageable pageable) {
+        return ResponseDto.of("결제 내역 조회 성공", paymentService.getPaymentList(UUID.randomUUID(), pageable));
     }
 
     @GetMapping("/{paymentId}")

@@ -30,6 +30,9 @@ public class Payment extends AuditingDate {
     private UUID orderId;
 
     @Column(nullable = false)
+    private UUID userId;
+
+    @Column(nullable = false)
     private PaymentStatus status;
 
     @Column(nullable = false)
@@ -43,6 +46,7 @@ public class Payment extends AuditingDate {
 
     public static Payment create(
             UUID orderId,
+            UUID userId,
             PaymentStatus status,
             Integer amount,
             Integer refundAmount,

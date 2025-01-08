@@ -15,16 +15,18 @@ import lombok.NoArgsConstructor;
 public class ResGetPaymentByIdDto {
     private UUID paymentId;
     private UUID orderId;
+    private UUID userId;
     private PaymentStatus paymentStatus;
-    private Integer paymentAmount;
+    private Integer payedAmount;
     private Integer refundAmount;
 
     public static ResGetPaymentByIdDto of(Payment payment){
         return ResGetPaymentByIdDto.builder()
                 .paymentId(payment.getId())
                 .orderId(payment.getOrderId())
+                .userId(payment.getUserId())
                 .paymentStatus(payment.getStatus())
-                .paymentAmount(payment.getAmount())
+                .payedAmount(payment.getAmount())
                 .refundAmount(payment.getRefundAmount())
                 .build();
     }
