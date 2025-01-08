@@ -23,7 +23,11 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public ResGetUsersByIdDto getUser(UUID userId) {
+    public ResGetUsersByIdDto getUser(UUID userId, UUID requestUserId, String requestUserRole) {
+        if (!requestUserRole.equals("ROLE_MASTER")) {
+            checkOwnUser(userId, requestUserId);
+        }
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.USER_NOT_FOUND.getMessage()));
 
@@ -31,7 +35,17 @@ public class UserService {
     }
 
     @Transactional
-    public ResPatchUsersInfoByIdDto updateUser(UUID userId, ReqPatchUsersInfoByIdDto requestDto) {
+    public ResPatchUsersInfoByIdDto updateUser(
+            UUID userId,
+            ReqPatchUsersInfoByIdDto requestDto,
+            UUID requestUserId,
+            String requestUserRole
+    ) {
+
+        if (!requestUserRole.equals("ROLE_MASTER")) {
+            checkOwnUser(userId, requestUserId);
+        }
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.USER_NOT_FOUND.getMessage()));
 
@@ -43,7 +57,14 @@ public class UserService {
     }
 
     @Transactional
-    public ResPatchUsersPasswordByIdDto updateUserPassword(UUID userId, ReqPatchUsersPasswordByIdDto requestDto) {
+    public ResPatchUsersPasswordByIdDto updateUserPassword(
+            UUID userId,
+            ReqPatchUsersPasswordByIdDto requestDto,
+            UUID requestUserId
+    ) {
+
+        checkOwnUser(userId, requestUserId);
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.USER_NOT_FOUND.getMessage()));
 
@@ -57,7 +78,16 @@ public class UserService {
     }
 
     @Transactional
-    public ResDeleteUsersByIdDto deleteUser(UUID userId) {
+    public ResDeleteUsersByIdDto deleteUser(
+            UUID userId,
+            UUID requestUserId,
+            String requestUserRole
+    ) {
+
+        if (!requestUserRole.equals("ROLE_MASTER")) {
+            checkOwnUser(userId, requestUserId);
+        }
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.USER_NOT_FOUND.getMessage()));
 
@@ -66,5 +96,11 @@ public class UserService {
         return ResDeleteUsersByIdDto.builder()
                 .userId(user.getUserId())
                 .build();
+    }
+
+    private void checkOwnUser(UUID userId, UUID requestUserId) {
+        if (!userId.equals(requestUserId)) {
+            throw new IllegalArgumentException(ErrorMessage.NOT_ALLOWED_CONTENT.getMessage());
+        }
     }
 }
