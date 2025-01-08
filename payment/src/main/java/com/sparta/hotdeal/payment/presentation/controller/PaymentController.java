@@ -52,11 +52,11 @@ public class PaymentController {
 
     @GetMapping("/{paymentId}")
     public ResponseDto<ResGetPaymentByIdDto> getPaymentById(@PathVariable UUID paymentId) {
-        return ResponseDto.of("결제 상세 조회 성공", ResGetPaymentByIdDto.createDummyData(paymentId));
+        return ResponseDto.of("결제 단건 조회 성공", paymentService.getPaymentById(UUID.randomUUID(), paymentId));
     }
 
     @DeleteMapping("/{paymentId}")
-    public ResponseDto<Void> deletePayment(@PathVariable UUID paymentId) {
+    public ResponseDto<Void> deletePayment(@PathVariable UUID paymentId) {// 추후 구현
         return ResponseDto.of("결제 환불 처리되었습니다.", null);
     }
 }

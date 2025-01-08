@@ -5,6 +5,7 @@ import com.sparta.hotdeal.payment.application.dtos.kakaopay.KakaoPayReadyDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.PaymentDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.req.ReqPostPaymentConfirmDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.req.ReqPostPaymentDto;
+import com.sparta.hotdeal.payment.application.dtos.payment.res.ResGetPaymentByIdDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResPostPaymentConfirmDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResPostPaymentsDto;
 import com.sparta.hotdeal.payment.application.port.KakaoPayClientPort;
@@ -44,4 +45,12 @@ public class PaymentService {
         payment.updateStatus(PaymentStatus.COMPLETE);
         return ResPostPaymentConfirmDto.of(kakaoPayApproveDto);
     }
+
+    public ResGetPaymentByIdDto getPaymentById(UUID userId, UUID paymentId) {
+        Payment payment = paymentRepository.findByIdAndUserId(paymentId, userId)
+                .orElseThrow(() -> new IllegalArgumentException("결제 정보 없음"));
+        return ResGetPaymentByIdDto.of(payment);
+    }
+
+
 }
