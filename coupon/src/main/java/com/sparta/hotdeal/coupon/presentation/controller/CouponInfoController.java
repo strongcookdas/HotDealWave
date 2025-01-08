@@ -6,6 +6,7 @@ import com.sparta.hotdeal.coupon.application.dto.ResponseDto;
 import com.sparta.hotdeal.coupon.application.service.CouponInfoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,18 +21,21 @@ public class CouponInfoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @Secured({"ROLE_MASTER", "ROLE_MANAGER"})
     public ResponseDto<ResPostCouponInfosDto> createCoupon(@RequestBody ReqPostCouponInfosDto reqDto) {
         ResPostCouponInfosDto responseDto = couponInfoService.createCoupon(reqDto);
         return ResponseDto.of("쿠폰 정보 생성 성공", responseDto);
     }
 
     @PutMapping("/{couponInfoId}")
+    @Secured({"ROLE_MASTER", "ROLE_MANAGER"})
     public ResponseDto<Void> updateCoupon(@PathVariable UUID couponInfoId, @RequestBody ReqPutCouponInfosByIdDto reqDto) {
         couponInfoService.updateCoupon(couponInfoId, reqDto);
         return ResponseDto.of("쿠폰 정보 수정 성공", null);
     }
 
     @PatchMapping("/{couponInfoId}/status")
+    @Secured({"ROLE_MASTER", "ROLE_MANAGER"})
     public ResponseDto<Void> updateCouponStatus(@PathVariable UUID couponInfoId, @RequestBody ReqPatchCouponInfosByIdStatusDto reqDto) {
         couponInfoService.updateCouponStatus(couponInfoId, reqDto.getStatus());
         return ResponseDto.of("쿠폰 정보의 상태 변경 성공", null);

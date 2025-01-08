@@ -78,8 +78,8 @@ public class CouponController {
         return ResponseDto.of("쿠폰 회복 성공", null);
     }
 
-    @Secured({"ROLE_MASTER", "ROLE_MANAGER"})
     @DeleteMapping("/{couponId}")
+    @Secured({"ROLE_MASTER", "ROLE_MANAGER"})
     public ResponseDto<Void> deleteCoupon(@PathVariable UUID couponId,
                                           @AuthenticationPrincipal RequestUserDetails userDetails) {
         couponService.deleteCoupon(couponId, userDetails.getEmail());
