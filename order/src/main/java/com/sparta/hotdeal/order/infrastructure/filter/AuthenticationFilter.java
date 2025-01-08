@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import javax.security.sasl.AuthenticationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,31 +20,48 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class AuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException { //userId 이외에 다른 데이터가 필요한지 논의 필요
+            throws ServletException, IOException {
 
-        String userId = request.getHeader("X-User-Id");
-        String username = request.getHeader("X-User-Name"); // 중복 허용되지 않는 값으로 설정이 필요 (일단 email로 생각하고 구현)
-        String role = request.getHeader("X-User-Role"); //ROLE_ 추가되는지 확인 필요
+        String userId = request.getHeader("X-User-UserId");
+        log.info("userId : {}", userId);
+        String email = request.getHeader("X-User-Email");
+        log.info("email : {}", email);
+        String role = request.getHeader("X-User-Role");
+        log.info("role : {}", role);
 
-        if (userId == null || role == null) {
-            /* 로그인 연동 전까지 mock user 사용
-            log.warn("Missing authentication headers: X-User-Id or X-User-Role");
-            SecurityContextHolder.clearContext();
+        // 특정 경로(Swagger 등)는 필터링 제외
+        String requestURI = request.getRequestURI();
+        if (requestURI.startsWith("/swagger-ui") ||
+                requestURI.startsWith("/v3/api-docs") ||
+                requestURI.startsWith("/swagger-resources") ||
+                requestURI.startsWith("/webjars")) {
             filterChain.doFilter(request, response);
             return;
-             */
-            userId = "8fbd655f-dc52-4bf9-ab23-ef89e923db44";
-            username = "mock@email.com";
-            role = "MASTER";
         }
 
-        // ROLE_ 접두사 추가
+        if (userId == null || email == null || role == null) {
+            log.warn("Missing authentication headers");
+            // 다음 필터로 넘어가서 security 에서 401 자동 리턴
+            //spring security는 context가 비어있을 때 401 리턴
+//            SecurityContextHolder.clearContext();
+//            filterChain.doFilter(request, response);
+//            return;
+
+            //mock user
+//            userId = "8fbd655f-dc52-4bf9-ab23-ef89e923db44";
+//            email = "mock@email.com";
+//            role = "MASTER";
+
+            //401 핸들러에서 처리
+            throw new AuthenticationException("Missing authentication headers");
+        }
+
         if (!role.startsWith("ROLE_")) {
             role = "ROLE_" + role;
         }
 
         List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
-        UserDetails userDetails = new RequestUserDetails(userId, username, authorities);
+        UserDetails userDetails = new RequestUserDetails(userId, email, authorities);
 
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
