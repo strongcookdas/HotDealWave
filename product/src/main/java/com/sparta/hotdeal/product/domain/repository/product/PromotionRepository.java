@@ -21,4 +21,10 @@ public interface PromotionRepository {
     void save(Promotion promotion);
 
     Optional<Promotion> findByProductIdAndStatus(UUID productId, PromotionStatusEnum status);
+
+    // 시작 시간이 일치하는 Promotion 리스트 조회
+    List<Promotion> findByStart(LocalDateTime startTime);
+
+    // 종료 시간이 일치하는 Promotion 리스트 조회
+    List<Promotion> findByEnd(LocalDateTime endTime);
 }

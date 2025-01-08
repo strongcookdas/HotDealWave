@@ -36,7 +36,7 @@ public class PromotionService {
 
     private final PromotionRepository promotionRepository;
     private final ProductService productService;
-    
+
     public ResPostPromotionDto createPromotion(ReqPostPromotionDto reqPostPromotionDto) throws ApplicationException {
         // 상품 조회
         ResGetProductDto productDto = productService.getProduct(reqPostPromotionDto.getProductId());
@@ -191,6 +191,10 @@ public class PromotionService {
                 .remaining(promotion.getRemaining())
                 .status(promotion.getStatus())
                 .build();
+    }
+
+    public void updatePromotionStatus(Promotion promotion, PromotionStatusEnum status) {
+        promotion.updateStatus(status);
     }
 
 }

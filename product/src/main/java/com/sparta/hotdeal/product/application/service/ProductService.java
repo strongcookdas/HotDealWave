@@ -203,7 +203,7 @@ public class ProductService {
                 .build();
     }
 
-    public void updateProductDiscountPrice(UUID productId, int discountPrice) {
+    public void updateProductDiscountPrice(UUID productId, Integer discountPrice) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.PRODUCT_NOT_FOUND_EXCEPTION));
 
