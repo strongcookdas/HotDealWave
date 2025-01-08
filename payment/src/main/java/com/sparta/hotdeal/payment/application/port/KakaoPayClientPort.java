@@ -8,6 +8,6 @@ import com.sparta.hotdeal.payment.application.dtos.payment.req.ReqPostPaymentDto
 import java.util.UUID;
 
 public interface KakaoPayClientPort {
-    KakaoPayReadyDto ready(ReqPostPaymentDto reqPostPaymentDto);
+    KakaoPayReadyDto ready(UUID userId, ReqPostPaymentDto reqPostPaymentDto);
     KakaoPayApproveDto approve(UUID userId, ReqPostPaymentConfirmDto paymentConfirmDto, PaymentDto paymentDto);
 }

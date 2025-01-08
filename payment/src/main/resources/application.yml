@@ -26,3 +26,5 @@ server:
 pay:
   key: ${PAY_KEY}
   cid: ${PAY_CID}
+  host:
+    domain: ${PAY_HOST_DOMAIN}
