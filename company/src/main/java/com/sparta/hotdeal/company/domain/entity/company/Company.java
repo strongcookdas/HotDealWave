@@ -1,6 +1,6 @@
 package com.sparta.hotdeal.company.domain.entity.company;
 
-import com.sparta.hotdeal.company.domain.AuditingDate;
+import com.sparta.hotdeal.company.domain.entity.Audit;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -24,7 +24,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder(access = AccessLevel.PRIVATE)
 @Table(name = "p_companies")
-public class Company extends AuditingDate {
+public class Company extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
