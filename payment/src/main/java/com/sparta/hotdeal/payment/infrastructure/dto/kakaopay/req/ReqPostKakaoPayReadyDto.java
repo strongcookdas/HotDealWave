@@ -1,11 +1,14 @@
 package com.sparta.hotdeal.payment.infrastructure.dto.kakaopay.req;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ReqPostKakaoPayReadyDto {
     private String cid;
     private String partnerOrderId;

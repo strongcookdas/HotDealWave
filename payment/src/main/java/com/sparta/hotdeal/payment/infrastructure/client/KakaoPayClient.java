@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-@FeignClient(name = "kakaoPayClient", url = "https://kapi.kakao.com/online/v1/payment")
+@FeignClient(name = "kakaoPayClient", url = "https://open-api.kakaopay.com/online/v1/payment")
 public interface KakaoPayClient {
     @PostMapping("/ready")
     ResPostKakaoPayReadyDto ready(
