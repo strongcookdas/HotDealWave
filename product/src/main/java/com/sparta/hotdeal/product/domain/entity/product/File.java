@@ -1,6 +1,7 @@
 package com.sparta.hotdeal.product.domain.entity.product;
 
 import com.sparta.hotdeal.product.domain.entity.AuditingDate;
+import com.sparta.hotdeal.product.domain.entity.review.Review;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -42,4 +43,8 @@ public class File extends AuditingDate {
     // Product와 thumbImg의 1:1 관계
     @OneToOne(mappedBy = "thumbImg")
     private Product productThumbImg;
+
+    // Review와 reviewImgs의 1:1 관계
+    @OneToOne(mappedBy = "reviewImgs")
+    private Review reviewImgs;
 }

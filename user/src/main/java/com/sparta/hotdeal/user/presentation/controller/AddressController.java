@@ -1,6 +1,7 @@
 package com.sparta.hotdeal.user.presentation.controller;
 
 import com.sparta.hotdeal.user.application.dtos.ResponseDto;
+import com.sparta.hotdeal.user.application.dtos.ResponseMessage;
 import com.sparta.hotdeal.user.application.dtos.address.request.ReqPatchAddressByIdDto;
 import com.sparta.hotdeal.user.application.dtos.address.request.ReqPostAddressDto;
 import com.sparta.hotdeal.user.application.dtos.address.response.ResDeleteAddressByIdDto;
@@ -10,10 +11,14 @@ import com.sparta.hotdeal.user.application.dtos.address.response.ResGetDefaultAd
 import com.sparta.hotdeal.user.application.dtos.address.response.ResPatchAddressByIdDto;
 import com.sparta.hotdeal.user.application.dtos.address.response.ResPatchDefaultAddressByIdDto;
 import com.sparta.hotdeal.user.application.dtos.address.response.ResPostAddressDto;
-import java.util.ArrayList;
-import java.util.List;
+import com.sparta.hotdeal.user.application.service.AddressService;
+import com.sparta.hotdeal.user.infrastructure.security.RequestUserDetails;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -25,103 +30,91 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1")
 public class AddressController {
 
+    private final AddressService addressService;
+
     @PostMapping("/address")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseDto<ResPostAddressDto> createAddress(@RequestBody ReqPostAddressDto requestDto) {
+    public ResponseDto<ResPostAddressDto> createAddress(
+            @RequestBody ReqPostAddressDto requestDto,
+            @AuthenticationPrincipal RequestUserDetails userDetails
+    ) {
 
-        ResPostAddressDto resPostAddressDto = ResPostAddressDto.builder()
-                .addressId(UUID.randomUUID())
-                .build();
+        ResPostAddressDto resPostAddressDto = addressService.createAddress(requestDto, userDetails.getUserId());
 
-        return ResponseDto.of("배송지 등록 성공", resPostAddressDto);
+        return ResponseDto.of(ResponseMessage.CREATE_ADDRESS_SUCCESS.getMessage(), resPostAddressDto);
     }
 
     @GetMapping("/address/{addressId}")
-    public ResponseDto<ResGetAddressByIdDto> getAddress(@PathVariable UUID addressId) {
+    public ResponseDto<ResGetAddressByIdDto> getAddress(
+            @PathVariable UUID addressId,
+            @AuthenticationPrincipal RequestUserDetails userDetails
+    ) {
 
-        ResGetAddressByIdDto resGetAddressByIdDto = ResGetAddressByIdDto.builder()
-                .addressId(addressId)
-                .zipNum("zipNum")
-                .city("city")
-                .district("district")
-                .streetName("streetName")
-                .streetNum("streetNum")
-                .detailAddr("detailAddr")
-                .build();
+        ResGetAddressByIdDto resGetAddressByIdDto = addressService.getAddress(addressId, userDetails.getUserId());
 
-        return ResponseDto.of("배송지 조회 성공", resGetAddressByIdDto);
+        return ResponseDto.of(ResponseMessage.GET_ADDRESS_SUCCESS.getMessage(), resGetAddressByIdDto);
     }
 
     @GetMapping("/address-default")
-    public ResponseDto<ResGetDefaultAddressDto> getDefaultAddress() {
+    public ResponseDto<ResGetDefaultAddressDto> getDefaultAddress(
+            @AuthenticationPrincipal RequestUserDetails userDetails
+    ) {
 
-        ResGetDefaultAddressDto resGetDefaultAddressDto = ResGetDefaultAddressDto.builder()
-                .addressId(UUID.randomUUID())
-                .zipNum("zipNum")
-                .city("city")
-                .district("district")
-                .streetName("streetName")
-                .streetNum("streetNum")
-                .detailAddr("detailAddr")
-                .build();
+        ResGetDefaultAddressDto resGetDefaultAddressDto = addressService.getDefaultAddress(userDetails.getUserId());
 
-        return ResponseDto.of("기본 배송지 조회 성공", resGetDefaultAddressDto);
+        return ResponseDto.of(ResponseMessage.GET_DEFAULT_ADDRESS_SUCCESS.getMessage(), resGetDefaultAddressDto);
     }
 
-    // 구현 시 List가 아닌 페이징을 적용하도록 수정
     @GetMapping("/address")
-    public ResponseDto<List<ResGetAddressesDto>> getAddresses() {
+    public ResponseDto<PagedModel<ResGetAddressesDto>> getAddresses(
+            Pageable pageable,
+            @AuthenticationPrincipal RequestUserDetails userDetails
+    ) {
 
-        ResGetAddressesDto resGetAddressesDto = ResGetAddressesDto.builder()
-                .addressId(UUID.randomUUID())
-                .zipNum("zipNum")
-                .city("city")
-                .district("district")
-                .streetName("streetName")
-                .streetNum("streetNum")
-                .detailAddr("detailAddr")
-                .build();
+        PagedModel<ResGetAddressesDto> resGetAddressesDtos =
+                addressService.getAddresses(pageable, userDetails.getUserId());
 
-        List<ResGetAddressesDto> responseDtos = new ArrayList<>();
-        responseDtos.add(resGetAddressesDto);
-
-        return ResponseDto.of("배송지 목록 조회 성공", responseDtos);
+        return ResponseDto.of(ResponseMessage.GET_ADDRESS_LIST_SUCCESS.getMessage(), resGetAddressesDtos);
     }
 
     @PatchMapping("/address/{addressId}")
-    public ResponseDto<ResPatchAddressByIdDto> updateAddress(@PathVariable UUID addressId,
-                                                             @RequestBody ReqPatchAddressByIdDto requestDto) {
+    public ResponseDto<ResPatchAddressByIdDto> updateAddress(
+            @PathVariable UUID addressId,
+            @RequestBody ReqPatchAddressByIdDto requestDto,
+            @AuthenticationPrincipal RequestUserDetails userDetails) {
 
-        ResPatchAddressByIdDto resPatchAddressByIdDto = ResPatchAddressByIdDto.builder()
-                .addressId(addressId)
-                .build();
+        ResPatchAddressByIdDto resPatchAddressByIdDto =
+                addressService.updateAddress(addressId, requestDto, userDetails.getUserId());
 
-        return ResponseDto.of("배송지 수정 성공", resPatchAddressByIdDto);
+        return ResponseDto.of(ResponseMessage.UPDATE_ADDRESS_SUCCESS.getMessage(), resPatchAddressByIdDto);
     }
 
     @PatchMapping("/address-default/{addressId}")
     public ResponseDto<ResPatchDefaultAddressByIdDto> updateDefaultAddress(
             @PathVariable UUID addressId,
-            @RequestBody ResPatchDefaultAddressByIdDto requestDto
+            @AuthenticationPrincipal RequestUserDetails userDetails
     ) {
 
-        ResPatchDefaultAddressByIdDto resPatchDefaultAddressByIdDto = ResPatchDefaultAddressByIdDto.builder()
-                .addressId(addressId)
-                .build();
+        ResPatchDefaultAddressByIdDto resPatchDefaultAddressByIdDto =
+                addressService.updateDefaultAddress(addressId, userDetails.getUserId());
 
-        return ResponseDto.of("기본 배송지 설정 성공", resPatchDefaultAddressByIdDto);
+        return ResponseDto.of(ResponseMessage.UPDATE_DEFAULT_ADDRESS_SUCCESS.getMessage(),
+                resPatchDefaultAddressByIdDto);
     }
 
     @DeleteMapping("/address/{addressId}")
-    public ResponseDto<ResDeleteAddressByIdDto> deleteAddress(@PathVariable UUID addressId) {
+    public ResponseDto<ResDeleteAddressByIdDto> deleteAddress(
+            @PathVariable UUID addressId,
+            @AuthenticationPrincipal RequestUserDetails userDetails
+    ) {
 
-        ResDeleteAddressByIdDto resDeleteAddressByIdDto = ResDeleteAddressByIdDto.builder()
-                .addressId(addressId)
-                .build();
+        ResDeleteAddressByIdDto resDeleteAddressByIdDto =
+                addressService.deleteAddress(addressId, userDetails.getUserId());
 
-        return ResponseDto.of("배송지 삭제 성공", resDeleteAddressByIdDto);
+        return ResponseDto.of(ResponseMessage.DELETE_ADDRESS_SUCCESS.getMessage(), resDeleteAddressByIdDto);
     }
 }
