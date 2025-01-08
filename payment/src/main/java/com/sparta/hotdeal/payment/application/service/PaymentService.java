@@ -9,6 +9,8 @@ import com.sparta.hotdeal.payment.application.dtos.payment.res.ResGetPaymentById
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResGetPaymentForListDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResPostPaymentConfirmDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResPostPaymentsDto;
+import com.sparta.hotdeal.payment.application.exception.ApplicationException;
+import com.sparta.hotdeal.payment.application.exception.ErrorCode;
 import com.sparta.hotdeal.payment.application.port.KakaoPayClientPort;
 import com.sparta.hotdeal.payment.domain.entity.payment.Payment;
 import com.sparta.hotdeal.payment.domain.entity.payment.PaymentStatus;
@@ -43,7 +45,7 @@ public class PaymentService {
 
     public ResPostPaymentConfirmDto approvePayment(UUID userId, ReqPostPaymentConfirmDto reqPostPaymentConfirmDto) {
         Payment payment = paymentRepository.findByTid(reqPostPaymentConfirmDto.getTid())
-                .orElseThrow(() -> new IllegalArgumentException("결제 정보 없음"));
+                .orElseThrow(() -> new ApplicationException(ErrorCode.PAYMENT_NOT_FOUND_EXCEPTION));
         KakaoPayApproveDto kakaoPayApproveDto = kakaoPayClientPort.approve(userId, reqPostPaymentConfirmDto,
                 PaymentDto.from(payment));
         payment.updateStatus(PaymentStatus.COMPLETE);
@@ -52,7 +54,7 @@ public class PaymentService {
 
     public ResGetPaymentByIdDto getPaymentById(UUID userId, UUID paymentId) {
         Payment payment = paymentRepository.findByIdAndUserId(paymentId, userId)
-                .orElseThrow(() -> new IllegalArgumentException("결제 정보 없음"));
+                .orElseThrow(() -> new ApplicationException(ErrorCode.PAYMENT_NOT_FOUND_EXCEPTION));
         return ResGetPaymentByIdDto.of(payment);
     }
 
