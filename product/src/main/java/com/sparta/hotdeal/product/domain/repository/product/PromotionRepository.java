@@ -19,4 +19,6 @@ public interface PromotionRepository {
     Optional<Promotion> findById(UUID id);
 
     void save(Promotion promotion);
+
+    Optional<Promotion> findByProductIdAndStatus(UUID productId, PromotionStatusEnum status);
 }

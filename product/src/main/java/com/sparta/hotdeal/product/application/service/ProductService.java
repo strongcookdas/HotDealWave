@@ -4,6 +4,7 @@ import com.sparta.hotdeal.product.application.dtos.req.product.ReqPatchProductQu
 import com.sparta.hotdeal.product.application.dtos.req.product.ReqPatchProductStatusDto;
 import com.sparta.hotdeal.product.application.dtos.req.product.ReqPostProductDto;
 import com.sparta.hotdeal.product.application.dtos.req.product.ReqPutProductDto;
+import com.sparta.hotdeal.product.application.dtos.req.promotion.ReqPromotionQuantityDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResGetProductDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPatchProductStatusDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPatchReduceProductQuantityDto;
@@ -46,7 +47,7 @@ public class ProductService {
     private final CompanyClientService companyClientService;
     private final FileService fileService;
     private final SubFileService subFileService;
-    private final PromotionService promotionService;
+    private final ProductPromotionHelperService productPromotionHelperService;
 
     public ResPostProductDto createProduct(ReqPostProductDto productDto) {
         // company 검증
@@ -228,12 +229,23 @@ public class ProductService {
         }
 
         // 할인 중인 상품을 분리
-        List<Product> discountedProducts = products.stream()
-                .filter(product -> product.getDiscountPrice() != null)
+        List<ReqPromotionQuantityDto> reqPromotionQuantityDtos = products.stream()
+                .filter(product -> product.getDiscountPrice() != null) // 할인 중인 상품만 필터
+                .map(product -> {
+                    // 해당 상품의 ID와 수량을 ReqPromotionQuantityDto로 매핑
+                    int quantity = reqPatchProductQuantityDto.stream()
+                            .filter(dto -> dto.getProductId().equals(product.getId()))
+                            .map(ReqPatchProductQuantityDto::getQuantity)
+                            .findFirst()
+                            .orElse(0); // 수량을 찾고, 없으면 0으로 기본 설정
+                    return new ReqPromotionQuantityDto(product.getId(), quantity);
+                })
                 .collect(Collectors.toList());
 
+        log.info("ProductService reqPromotionQuantityDtos : {}", reqPromotionQuantityDtos.size());
+
         // 할인 중인 상품에 대한 별도 요청 처리
-        processDiscountedProducts(discountedProducts);
+        processDiscountedProducts(reqPromotionQuantityDtos, isRestore);
 
         List<T> resPatchProductQuantityDtos = new ArrayList<>();
 
@@ -262,9 +274,12 @@ public class ProductService {
                 .orElseThrow(() -> new ApplicationException(ErrorCode.PRODUCT_NOT_FOUND_EXCEPTION));
     }
 
-    private void processDiscountedProducts(List<Product> discountedProducts) {
-        // 할인 중인 상품들에 대해 추가 작업 (예: 할인 처리, 외부 API 호출 등)
-        // 이곳에서 외부 API 호출 또는 로직을 작성할 수 있습니다.
+    private void processDiscountedProducts(List<ReqPromotionQuantityDto> reqPromotionQuantityDtos, Boolean isRestore) {
+        if (isRestore) {
+            productPromotionHelperService.processPromotionQuantity(reqPromotionQuantityDtos, isRestore);
+        } else {
+            productPromotionHelperService.processPromotionQuantity(reqPromotionQuantityDtos, isRestore);
+        }
     }
 
 }
