@@ -10,5 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ResPostCouponValidateDto {
-    private boolean isValid; // 쿠폰 사용 가능 여부
+    private boolean isValid;
+    private int totalDiscountAmount;
 }

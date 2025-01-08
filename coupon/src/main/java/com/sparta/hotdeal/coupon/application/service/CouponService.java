@@ -99,6 +99,7 @@ public class CouponService {
 
         return ResPostCouponValidateDto.builder()
                 .isValid(true)
+                .totalDiscountAmount(couponInfo.getDiscountAmount())
                 .build();
     }
 
