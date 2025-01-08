@@ -8,6 +8,7 @@ import com.sparta.hotdeal.payment.application.dtos.payment.res.ResGetPaymentForL
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResPostPaymentConfirmDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResPostPaymentsDto;
 import com.sparta.hotdeal.payment.application.service.PaymentService;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -29,12 +30,12 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @PostMapping
-    public ResponseDto<ResPostPaymentsDto> readyPayment(@RequestBody ReqPostPaymentDto req) {
+    public ResponseDto<ResPostPaymentsDto> readyPayment(@RequestBody @Valid ReqPostPaymentDto req) {
         return ResponseDto.of("결제 요청이 처리되었습니다.", paymentService.readyPayment(UUID.randomUUID(), req));
     }
 
     @PostMapping("/confirm")
-    public ResponseDto<ResPostPaymentConfirmDto> confirmPayment(@RequestBody ReqPostPaymentConfirmDto req) {
+    public ResponseDto<ResPostPaymentConfirmDto> confirmPayment(@RequestBody @Valid ReqPostPaymentConfirmDto req) {
         return ResponseDto.of("결제 승인 처리되었습니다.", paymentService.approvePayment(UUID.randomUUID(), req));
     }
 
