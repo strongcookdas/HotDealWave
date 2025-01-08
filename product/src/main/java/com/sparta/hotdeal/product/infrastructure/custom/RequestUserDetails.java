@@ -9,12 +9,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class RequestUserDetails implements UserDetails {
     @Getter
     private final UUID userId;
-    private final String username;
+
+    @Getter
+    private final String email;
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public RequestUserDetails(String userId, String username, Collection<? extends GrantedAuthority> authorities) {
+    public RequestUserDetails(String userId, String email, Collection<? extends GrantedAuthority> authorities) {
         this.userId = UUID.fromString(userId);
-        this.username = username;
+        this.email = email;
         this.authorities = authorities;
     }
 
@@ -30,7 +32,7 @@ public class RequestUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return username;
+        return "";
     }
 
     public String getRole() {

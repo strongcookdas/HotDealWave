@@ -94,7 +94,7 @@ public class ProductController {
             @AuthenticationPrincipal RequestUserDetails userDetails,
             @PathVariable UUID productId
     ) {
-        productService.deleteProduct(productId, userDetails.getUsername());
+        productService.deleteProduct(productId, userDetails.getEmail());
 
         return ResponseDto.of("상품이 삭제되었습니다.", null);
     }

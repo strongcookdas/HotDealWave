@@ -22,7 +22,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException { //userId 이외에 다른 데이터가 필요한지 논의 필요
 
         String userId = request.getHeader("X-User-Id");
-        String username = request.getHeader("X-User-Name"); // 중복 허용되지 않는 값으로 설정이 필요 (일단 email로 생각하고 구현)
+        String email = request.getHeader("X-User-Email"); // 중복 허용되지 않는 값으로 설정이 필요 (일단 email로 생각하고 구현)
         String role = request.getHeader("X-User-Role"); //ROLE_ 추가되는지 확인 필요
 
         if (userId == null || role == null) {
@@ -33,7 +33,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             return;
              */
             userId = "8fbd655f-dc52-4bf9-ab23-ef89e923db44";
-            username = "mock@email.com";
+            email = "mock@email.com";
             role = "MASTER";
         }
 
@@ -43,7 +43,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         }
 
         List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
-        UserDetails userDetails = new RequestUserDetails(userId, username, authorities);
+        UserDetails userDetails = new RequestUserDetails(userId, email, authorities);
 
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(userDetails, null, authorities);

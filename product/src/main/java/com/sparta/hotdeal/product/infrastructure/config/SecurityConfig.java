@@ -1,6 +1,7 @@
 package com.sparta.hotdeal.product.infrastructure.config;
 
 import com.sparta.hotdeal.product.infrastructure.exception.handler.CustomAccessDeniedHandler;
+import com.sparta.hotdeal.product.infrastructure.exception.handler.CustomAuthenticationHandler;
 import com.sparta.hotdeal.product.infrastructure.filter.AuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +23,7 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable) // 폼 로그인 비활성화
                 .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll())
                 .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(new CustomAuthenticationHandler())
                         .accessDeniedHandler(new CustomAccessDeniedHandler()) // 권한 부족(403) 시 핸들러
                 )
                 .addFilterBefore(authenticationFilter(), UsernamePasswordAuthenticationFilter.class); // 커스텀 필터 추가

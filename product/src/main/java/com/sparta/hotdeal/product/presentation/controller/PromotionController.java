@@ -67,7 +67,7 @@ public class PromotionController {
             @AuthenticationPrincipal RequestUserDetails userDetails,
             @PathVariable UUID promotionId
     ) {
-        promotionService.deletePromotion(promotionId, userDetails.getUsername());
+        promotionService.deletePromotion(promotionId, userDetails.getEmail());
 
         return ResponseDto.of("프로모션이 삭제되었습니다.", null);
     }
