@@ -12,11 +12,11 @@ import java.util.UUID;
 public interface CouponRepository {
     boolean existsByUserIdAndCouponInfoId(UUID userId, UUID couponInfoId);
 
-    Optional<Coupon> findByIdAndIsDeletedFalse(UUID couponId);
+    Optional<Coupon> findByIdAndDeletedAtIsNull(UUID couponId);
 
-    List<Coupon> findByUserIdAndIsDeletedFalseAndIsUsed(UUID userId, boolean isUsed);
+    List<Coupon> findByUserIdAndDeletedAtIsNullAndIsUsed(UUID userId, boolean isUsed);
 
-    List<Coupon> findAllByCouponInfoAndIsDeletedFalse(CouponInfo couponInfo);
+    List<Coupon> findAllByCouponInfoAndDeletedAtIsNull(CouponInfo couponInfo);
 
     Coupon save(Coupon coupon);
 }

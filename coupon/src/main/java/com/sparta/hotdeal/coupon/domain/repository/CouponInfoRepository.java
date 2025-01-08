@@ -7,9 +7,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface CouponInfoRepository {
-    Optional<CouponInfo> findByIdAndIsDeletedFalse(UUID couponInfoId);
+    Optional<CouponInfo> findByIdAndDeletedAtIsNull(UUID couponInfoId);
 
-    List<CouponInfo> findAllByExpirationDateBeforeAndIsDeletedFalse(LocalDate expirationDate);
+    List<CouponInfo> findAllByExpirationDateBeforeAndDeletedAtIsNull(LocalDate expirationDate);
 
     CouponInfo save(CouponInfo couponInfo);
 }

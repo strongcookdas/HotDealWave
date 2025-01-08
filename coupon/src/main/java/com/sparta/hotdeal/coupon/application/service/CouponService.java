@@ -127,14 +127,14 @@ public class CouponService {
 
     @Transactional
     public void deleteCoupon(UUID couponId, String email) {
-        Coupon coupon = couponRepository.findByIdAndIsDeletedFalse(couponId)
+        Coupon coupon = couponRepository.findByIdAndDeletedAtIsNull(couponId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_COUPON));
 
         coupon.delete(email);
     }
 
     public List<ResGetUserCouponsDto> getUserCoupons(UUID userId, boolean isUsed) {
-        List<Coupon> coupons = couponRepository.findByUserIdAndIsDeletedFalseAndIsUsed(userId, isUsed);
+        List<Coupon> coupons = couponRepository.findByUserIdAndDeletedAtIsNullAndIsUsed(userId, isUsed);
 
         return CouponMapper.toResGetUserCouponsDtoList(coupons);
     }
@@ -147,7 +147,7 @@ public class CouponService {
 
 
     public Coupon findByIdOrThrow(UUID couponId) {
-        return couponRepository.findByIdAndIsDeletedFalse(couponId)
+        return couponRepository.findByIdAndDeletedAtIsNull(couponId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_COUPON));
     }
 

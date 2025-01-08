@@ -31,22 +31,17 @@ public class AuditingDate {
 
     private String deletedBy;
 
-    private boolean isDeleted;
-
     public void delete(String email) {
-        this.isDeleted = true;
         this.deletedAt = LocalDateTime.now();
         this.deletedBy = email;
     }
 
     public void systemDelete() {
-        this.isDeleted = true;
         this.deletedAt = LocalDateTime.now();
         this.deletedBy = "SYSTEM";
     }
 
     public void recover() {
-        this.isDeleted = false;
         this.deletedAt = null;
         this.deletedBy = null;
     }

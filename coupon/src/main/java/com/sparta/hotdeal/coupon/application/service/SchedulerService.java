@@ -22,10 +22,10 @@ public class SchedulerService {
 
     @Transactional
     public void processExpiredCoupons() {
-        List<CouponInfo> expiredCouponInfos = couponInfoRepository.findAllByExpirationDateBeforeAndIsDeletedFalse(LocalDate.now());
+        List<CouponInfo> expiredCouponInfos = couponInfoRepository.findAllByExpirationDateBeforeAndDeletedAtIsNull(LocalDate.now());
 
         expiredCouponInfos.forEach(couponInfo -> {
-            List<Coupon> relatedCoupons = couponRepository.findAllByCouponInfoAndIsDeletedFalse(couponInfo);
+            List<Coupon> relatedCoupons = couponRepository.findAllByCouponInfoAndDeletedAtIsNull(couponInfo);
             relatedCoupons.forEach(Coupon::systemDelete);
 
             couponInfo.systemDelete();
