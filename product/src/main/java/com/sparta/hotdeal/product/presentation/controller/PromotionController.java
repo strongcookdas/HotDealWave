@@ -8,11 +8,13 @@ import com.sparta.hotdeal.product.application.dtos.res.promotion.ResPostPromotio
 import com.sparta.hotdeal.product.application.dtos.res.promotion.ResPutPromotionDto;
 import com.sparta.hotdeal.product.application.service.PromotionService;
 import com.sparta.hotdeal.product.domain.entity.promotion.PromotionStatusEnum;
+import com.sparta.hotdeal.product.infrastructure.custom.RequestUserDetails;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,6 +37,7 @@ public class PromotionController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<ResPostPromotionDto> createPromotion(
+            @AuthenticationPrincipal RequestUserDetails userDetails,
             @RequestBody ReqPostPromotionDto reqPostCreatePromotionDto
     ) {
 //        ResPostPromotionDto resPostPromotionDto = ResPostPromotionDto.builder()
@@ -47,6 +50,7 @@ public class PromotionController {
 
     @PutMapping("/{promotionId}")
     public ResponseDto<ResPutPromotionDto> updatePromotion(
+            @AuthenticationPrincipal RequestUserDetails userDetails,
             @PathVariable UUID promotionId,
             @RequestBody ReqPutPromotionDto reqPutUpdatePromotionDto
     ) {
@@ -60,17 +64,17 @@ public class PromotionController {
 
     @DeleteMapping("/{promotionId}")
     public ResponseDto<Void> deletePromotion(
+            @AuthenticationPrincipal RequestUserDetails userDetails,
             @PathVariable UUID promotionId
     ) {
-        // 임시 user
-        String username = "testUser";
-        promotionService.deletePromotion(promotionId, username);
+        promotionService.deletePromotion(promotionId, userDetails.getUsername());
 
         return ResponseDto.of("프로모션이 삭제되었습니다.", null);
     }
 
     @GetMapping("/{promotionId}")
     public ResponseDto<ResGetPromotionDto> getPromotion(
+            @AuthenticationPrincipal RequestUserDetails userDetails,
             @PathVariable UUID promotionId
     ) {
 //        ResGetPromotionDto resGetPromotionDto = ResGetPromotionDto.builder()
@@ -90,6 +94,7 @@ public class PromotionController {
 
     @GetMapping()
     public ResponseDto<Page<ResGetPromotionDto>> getAllPromotions(
+            @AuthenticationPrincipal RequestUserDetails userDetails,
             @RequestParam(defaultValue = "1") int page_number,
             @RequestParam(defaultValue = "10") int page_size,
             @RequestParam(defaultValue = "createdAt") String sort_by,

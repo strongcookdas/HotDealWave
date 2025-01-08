@@ -12,12 +12,14 @@ import com.sparta.hotdeal.product.application.dtos.res.product.ResPatchRestorePr
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPostProductDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPutProductDto;
 import com.sparta.hotdeal.product.application.service.ProductService;
+import com.sparta.hotdeal.product.infrastructure.custom.RequestUserDetails;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -42,6 +44,7 @@ public class ProductController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<ResPostProductDto> createProduct(
+            @AuthenticationPrincipal RequestUserDetails userDetails,
             @ModelAttribute ReqPostProductDto reqPostCreateProductDto
     ) {
 //        ResPostProductDto resPostProductDto = ResPostProductDto.builder()
@@ -54,6 +57,7 @@ public class ProductController {
 
     @PutMapping("/{productId}")
     public ResponseDto<ResPutProductDto> updateProduct(
+            @AuthenticationPrincipal RequestUserDetails userDetails,
             @PathVariable UUID productId,
             @ModelAttribute ReqPutProductDto reqPutUpdateProductDto
     ) {
@@ -71,6 +75,7 @@ public class ProductController {
 
     @PatchMapping("/{productId}")
     public ResponseDto<ResPatchProductStatusDto> updateProductStatus(
+            @AuthenticationPrincipal RequestUserDetails userDetails,
             @PathVariable UUID productId,
             @RequestBody ReqPatchProductStatusDto reqPatchUpdateProductStatusDto
     ) {
@@ -86,17 +91,17 @@ public class ProductController {
 
     @DeleteMapping("/{productId}")
     public ResponseDto<Void> deleteProduct(
+            @AuthenticationPrincipal RequestUserDetails userDetails,
             @PathVariable UUID productId
     ) {
-        // 임시 user
-        String username = "testUser";
-        productService.deleteProduct(productId, username);
+        productService.deleteProduct(productId, userDetails.getUsername());
 
         return ResponseDto.of("상품이 삭제되었습니다.", null);
     }
 
     @PatchMapping("/reduceQuantity")
     public ResponseDto<List<ResPatchReduceProductQuantityDto>> reduceQuantity(
+            @AuthenticationPrincipal RequestUserDetails userDetails,
             @RequestBody List<ReqPatchProductQuantityDto> reqPatchProductQuantityDto
     ) {
 //        ResPatchReduceProductQuantityDto resPatchReduceProductQuantityDto = ResPatchReduceProductQuantityDto.builder()
@@ -110,6 +115,7 @@ public class ProductController {
 
     @PatchMapping("/restoreQuantity")
     public ResponseDto<List<ResPatchRestoreProductQuantityDto>> restoreQuantity(
+            @AuthenticationPrincipal RequestUserDetails userDetails,
             @RequestBody List<ReqPatchProductQuantityDto> reqPatchProductQuantityDto
     ) {
 //        ResPatchRestoreProductQuantityDto resPatchRestoreProductQuantityDto = ResPatchRestoreProductQuantityDto.builder()
@@ -123,6 +129,7 @@ public class ProductController {
 
     @GetMapping("/{productId}")
     public ResponseDto<ResGetProductDto> getProduct(
+            @AuthenticationPrincipal RequestUserDetails userDetails,
             @PathVariable UUID productId
     ) {
 //        ResGetProductDto resGetProductDto = ResGetProductDto.builder()
@@ -147,6 +154,7 @@ public class ProductController {
 
     @GetMapping()
     public ResponseDto<Page<ResGetProductDto>> getAllProducts(
+            @AuthenticationPrincipal RequestUserDetails userDetails,
             @RequestParam(defaultValue = "1") int page_number,
             @RequestParam(defaultValue = "10") int page_size,
             @RequestParam(defaultValue = "createdAt") String sort_by,
