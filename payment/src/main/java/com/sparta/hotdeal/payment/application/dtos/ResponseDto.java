@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.payment.presentation.dtos;
+package com.sparta.hotdeal.payment.application.dtos;
 
 import lombok.Builder;
 import lombok.Getter;
