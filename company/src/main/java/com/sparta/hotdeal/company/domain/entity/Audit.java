@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.company.domain;
+package com.sparta.hotdeal.company.domain.entity;
 
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
@@ -13,7 +13,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public class AuditingDate {
+public class Audit {
     @CreatedDate
     private LocalDateTime createdAt;
     @CreatedBy
@@ -28,5 +28,10 @@ public class AuditingDate {
     public void delete(String deletedBy) {
         this.deletedAt = LocalDateTime.now();
         this.deletedBy = deletedBy;
+    }
+
+    public void update(String updatedBy) {
+        this.createdBy = updatedBy;
+        this.updatedBy = updatedBy;
     }
 }
