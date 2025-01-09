@@ -161,6 +161,10 @@ public class OrderService {
                 throw new ApplicationException(ErrorCode.PRODUCT_INVALID_QUANTITY_EXCEPTION);
             }
 
+            if (!productDto.getStatus().equals("ON_SALE")) {
+                throw new ApplicationException(ErrorCode.PRODUCT_NOT_ON_SALE_EXCEPTION);
+            }
+
             int productPrice =
                     (productDto.getDiscountPrice() == null) ? productDto.getPrice() : productDto.getDiscountPrice();
             totalAmount += (productPrice * basket.getQuantity());

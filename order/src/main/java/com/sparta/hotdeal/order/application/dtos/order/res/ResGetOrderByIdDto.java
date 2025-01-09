@@ -7,7 +7,6 @@ import com.sparta.hotdeal.order.application.dtos.user.UserDto;
 import com.sparta.hotdeal.order.domain.entity.order.Order;
 import com.sparta.hotdeal.order.domain.entity.order.OrderStatus;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -22,7 +21,7 @@ public class ResGetOrderByIdDto {
     private List<Product> productList;
     private String username;
     private Address address;
-    private Long totalAmount;
+    private Integer totalAmount;
     private Integer discountAmount;
     private OrderStatus orderStatus;
 
@@ -66,39 +65,6 @@ public class ResGetOrderByIdDto {
                     .detailAddr(address.getDetailAddr())
                     .build();
         }
-    }
-
-    // 더미 데이터 생성 메서드
-    public static ResGetOrderByIdDto createDummy(UUID orderId) {
-        return ResGetOrderByIdDto.builder()
-                .orderId(orderId)
-                .createdAt(LocalDateTime.now())
-                .username("john_doe")
-                .address(Address.builder()
-                        .addressId(UUID.randomUUID())
-                        .zipNum("12345")
-                        .city("Seoul")
-                        .district("Gangnam")
-                        .streetName("Teheran-ro")
-                        .streetNum("123")
-                        .detailAddr("Apartment 101")
-                        .build())
-                .productList(Arrays.asList(
-                        Product.builder()
-                                .productId(UUID.randomUUID())
-                                .productName("Product A")
-                                .productQuantity(1)
-                                .productPrice(20000)
-                                .build(),
-                        Product.builder()
-                                .productId(UUID.randomUUID())
-                                .productName("Product B")
-                                .productQuantity(2)
-                                .productPrice(30000)
-                                .build()
-                ))
-                .totalAmount(80000L)
-                .build();
     }
 
     public static ResGetOrderByIdDto of(Order order, AddressDto address,
