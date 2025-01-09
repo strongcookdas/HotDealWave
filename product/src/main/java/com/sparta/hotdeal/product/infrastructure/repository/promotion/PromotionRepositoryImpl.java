@@ -42,4 +42,9 @@ public class PromotionRepositoryImpl implements PromotionRepository {
     public void save(Promotion promotion) {
         promotionRepositoryJpa.save(promotion);
     }
+
+    @Override
+    public Optional<Promotion> findByProductIdAndStatus(UUID productId, PromotionStatusEnum status) {
+        return promotionRepositoryJpa.findByProductIdAndStatus(productId, status);
+    }
 }
