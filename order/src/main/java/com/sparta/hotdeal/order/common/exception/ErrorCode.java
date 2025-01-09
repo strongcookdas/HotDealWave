@@ -29,6 +29,7 @@ public enum ErrorCode {
     PRODUCT_FORBIDDEN_EXCEPTION(HttpStatus.FORBIDDEN, "OP002", "인가되지 않는 상품 요청입니다."),
     PRODUCT_NOT_ON_SALE_EXCEPTION(HttpStatus.BAD_REQUEST,"OP003","판매하지 않는 상품입니다."),
     PRODUCT_INVALID_QUANTITY_EXCEPTION(HttpStatus.BAD_REQUEST,"OP004","상품 수량이 부족합니다."),
+    PRODUCT_INVALID_VALUE_EXCEPTION(HttpStatus.BAD_REQUEST, "OP005", "올바르지 않은 상품 요청 값입니다."),
 
     //Basket
     BASKET_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "OB001", "존재하지 않는 장바구니 리소스입니다."),

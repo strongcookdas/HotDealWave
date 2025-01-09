@@ -11,7 +11,7 @@ public interface ProductClientPort {
 
     Map<UUID, ProductDto> getProductAll(List<UUID> productIds);
 
-    void reduceProductQuantity(List<Basket> basketList, Map<UUID, ProductDto> productMap);
+    void reduceProductQuantity(List<Basket> basketList);
 
     ProductByIdtDto getProduct(UUID productId);
 

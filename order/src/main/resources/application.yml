@@ -28,7 +28,7 @@ logging:
     org.springframework.security: DEBUG
 
 admin:
-  user: ${ADMIN_USER_ID}
+  user-id: ${ADMIN_USER_ID}
   email: ${ADMIN_EMAIL}
   role: ${ADMIN_ROLE}
 

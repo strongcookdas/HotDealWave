@@ -6,7 +6,7 @@ import feign.codec.ErrorDecoder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 
-public class CouponClientConfig {
+public class ProductClientConfig {
 
     @Value("${admin.user-id}")
     private String userId;

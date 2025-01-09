@@ -1,6 +1,5 @@
 package com.sparta.hotdeal.order.infrastructure.adapter;
 
-import com.sparta.hotdeal.order.application.dtos.coupon.CouponDto;
 import com.sparta.hotdeal.order.application.dtos.coupon.CouponValidationDto;
 import com.sparta.hotdeal.order.application.dtos.product.ProductDto;
 import com.sparta.hotdeal.order.application.port.CouponClientPort;

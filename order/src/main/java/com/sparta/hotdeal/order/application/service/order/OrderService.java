@@ -70,7 +70,7 @@ public class OrderService {
         }
 
         //6. 상품 감소 처리
-//        productClientPort.reduceProductQuantity(basketList, productMap);
+        productClientPort.reduceProductQuantity(basketList);
 
         //7. 장바구니 삭제
         orderBasketService.deleteBasketList(basketList);
