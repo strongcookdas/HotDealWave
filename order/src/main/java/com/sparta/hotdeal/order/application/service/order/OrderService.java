@@ -2,13 +2,17 @@ package com.sparta.hotdeal.order.application.service.order;
 
 import com.sparta.hotdeal.order.application.dtos.address.AddressDto;
 import com.sparta.hotdeal.order.application.dtos.coupon.CouponValidationDto;
+import com.sparta.hotdeal.order.application.dtos.order.OrderDto;
 import com.sparta.hotdeal.order.application.dtos.order.req.ReqPostOrderDto;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrderByIdDto;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrderListDto;
+import com.sparta.hotdeal.order.application.dtos.order.res.ResPostOrderDto;
 import com.sparta.hotdeal.order.application.dtos.order_product.OrderProductDto;
+import com.sparta.hotdeal.order.application.dtos.payment.PaymentRequestDto;
 import com.sparta.hotdeal.order.application.dtos.product.ProductDto;
 import com.sparta.hotdeal.order.application.dtos.user.UserDto;
 import com.sparta.hotdeal.order.application.port.CouponClientPort;
+import com.sparta.hotdeal.order.application.port.PaymentClientPort;
 import com.sparta.hotdeal.order.application.port.ProductClientPort;
 import com.sparta.hotdeal.order.application.port.UserClientPort;
 import com.sparta.hotdeal.order.common.exception.ApplicationException;
@@ -38,11 +42,12 @@ public class OrderService {
     private final ProductClientPort productClientPort;
     private final CouponClientPort couponClientPort;
     private final UserClientPort userClientPort;
+    private final PaymentClientPort paymentClientPort;
 
     private final OrderProductService orderProductService;
     private final OrderBasketService orderBasketService;
 
-    public void createOrder(UUID userId, ReqPostOrderDto req) {
+    public ResPostOrderDto createOrder(UUID userId, ReqPostOrderDto req) {
         //1. 장바구니 조회
         List<Basket> basketList = orderBasketService.getBasketList(req.getBasketList());
 
@@ -61,9 +66,10 @@ public class OrderService {
         //5. 쿠폰 유효성 및 쿠폰 적용
         int discountAmount = 0;
         UUID couponId = null;
-        CouponValidationDto couponValidationDto = couponClientPort.validateCoupon(req.getCouponId(), basketList, productDtoMap);
+        CouponValidationDto couponValidationDto = couponClientPort.validateCoupon(req.getCouponId(), basketList,
+                productDtoMap);
 
-        if(couponValidationDto.isValid()){
+        if (couponValidationDto.isValid()) {
             discountAmount = couponValidationDto.getTotalDiscountAmount();
             couponId = req.getCouponId();
             couponClientPort.useCoupon(couponId);
@@ -88,7 +94,10 @@ public class OrderService {
 
         order = orderRepository.save(order);
         orderProductService.createOrderProductList(order, basketList, productDtoList);
-        //주문 생성 이후 비동리 처리 (쿠폰 사용, 수량 감소, 결제 요청)
+
+        //주문 생성 이후 비동기 처리 (결제 요청)
+        PaymentRequestDto paymentRequestDto = paymentClientPort.readyPayment(OrderDto.of(order), basketList);
+        return ResPostOrderDto.of(order, paymentRequestDto);
     }
 
     @Transactional(readOnly = true)

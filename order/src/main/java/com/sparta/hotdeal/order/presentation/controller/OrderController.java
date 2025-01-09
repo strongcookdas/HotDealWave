@@ -6,6 +6,7 @@ import com.sparta.hotdeal.order.application.dtos.order.req.ReqPostOrderDto;
 import com.sparta.hotdeal.order.application.dtos.order.res.OrderResponseMessage;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrderByIdDto;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrderListDto;
+import com.sparta.hotdeal.order.application.dtos.order.res.ResPostOrderDto;
 import com.sparta.hotdeal.order.application.service.order.OrderService;
 import com.sparta.hotdeal.order.infrastructure.custom.RequestUserDetails;
 import java.util.UUID;
@@ -35,14 +36,14 @@ public class OrderController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseDto<Void> createOrder(@AuthenticationPrincipal RequestUserDetails userDetails,
-                                         @RequestBody ReqPostOrderDto req) {
+    public ResponseDto<ResPostOrderDto> createOrder(@AuthenticationPrincipal RequestUserDetails userDetails,
+                                                    @RequestBody ReqPostOrderDto req) {
 
         log.info("userId : {}", userDetails.getUserId());
         log.info("userEmail : {}", userDetails.getEmail());
         log.info("userRole : {}", userDetails.getRole());
-        orderService.createOrder(userDetails.getUserId(), req);
-        return ResponseDto.of(OrderResponseMessage.CREATE_ORDER.getMessage(), null);
+        return ResponseDto.of(OrderResponseMessage.CREATE_ORDER.getMessage(),
+                orderService.createOrder(userDetails.getUserId(), req));
     }
 
     @GetMapping
