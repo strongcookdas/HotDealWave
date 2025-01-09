@@ -51,8 +51,8 @@ public class AuthService {
         String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
 
         User user = requestDto.toEntity(encodedPassword);
-        user.updateCreatedByAndUpdateBy(user.getEmail());
         userRepository.save(user);
+        user.updateCreatedByAndUpdateBy(user.getEmail());
 
         return ResPostSignUpDto.builder()
                 .userId(user.getUserId())
