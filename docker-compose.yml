@@ -49,10 +49,6 @@ services:
     networks:
       - hotdealnetwork
 
-volumes:
-  mysql-data:
-    driver: local
-
 networks:
   hotdealnetwork:
     external: true
