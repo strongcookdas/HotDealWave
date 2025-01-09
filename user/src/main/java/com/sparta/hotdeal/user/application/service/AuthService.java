@@ -69,7 +69,7 @@ public class AuthService {
     public void sendVerifyEmail(ReqPostVerifyEmailDto requestDto) {
         checkEmail(requestDto.getEmail());
 
-        if (emailRepository.existsById(requestDto.getEmail())) {
+        if (!emailRepository.existsById(requestDto.getEmail())) {
             Email email = requestDto.toEntity();
             emailRepository.save(email);
         }
