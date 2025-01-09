@@ -12,9 +12,6 @@ import com.sparta.hotdeal.product.domain.entity.promotion.Promotion;
 import com.sparta.hotdeal.product.domain.entity.promotion.PromotionStatusEnum;
 import com.sparta.hotdeal.product.domain.repository.product.PromotionRepository;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -70,6 +67,10 @@ public class PromotionService {
         Promotion promotion = promotionRepository.findById(promotionId)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.PROMOTION_NOT_FOUND_EXCEPTION));
 
+        if (promotion.getStatus() == PromotionStatusEnum.IN_PROGRESS) {
+            throw new ApplicationException(ErrorCode.PROMOTION_IS_ACTIVE_EXCEPTION);
+        }
+
         // 상품 조회
         UUID productId = reqPutUpdatePromotionDto.getProductId() == null ? promotion.getProductId()
                 : reqPutUpdatePromotionDto.getProductId();
@@ -92,15 +93,6 @@ public class PromotionService {
             validateDiscountQuantity(productDto.getQuantity(), reqPutUpdatePromotionDto.getQuantity());
         }
 
-        if (reqPutUpdatePromotionDto.getStart() != null || reqPutUpdatePromotionDto.getEnd() != null) {
-            log.info("update Promotion check promotion is Active");
-            LocalDateTime originStart = promotion.getStart();
-            LocalDateTime originEnd = promotion.getEnd();
-
-            // 타임세일이 진행중인지 확인
-            checkPromotionActive(originStart, originEnd);
-        }
-
         promotion.update(reqPutUpdatePromotionDto, discountRate);
 
         return ResPutPromotionDto.of(promotion.getId());
@@ -111,7 +103,9 @@ public class PromotionService {
                 .orElseThrow(() -> new ApplicationException(ErrorCode.PROMOTION_NOT_FOUND_EXCEPTION));
 
         // 타임세일이 진행중인지 확인
-        checkPromotionActive(promotion.getStart(), promotion.getEnd());
+        if (promotion.getStatus() == PromotionStatusEnum.IN_PROGRESS) {
+            throw new ApplicationException(ErrorCode.PROMOTION_IS_ACTIVE_EXCEPTION);
+        }
 
         // 타임세일 삭제 처리
         promotion.delete(username);
@@ -158,24 +152,6 @@ public class PromotionService {
     private void validateDiscountQuantity(int originQuantity, int discountQuantity) {
         if (discountQuantity > originQuantity) {
             throw new ApplicationException(ErrorCode.PROMOTION_INVALID_QUANTITY_EXCEPTION);
-        }
-    }
-
-    private void checkPromotionActive(LocalDateTime start, LocalDateTime end) {
-        // 현재 시간을 시스템 기본 시간대에서 ZonedDateTime으로 구하기
-        ZonedDateTime now = ZonedDateTime.now();
-        log.info("now : {}", now.toString());
-
-        // start와 end도 ZonedDateTime으로 변환
-        ZonedDateTime startZoned = start.atZone(ZoneId.systemDefault());
-        ZonedDateTime endZoned = end.atZone(ZoneId.systemDefault());
-
-        log.info("start : {}", startZoned.toString());
-        log.info("end : {}", endZoned.toString());
-
-        // 현재 시간이 타임세일 기간(start ~ end) 사이에 있으면 에러를 던짐
-        if (now.isAfter(startZoned) && now.isBefore(endZoned)) {
-            throw new ApplicationException(ErrorCode.PROMOTION_IS_ACTIVE_EXCEPTION);
         }
     }
 
