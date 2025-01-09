@@ -1,7 +1,8 @@
 package com.sparta.hotdeal.order.infrastructure.client;
 
 import com.sparta.hotdeal.order.infrastructure.dtos.ResponseDto;
-import com.sparta.hotdeal.order.infrastructure.dtos.coupon.ResPostCouponValidateDto;
+import com.sparta.hotdeal.order.infrastructure.dtos.coupon.req.ReqPostCouponValidateDto;
+import com.sparta.hotdeal.order.infrastructure.dtos.coupon.res.ResPostCouponValidateDto;
 import java.util.UUID;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,5 +14,5 @@ public interface CouponClient {
     // 구현 예정
     @PostMapping("/{couponId}/validate")
     public ResponseDto<ResPostCouponValidateDto> validateCoupon(@PathVariable UUID couponId,
-                                                                @RequestBody ResPostCouponValidateDto resPostCouponValidateDto);
+                                                                @RequestBody ReqPostCouponValidateDto reqPostCouponValidateDto);
 }

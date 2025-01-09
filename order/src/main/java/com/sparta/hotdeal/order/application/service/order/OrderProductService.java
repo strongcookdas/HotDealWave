@@ -26,14 +26,15 @@ public class OrderProductService {
 
     private final OrderProductRepository orderProductRepository;
 
-    public void createOrderProductList(Order order, List<Basket> basketList,
-                                       Map<UUID, ProductDto> productMap) {
+    public void createOrderProductList(Order order, List<Basket> basketList, List<ProductDto> productDtoList) {
+        Map<UUID, ProductDto> productDtoMap = productDtoList.stream()
+                .collect(Collectors.toMap(ProductDto::getProductId, product -> product));
 
         List<OrderProduct> orderProductList = basketList.stream()
                 .map(basket -> {
-                    ProductDto product = getProductOrThrow(productMap, basket.getProductId());
+                    ProductDto product = getProductOrThrow(productDtoMap, basket.getProductId());
                     return OrderProduct.create(
-                            order.getId(),
+                            order,
                             product.getProductId(),
                             basket.getQuantity(),
                             (product.getDiscountPrice() == null) ? product.getPrice() : product.getDiscountPrice()

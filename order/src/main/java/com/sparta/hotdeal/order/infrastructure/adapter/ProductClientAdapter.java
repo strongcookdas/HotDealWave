@@ -51,4 +51,12 @@ public class ProductClientAdapter implements ProductClientPort {
 //        return productClient.getProductFromAPI(productId).getData().toDto();
         return ResGetProductByIdDto.createDummyData(productId).toDto();
     }
+
+    @Override
+    public List<ProductDto> getProductALL(List<UUID> productIds) {
+        List<ResGetProductListDto> resGetProductListDtoList = productClient.getProductListFromAPI(productIds).getData()
+                .stream().toList();
+
+        return resGetProductListDtoList.stream().map(ResGetProductListDto::toGetProductListForOrderDto).toList();
+    }
 }
