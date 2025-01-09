@@ -11,7 +11,7 @@ public class SecurityAuditorAware implements AuditorAware<String> {
                 .getAuthentication().getPrincipal();
 
         if (userDetails != null) {
-            return Optional.of(userDetails.getUsername());
+            return Optional.of(userDetails.getEmail());
         }
 
         return Optional.of("anonymousUser");
