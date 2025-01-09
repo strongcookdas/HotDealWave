@@ -16,7 +16,6 @@ import com.sparta.hotdeal.product.infrastructure.custom.RequestUserDetails;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -33,7 +32,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-@Slf4j
 @RestController
 @RequestMapping("/api/v1/products")
 @RequiredArgsConstructor
@@ -47,10 +45,6 @@ public class ProductController {
             @AuthenticationPrincipal RequestUserDetails userDetails,
             @ModelAttribute ReqPostProductDto reqPostCreateProductDto
     ) {
-//        ResPostProductDto resPostProductDto = ResPostProductDto.builder()
-//                .productId(UUID.randomUUID())
-//                .build();
-
         ResPostProductDto resPostProductDto = productService.createProduct(reqPostCreateProductDto);
         return ResponseDto.of("상품이 생성되었습니다.", resPostProductDto);
     }
@@ -61,14 +55,8 @@ public class ProductController {
             @PathVariable UUID productId,
             @ModelAttribute ReqPutProductDto reqPutUpdateProductDto
     ) {
-//        ResPutProductDto resPutProductDto = ResPutProductDto.builder()
-//                .productId(UUID.randomUUID())
-//                .build();
-
-        // 임시 유저 정보
-        String deletedBy = "testUser";
-
-        ResPutProductDto resPutProductDto = productService.updateProduct(productId, reqPutUpdateProductDto, deletedBy);
+        ResPutProductDto resPutProductDto = productService.updateProduct(productId, reqPutUpdateProductDto,
+                userDetails.getEmail());
 
         return ResponseDto.of("상품이 수정되었습니다.", resPutProductDto);
     }
@@ -79,10 +67,6 @@ public class ProductController {
             @PathVariable UUID productId,
             @RequestBody ReqPatchProductStatusDto reqPatchUpdateProductStatusDto
     ) {
-//        ResPatchProductStatusDto resPatchProductStatusDto = ResPatchProductStatusDto.builder()
-//                .productId(UUID.randomUUID())
-//                .build();
-
         ResPatchProductStatusDto resPatchProductStatusDto = productService.updateProductStatus(productId,
                 reqPatchUpdateProductStatusDto);
 
@@ -104,9 +88,6 @@ public class ProductController {
             @AuthenticationPrincipal RequestUserDetails userDetails,
             @RequestBody List<ReqPatchProductQuantityDto> reqPatchProductQuantityDto
     ) {
-//        ResPatchReduceProductQuantityDto resPatchReduceProductQuantityDto = ResPatchReduceProductQuantityDto.builder()
-//                .productId(UUID.randomUUID())
-//                .build();
         List<ResPatchReduceProductQuantityDto> resPatchReduceProductQuantityDto = productService.reduceQuantity(
                 reqPatchProductQuantityDto);
 
@@ -118,9 +99,6 @@ public class ProductController {
             @AuthenticationPrincipal RequestUserDetails userDetails,
             @RequestBody List<ReqPatchProductQuantityDto> reqPatchProductQuantityDto
     ) {
-//        ResPatchRestoreProductQuantityDto resPatchRestoreProductQuantityDto = ResPatchRestoreProductQuantityDto.builder()
-//                .productId(UUID.randomUUID())
-//                .build();
         List<ResPatchRestoreProductQuantityDto> resPatchRestoreProductQuantityDto = productService.restoreQuantity(
                 reqPatchProductQuantityDto);
 
@@ -132,21 +110,6 @@ public class ProductController {
             @AuthenticationPrincipal RequestUserDetails userDetails,
             @PathVariable UUID productId
     ) {
-//        ResGetProductDto resGetProductDto = ResGetProductDto.builder()
-//                .productId(UUID.randomUUID())
-//                .name("노트")
-//                .price(1000)
-//                .quantity(100)
-//                .category(ProductCategoryEnum.OFFICE_SUPPLIES)
-//                .companyId(UUID.randomUUID())
-//                .description("줄선 노트입니다.")
-//                .detailImgs(List.of("img1", "img2"))
-//                .thumbImg("img")
-//                .status(ProductStatusEnum.ON_SALE)
-//                .rating(3.5)
-//                .reviewCnt(3)
-//                .discountPrice(null)
-//                .build();
         ResGetProductDto resGetProductDto = productService.getProduct(productId);
 
         return ResponseDto.of("상품이 조회되었습니다.", resGetProductDto);
@@ -162,47 +125,6 @@ public class ProductController {
             @RequestParam(required = false) String search,
             @RequestParam(required = false) List<UUID> productIds
     ) {
-//        ResGetProductDto resGetProductDto1 = ResGetProductDto.builder()
-//                .productId(UUID.randomUUID())
-//                .name("노트")
-//                .price(1000)
-//                .quantity(100)
-//                .category(ProductCategoryEnum.OFFICE_SUPPLIES)
-//                .companyId(UUID.randomUUID())
-//                .description("줄선 노트입니다.")
-//                .detailImgs(List.of("img1", "img2"))
-//                .thumbImg("img")
-//                .status(ProductStatusEnum.ON_SALE)
-//                .rating(3.5)
-//                .reviewCnt(3)
-//                .discountPrice(null)
-//                .build();
-//
-//        ResGetProductDto resGetProductDto2 = ResGetProductDto.builder()
-//                .productId(UUID.randomUUID())
-//                .name("볼펜")
-//                .price(700)
-//                .quantity(100)
-//                .category(ProductCategoryEnum.OFFICE_SUPPLIES)
-//                .companyId(UUID.randomUUID())
-//                .description("검정색 볼펜입니다.")
-//                .detailImgs(List.of("img1", "img2"))
-//                .thumbImg("img")
-//                .status(ProductStatusEnum.ON_SALE)
-//                .rating(4.3)
-//                .reviewCnt(7)
-//                .discountPrice(null)
-//                .build();
-//
-//        List<ResGetProductDto> productList = List.of(resGetProductDto1, resGetProductDto2);
-//
-//        // Pageable 생성
-//        Pageable pageable = PageRequest.of(page_number - 1, page_size,
-//                "asc".equalsIgnoreCase(direction) ? Sort.by(sort_by).ascending() : Sort.by(sort_by).descending());
-//
-//        // Page 객체 생성
-//        Page<ResGetProductDto> productPage = new PageImpl<>(productList, pageable, productList.size());
-
         Page<ResGetProductDto> productPage = productService.getAllProducts(page_number, page_size, sort_by, direction,
                 search, productIds);
 

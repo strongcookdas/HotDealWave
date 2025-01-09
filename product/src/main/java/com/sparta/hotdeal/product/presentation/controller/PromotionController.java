@@ -40,9 +40,6 @@ public class PromotionController {
             @AuthenticationPrincipal RequestUserDetails userDetails,
             @RequestBody ReqPostPromotionDto reqPostCreatePromotionDto
     ) {
-//        ResPostPromotionDto resPostPromotionDto = ResPostPromotionDto.builder()
-//                .promotionId(UUID.randomUUID())
-//                .build();
         ResPostPromotionDto resPostPromotionDto = promotionService.createPromotion(reqPostCreatePromotionDto);
 
         return ResponseDto.of("프로모션이 생성되었습니다.", resPostPromotionDto);
@@ -54,9 +51,6 @@ public class PromotionController {
             @PathVariable UUID promotionId,
             @RequestBody ReqPutPromotionDto reqPutUpdatePromotionDto
     ) {
-//        ResPutPromotionDto resPutPromotionDto = ResPutPromotionDto.builder()
-//                .promotionId(UUID.randomUUID())
-//                .build();
         ResPutPromotionDto resPutPromotionDto = promotionService.updatePromotion(promotionId, reqPutUpdatePromotionDto);
 
         return ResponseDto.of("프로모션이 수정되었습니다.", resPutPromotionDto);
@@ -77,16 +71,6 @@ public class PromotionController {
             @AuthenticationPrincipal RequestUserDetails userDetails,
             @PathVariable UUID promotionId
     ) {
-//        ResGetPromotionDto resGetPromotionDto = ResGetPromotionDto.builder()
-//                .promotionId(UUID.randomUUID())
-//                .productId(UUID.randomUUID())
-//                .start(Timestamp.valueOf(LocalDateTime.now()))
-//                .end(Timestamp.valueOf(LocalDateTime.now().plusHours(3)))
-//                .discountRate(10)
-//                .discountPrice(1800)
-//                .quantity(8)
-//                .remaining(8)
-//                .build();
         ResGetPromotionDto resGetPromotionDto = promotionService.getPromotion(promotionId);
 
         return ResponseDto.of("프로모션이 조회되었습니다.", resGetPromotionDto);
@@ -102,37 +86,6 @@ public class PromotionController {
             @RequestParam(required = false) List<UUID> productIds,
             @RequestParam(required = false) PromotionStatusEnum status
     ) {
-//        ResGetPromotionDto resGetPromotionDto1 = ResGetPromotionDto.builder()
-//                .promotionId(UUID.randomUUID())
-//                .productId(UUID.randomUUID())
-//                .start(Timestamp.valueOf(LocalDateTime.now()))
-//                .end(Timestamp.valueOf(LocalDateTime.now().plusHours(3)))
-//                .discountRate(10)
-//                .discountPrice(1800)
-//                .quantity(8)
-//                .remaining(8)
-//                .build();
-//
-//        ResGetPromotionDto resGetPromotionDto2 = ResGetPromotionDto.builder()
-//                .promotionId(UUID.randomUUID())
-//                .productId(UUID.randomUUID())
-//                .start(Timestamp.valueOf(LocalDateTime.now()))
-//                .end(Timestamp.valueOf(LocalDateTime.now().plusHours(1)))
-//                .discountRate(10)
-//                .discountPrice(1800)
-//                .quantity(8)
-//                .remaining(8)
-//                .build();
-//
-//        List<ResGetPromotionDto> promotionList = List.of(resGetPromotionDto1, resGetPromotionDto2);
-//
-//        // Pageable 생성
-//        Pageable pageable = PageRequest.of(page_number - 1, page_size,
-//                "asc".equalsIgnoreCase(direction) ? Sort.by(sort_by).ascending() : Sort.by(sort_by).descending());
-//
-//        // Page 객체 생성
-//        Page<ResGetPromotionDto> promotionPage = new PageImpl<>(promotionList, pageable, promotionList.size());
-
         Page<ResGetPromotionDto> promotionPage = promotionService.getAllPromotions(page_number, page_size, sort_by,
                 direction, productIds, status);
 
