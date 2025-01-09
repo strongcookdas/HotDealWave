@@ -1,6 +1,5 @@
 package com.sparta.hotdeal.order.application.port;
 
-import com.sparta.hotdeal.order.application.dtos.coupon.CouponDto;
 import com.sparta.hotdeal.order.application.dtos.coupon.CouponValidationDto;
 import com.sparta.hotdeal.order.application.dtos.product.ProductDto;
 import com.sparta.hotdeal.order.domain.entity.basket.Basket;
@@ -9,7 +8,6 @@ import java.util.Map;
 import java.util.UUID;
 
 public interface CouponClientPort {
-    CouponDto getCoupon(UUID couponId);
 
     void useCoupon(UUID couponId);
 

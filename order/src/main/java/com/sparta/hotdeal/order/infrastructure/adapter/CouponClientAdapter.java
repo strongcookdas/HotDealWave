@@ -23,21 +23,13 @@ public class CouponClientAdapter implements CouponClientPort {
     private final CouponClient couponClient;
 
     @Override
-    public CouponDto getCoupon(UUID couponId) {
-        if (couponId == null) {
-            return null;
-        }
-        return CouponDto.createDummy();
-    }
-
-    @Override
     public void useCoupon(UUID couponId) {
-        // 구현
+        couponClient.useCoupon(couponId);
     }
 
     @Override
     public void recoverCoupon(UUID couponId) {
-        // 구현
+        couponClient.recoverCoupon(couponId);
     }
 
     @Override
@@ -46,12 +38,13 @@ public class CouponClientAdapter implements CouponClientPort {
 
         List<ReqPostCouponValidateDto.Product> productList = basketList.stream().flatMap(basket -> {
 
-            ProductDto productDto = Optional.ofNullable(productDtoMap.get(basket.getProductId())).orElseThrow(
-                    () -> new ApplicationException(ErrorCode.PRODUCT_NOT_FOUND_EXCEPTION));
+                    ProductDto productDto = Optional.ofNullable(productDtoMap.get(basket.getProductId())).orElseThrow(
+                            () -> new ApplicationException(ErrorCode.PRODUCT_NOT_FOUND_EXCEPTION));
 
-            return IntStream.range(0, basket.getQuantity())
-                    .mapToObj(i -> ReqPostCouponValidateDto.Product.create(productDto));
-        }).toList();
+                    return IntStream.range(0, basket.getQuantity())
+                            .mapToObj(i -> ReqPostCouponValidateDto.Product.create(productDto));
+                }
+        ).toList();
 
         ReqPostCouponValidateDto reqPostCouponValidateDto = ReqPostCouponValidateDto.create(productList);
         return couponClient.validateCoupon(couponId, reqPostCouponValidateDto).getData().toCouponValidationDto();

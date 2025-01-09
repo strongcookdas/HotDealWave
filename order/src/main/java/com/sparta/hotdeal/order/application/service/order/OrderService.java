@@ -66,6 +66,7 @@ public class OrderService {
         if(couponValidationDto.isValid()){
             discountAmount = couponValidationDto.getTotalDiscountAmount();
             couponId = req.getCouponId();
+            couponClientPort.useCoupon(couponId);
         }
 
         //6. 상품 감소 처리
@@ -87,7 +88,7 @@ public class OrderService {
 
         order = orderRepository.save(order);
         orderProductService.createOrderProductList(order, basketList, productDtoList);
-        //결제 비동기 처리 추후 구현 필요
+        //주문 생성 이후 비동리 처리 (쿠폰 사용, 수량 감소, 결제 요청)
     }
 
     @Transactional(readOnly = true)
