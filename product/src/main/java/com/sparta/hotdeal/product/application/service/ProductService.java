@@ -275,11 +275,7 @@ public class ProductService {
     }
 
     private void processDiscountedProducts(List<ReqPromotionQuantityDto> reqPromotionQuantityDtos, Boolean isRestore) {
-        if (isRestore) {
-            productPromotionHelperService.processPromotionQuantity(reqPromotionQuantityDtos, isRestore);
-        } else {
-            productPromotionHelperService.processPromotionQuantity(reqPromotionQuantityDtos, isRestore);
-        }
+        productPromotionHelperService.processPromotionQuantity(reqPromotionQuantityDtos, isRestore);
     }
 
 }
