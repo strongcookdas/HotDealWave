@@ -46,31 +46,6 @@ services:
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
     depends_on:
       - gateway-service
-      - redis
-      - mysql-db
-    networks:
-      - hotdealnetwork
-
-
-# redis 및 mysql은 로컬 테스트용으로 작성되었으며, redis, mysql-db, volumes는 배포 시 제거 예정입니다.
-  redis:
-    image: redis:latest
-    command: [ "redis-server", "--requirepass", "${REDIS_LOCAL_PASSWORD}" ]  # Redis 패스워드 설정
-    ports:
-      - "${REDIS_LOCAL_PORT}:${REDIS_LOCAL_PORT}"
-    environment:
-      - REDIS_LOCAL_PASSWORD=${REDIS_LOCAL_PASSWORD}  # Redis 패스워드 환경 변수 전달
-      - REDIS_LOCAL_USERNAME=${REDIS_LOCAL_USERNAME}  # Redis 사용자명 환경 변수 전달
-
-  mysql-db:
-    image: mysql:latest
-    container_name: mysql-db
-    environment:
-      MYSQL_ROOT_PASSWORD: ${LOCAL_DB_PASSWORD}  # 루트 비밀번호 설정
-    ports:
-      - "3307:3306"  # MySQL 포트를 로컬 머신과 연결
-    volumes:
-      - mysql-data:/var/lib/mysql  # 데이터 지속성을 위한 볼륨 사용
     networks:
       - hotdealnetwork
 
@@ -80,5 +55,6 @@ volumes:
 
 networks:
   hotdealnetwork:
-    driver: bridge
+    external: true
+    name: hotdeal-ecommerce_hotdealnetwork
 
