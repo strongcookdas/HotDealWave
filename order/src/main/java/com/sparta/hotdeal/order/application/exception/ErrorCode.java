@@ -43,7 +43,8 @@ public enum ErrorCode {
     COUPON_ALREADY_USED_EXCEPTION(HttpStatus.BAD_REQUEST, "OC002", "이미 사용한 쿠폰입니다."),
     COUPON_MINIMUM_PRICE_EXCEPTION(HttpStatus.BAD_REQUEST, "OC003", "쿠폰을 사용할 수 있는 최소금액이 아닙니다."),
     COUPON_INVALID_COMPANY_EXCEPTION(HttpStatus.BAD_REQUEST, "OC004", "쿠폰을 사용할 수 있는 회사 상품이 없습니다."),
-    COUPON_EXPIRED_EXCEPTION(HttpStatus.BAD_REQUEST, "OC005", "만료된 쿠폰입니다.");
+    COUPON_EXPIRED_EXCEPTION(HttpStatus.BAD_REQUEST, "OC005", "만료된 쿠폰입니다."),
+    COUPON_INVALID_VALUE_EXCEPTION(HttpStatus.BAD_REQUEST, "OC006", "올바르지 않은 쿠폰 도메인 요청 값입니다.");
 
 
     private final HttpStatus httpStatus;
