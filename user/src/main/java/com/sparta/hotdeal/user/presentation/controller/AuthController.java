@@ -12,6 +12,7 @@ import com.sparta.hotdeal.user.application.dtos.auth.response.ResPostLoginDto;
 import com.sparta.hotdeal.user.application.dtos.auth.response.ResPostRefreshDto;
 import com.sparta.hotdeal.user.application.dtos.auth.response.ResPostSignUpDto;
 import com.sparta.hotdeal.user.application.service.AuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,7 +30,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseDto<ResPostSignUpDto> signUp(@RequestBody ReqPostSignUpDto requestDto) {
+    public ResponseDto<ResPostSignUpDto> signUp(@Valid @RequestBody ReqPostSignUpDto requestDto) {
 
         ResPostSignUpDto resPostSignUpDto = authService.signup(requestDto);
 

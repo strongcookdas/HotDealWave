@@ -19,6 +19,11 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+        if (request.getRequestURI().startsWith("/api/v1/auth/")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String userId = request.getHeader("X-User-UserId");
         String email = request.getHeader("X-User-Email");
         String role = request.getHeader("X-User-Role");

@@ -48,8 +48,10 @@ public class AuthService {
         checkNickname(requestDto.getNickname());
         checkRole(requestDto.getRole());
 
-        User user = requestDto.toEntity(passwordEncoder);
-        user.updateCreatedByAndUpdateBy(user.getUserId().toString());
+        String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
+
+        User user = requestDto.toEntity(encodedPassword);
+        user.updateCreatedByAndUpdateBy(user.getEmail());
         userRepository.save(user);
 
         return ResPostSignUpDto.builder()
@@ -98,6 +100,8 @@ public class AuthService {
                 .orElseThrow(() -> new IllegalArgumentException(
                         ErrorMessage.WRONG_EMAIL_OR_PASSWORD.getMessage()));
 
+        checkDeletedUser(user);
+
         return ResPostLoginDto.builder()
                 .accessToken(jwtUtil.createToken(user.getUserId(), user.getEmail(), user.getRole()))
                 .refreshToken(null)
@@ -119,6 +123,12 @@ public class AuthService {
     private void checkEmailIsVerified(Email email) {
         if (!email.isVerified()) {
             throw new IllegalArgumentException(ErrorMessage.EMAIL_NOT_VERIFIED.getMessage());
+        }
+    }
+
+    private void checkDeletedUser(User user) {
+        if (user.getDeletedAt() != null) {
+            throw new IllegalArgumentException(ErrorMessage.USER_NOT_FOUND.getMessage());
         }
     }
 

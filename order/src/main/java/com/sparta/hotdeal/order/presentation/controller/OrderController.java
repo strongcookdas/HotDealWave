@@ -37,6 +37,10 @@ public class OrderController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<Void> createOrder(@AuthenticationPrincipal RequestUserDetails userDetails,
                                          @RequestBody ReqPostOrderDto req) {
+
+        log.info("userId : {}", userDetails.getUserId());
+        log.info("userEmail : {}", userDetails.getEmail());
+        log.info("userRole : {}", userDetails.getRole());
         orderService.createOrder(userDetails.getUserId(), req);
         return ResponseDto.of(OrderResponseMessage.CREATE_ORDER.getMessage(), null);
     }
@@ -44,13 +48,18 @@ public class OrderController {
     @GetMapping
     public ResponseDto<Page<ResGetOrderListDto>> getOrders(@AuthenticationPrincipal RequestUserDetails userDetails,
                                                            Pageable pageable) {
-
+        log.info("userId : {}", userDetails.getUserId());
+        log.info("userEmail : {}", userDetails.getEmail());
+        log.info("userRole : {}", userDetails.getRole());
         return ResponseDto.of("주문 목록 조회 성공", orderService.getOrderList(userDetails.getUserId(), pageable));
     }
 
     @GetMapping("/{orderId}")
     public ResponseDto<ResGetOrderByIdDto> getOrderById(@AuthenticationPrincipal RequestUserDetails userDetails,
                                                         @PathVariable UUID orderId) {
+        log.info("userId : {}", userDetails.getUserId());
+        log.info("userEmail : {}", userDetails.getEmail());
+        log.info("userRole : {}", userDetails.getRole());
         return ResponseDto.of("주문 상세 조회 성공", orderService.getOrderDetail(userDetails.getUserId(), orderId));
     }
 

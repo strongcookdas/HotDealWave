@@ -9,8 +9,10 @@ import com.sparta.hotdeal.user.application.dtos.users.response.ResGetUsersByIdDt
 import com.sparta.hotdeal.user.application.dtos.users.response.ResPatchUsersInfoByIdDto;
 import com.sparta.hotdeal.user.application.dtos.users.response.ResPatchUsersPasswordByIdDto;
 import com.sparta.hotdeal.user.application.service.UserService;
+import com.sparta.hotdeal.user.infrastructure.security.RequestUserDetails;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -27,9 +29,16 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/{userId}")
-    public ResponseDto<ResGetUsersByIdDto> getUser(@PathVariable("userId") UUID userId) {
+    public ResponseDto<ResGetUsersByIdDto> getUser(
+            @PathVariable("userId") UUID userId,
+            @AuthenticationPrincipal RequestUserDetails userDetails
+    ) {
 
-        ResGetUsersByIdDto resGetUsersByIdDto = userService.getUser(userId);
+        ResGetUsersByIdDto resGetUsersByIdDto = userService.getUser(
+                userId,
+                userDetails.getUserId(),
+                userDetails.getRole()
+        );
 
         return ResponseDto.of(ResponseMessage.GET_USER_SUCCESS.getMessage(), resGetUsersByIdDto);
     }
@@ -37,10 +46,16 @@ public class UserController {
     @PatchMapping("/{userId}")
     public ResponseDto<ResPatchUsersInfoByIdDto> updateUserInfos(
             @PathVariable("userId") UUID userId,
-            @RequestBody ReqPatchUsersInfoByIdDto reqPatchUsersInfoByIdDto
+            @RequestBody ReqPatchUsersInfoByIdDto reqPatchUsersInfoByIdDto,
+            @AuthenticationPrincipal RequestUserDetails userDetails
     ) {
 
-        ResPatchUsersInfoByIdDto resPatchUsersInfoByIdDto = userService.updateUser(userId, reqPatchUsersInfoByIdDto);
+        ResPatchUsersInfoByIdDto resPatchUsersInfoByIdDto = userService.updateUser(
+                userId,
+                reqPatchUsersInfoByIdDto,
+                userDetails.getUserId(),
+                userDetails.getRole()
+        );
 
         return ResponseDto.of(ResponseMessage.UPDATE_USER_SUCCESS.getMessage(), resPatchUsersInfoByIdDto);
     }
@@ -48,20 +63,32 @@ public class UserController {
     @PatchMapping("/{userId}/password")
     public ResponseDto<ResPatchUsersPasswordByIdDto> updateUserPassword(
             @PathVariable("userId") UUID userId,
-            @RequestBody ReqPatchUsersPasswordByIdDto reqPatchUsersPasswordByIdDto
+            @RequestBody ReqPatchUsersPasswordByIdDto reqPatchUsersPasswordByIdDto,
+            @AuthenticationPrincipal RequestUserDetails userDetails
     ) {
 
         ResPatchUsersPasswordByIdDto resPatchUsersPasswordByIdDto =
-                userService.updateUserPassword(userId, reqPatchUsersPasswordByIdDto);
+                userService.updateUserPassword(
+                        userId,
+                        reqPatchUsersPasswordByIdDto,
+                        userDetails.getUserId()
+                );
 
         return ResponseDto.of(ResponseMessage.UPDATE_USER_PASSWORD_SUCCESS.getMessage(), resPatchUsersPasswordByIdDto);
 
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseDto<ResDeleteUsersByIdDto> deleteUser(@PathVariable("userId") UUID userId) {
+    public ResponseDto<ResDeleteUsersByIdDto> deleteUser(
+            @PathVariable("userId") UUID userId,
+            @AuthenticationPrincipal RequestUserDetails userDetails
+    ) {
 
-        ResDeleteUsersByIdDto resDeleteUsersByIdDto = userService.deleteUser(userId);
+        ResDeleteUsersByIdDto resDeleteUsersByIdDto = userService.deleteUser(
+                userId,
+                userDetails.getUserId(),
+                userDetails.getRole()
+        );
 
         return ResponseDto.of(ResponseMessage.DELETE_USER_SUCCESS.getMessage(), resDeleteUsersByIdDto);
     }

@@ -22,3 +22,7 @@ eureka:
 
 server:
   port: 19095
+
+pay:
+  key: key
+  cid: cid

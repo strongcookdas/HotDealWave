@@ -1,11 +1,12 @@
 package com.sparta.hotdeal.order.infrastructure.adapter;
 
+import com.sparta.hotdeal.order.application.dtos.product.ProductByIdtDto;
 import com.sparta.hotdeal.order.application.dtos.product.ProductDto;
 import com.sparta.hotdeal.order.application.dtos.product.req.ReqProductReduceQuantityDto;
-import com.sparta.hotdeal.order.application.dtos.product.ProductByIdtDto;
 import com.sparta.hotdeal.order.application.port.ProductClientPort;
 import com.sparta.hotdeal.order.domain.entity.basket.Basket;
 import com.sparta.hotdeal.order.infrastructure.client.ProductClient;
+import com.sparta.hotdeal.order.infrastructure.dtos.product.ResGetProductByIdDto;
 import com.sparta.hotdeal.order.infrastructure.dtos.product.ResGetProductListDto;
 import java.util.List;
 import java.util.Map;
@@ -22,8 +23,9 @@ public class ProductClientAdapter implements ProductClientPort {
 
     @Override
     public Map<UUID, ProductDto> getProductAll(List<UUID> productIds) {
-        List<ResGetProductListDto> resGetProductListDtoList = productClient.getProductListFromAPI(productIds).getData()
-                .toList();
+//        List<ResGetProductListDto> resGetProductListDtoList = productClient.getProductListFromAPI(productIds).getData()
+//                .toList();
+        List<ResGetProductListDto> resGetProductListDtoList = ResGetProductListDto.createDummyDataList();
         return resGetProductListDtoList.stream()
                 .map(ResGetProductListDto::toGetProductListForOrderDto)
                 .collect(Collectors.toMap(
@@ -46,6 +48,7 @@ public class ProductClientAdapter implements ProductClientPort {
 
     @Override
     public ProductByIdtDto getProduct(UUID productId) {
-        return productClient.getProductFromAPI(productId).getData().toDto();
+//        return productClient.getProductFromAPI(productId).getData().toDto();
+        return ResGetProductByIdDto.createDummyData(productId).toDto();
     }
 }
