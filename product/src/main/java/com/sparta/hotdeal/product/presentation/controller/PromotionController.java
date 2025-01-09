@@ -14,6 +14,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,6 +37,7 @@ public class PromotionController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @Secured({"ROLE_MASTER", "ROLE_MANAGER", "ROLE_SELLER"})
     public ResponseDto<ResPostPromotionDto> createPromotion(
             @AuthenticationPrincipal RequestUserDetails userDetails,
             @RequestBody ReqPostPromotionDto reqPostCreatePromotionDto
@@ -46,6 +48,7 @@ public class PromotionController {
     }
 
     @PutMapping("/{promotionId}")
+    @Secured({"ROLE_MASTER", "ROLE_MANAGER", "ROLE_SELLER"})
     public ResponseDto<ResPutPromotionDto> updatePromotion(
             @AuthenticationPrincipal RequestUserDetails userDetails,
             @PathVariable UUID promotionId,
@@ -57,6 +60,7 @@ public class PromotionController {
     }
 
     @DeleteMapping("/{promotionId}")
+    @Secured({"ROLE_MASTER", "ROLE_MANAGER", "ROLE_SELLER"})
     public ResponseDto<Void> deletePromotion(
             @AuthenticationPrincipal RequestUserDetails userDetails,
             @PathVariable UUID promotionId

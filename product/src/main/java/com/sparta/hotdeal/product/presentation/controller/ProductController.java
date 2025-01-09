@@ -18,6 +18,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,6 +42,7 @@ public class ProductController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @Secured({"ROLE_MASTER", "ROLE_MANAGER", "ROLE_SELLER"})
     public ResponseDto<ResPostProductDto> createProduct(
             @AuthenticationPrincipal RequestUserDetails userDetails,
             @ModelAttribute ReqPostProductDto reqPostCreateProductDto
@@ -50,6 +52,7 @@ public class ProductController {
     }
 
     @PutMapping("/{productId}")
+    @Secured({"ROLE_MASTER", "ROLE_MANAGER", "ROLE_SELLER"})
     public ResponseDto<ResPutProductDto> updateProduct(
             @AuthenticationPrincipal RequestUserDetails userDetails,
             @PathVariable UUID productId,
@@ -62,6 +65,7 @@ public class ProductController {
     }
 
     @PatchMapping("/{productId}")
+    @Secured({"ROLE_MASTER"})
     public ResponseDto<ResPatchProductStatusDto> updateProductStatus(
             @AuthenticationPrincipal RequestUserDetails userDetails,
             @PathVariable UUID productId,
@@ -74,6 +78,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{productId}")
+    @Secured({"ROLE_MASTER", "ROLE_MANAGER", "ROLE_SELLER"})
     public ResponseDto<Void> deleteProduct(
             @AuthenticationPrincipal RequestUserDetails userDetails,
             @PathVariable UUID productId
@@ -84,6 +89,7 @@ public class ProductController {
     }
 
     @PatchMapping("/reduceQuantity")
+    @Secured({"ROLE_MASTER"})
     public ResponseDto<List<ResPatchReduceProductQuantityDto>> reduceQuantity(
             @AuthenticationPrincipal RequestUserDetails userDetails,
             @RequestBody List<ReqPatchProductQuantityDto> reqPatchProductQuantityDto
@@ -95,6 +101,7 @@ public class ProductController {
     }
 
     @PatchMapping("/restoreQuantity")
+    @Secured({"ROLE_MASTER"})
     public ResponseDto<List<ResPatchRestoreProductQuantityDto>> restoreQuantity(
             @AuthenticationPrincipal RequestUserDetails userDetails,
             @RequestBody List<ReqPatchProductQuantityDto> reqPatchProductQuantityDto
