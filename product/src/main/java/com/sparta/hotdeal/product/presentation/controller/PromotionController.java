@@ -9,6 +9,8 @@ import com.sparta.hotdeal.product.application.dtos.res.promotion.ResPutPromotion
 import com.sparta.hotdeal.product.application.service.PromotionService;
 import com.sparta.hotdeal.product.domain.entity.promotion.PromotionStatusEnum;
 import com.sparta.hotdeal.product.infrastructure.custom.RequestUserDetails;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/promotions")
 @RequiredArgsConstructor
+@Tag(name = "Promotion API", description = "프로모션 관련 API")
 public class PromotionController {
 
     private final PromotionService promotionService;
@@ -38,6 +41,7 @@ public class PromotionController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Secured({"ROLE_MASTER", "ROLE_MANAGER", "ROLE_SELLER"})
+    @Operation(summary = "프로모션 생성 API", description = "프로모션을 생성합니다.")
     public ResponseDto<ResPostPromotionDto> createPromotion(
             @AuthenticationPrincipal RequestUserDetails userDetails,
             @RequestBody ReqPostPromotionDto reqPostCreatePromotionDto
@@ -49,6 +53,7 @@ public class PromotionController {
 
     @PutMapping("/{promotionId}")
     @Secured({"ROLE_MASTER", "ROLE_MANAGER", "ROLE_SELLER"})
+    @Operation(summary = "프로모션 수정 API", description = "프로모션을 수정합니다.")
     public ResponseDto<ResPutPromotionDto> updatePromotion(
             @AuthenticationPrincipal RequestUserDetails userDetails,
             @PathVariable UUID promotionId,
@@ -61,6 +66,7 @@ public class PromotionController {
 
     @DeleteMapping("/{promotionId}")
     @Secured({"ROLE_MASTER", "ROLE_MANAGER", "ROLE_SELLER"})
+    @Operation(summary = "프로모션 삭제 API", description = "프로모션을 삭제합니다.")
     public ResponseDto<Void> deletePromotion(
             @AuthenticationPrincipal RequestUserDetails userDetails,
             @PathVariable UUID promotionId
@@ -71,6 +77,7 @@ public class PromotionController {
     }
 
     @GetMapping("/{promotionId}")
+    @Operation(summary = "프로모션 상세 조회 API", description = "프로모션을 조회합니다.")
     public ResponseDto<ResGetPromotionDto> getPromotion(
             @AuthenticationPrincipal RequestUserDetails userDetails,
             @PathVariable UUID promotionId
@@ -81,6 +88,7 @@ public class PromotionController {
     }
 
     @GetMapping()
+    @Operation(summary = "프로모션 목록 조회 API", description = "프로모션 목록을 조회합니다.")
     public ResponseDto<Page<ResGetPromotionDto>> getAllPromotions(
             @AuthenticationPrincipal RequestUserDetails userDetails,
             @RequestParam(defaultValue = "1") int page_number,

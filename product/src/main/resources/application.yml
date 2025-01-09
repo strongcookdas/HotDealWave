@@ -30,3 +30,9 @@ server:
 openapi:
   service:
     url: http://localhost:19091/product-service
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html

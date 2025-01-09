@@ -13,6 +13,8 @@ import com.sparta.hotdeal.product.application.dtos.res.product.ResPostProductDto
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPutProductDto;
 import com.sparta.hotdeal.product.application.service.ProductService;
 import com.sparta.hotdeal.product.infrastructure.custom.RequestUserDetails;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/products")
 @RequiredArgsConstructor
+@Tag(name = "Product API", description = "상품 관련 API")
 public class ProductController {
 
     private final ProductService productService;
@@ -43,6 +46,7 @@ public class ProductController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Secured({"ROLE_MASTER", "ROLE_MANAGER", "ROLE_SELLER"})
+    @Operation(summary = "상품 생성 API", description = "상품을 생성합니다.")
     public ResponseDto<ResPostProductDto> createProduct(
             @AuthenticationPrincipal RequestUserDetails userDetails,
             @ModelAttribute ReqPostProductDto reqPostCreateProductDto
@@ -53,6 +57,7 @@ public class ProductController {
 
     @PutMapping("/{productId}")
     @Secured({"ROLE_MASTER", "ROLE_MANAGER", "ROLE_SELLER"})
+    @Operation(summary = "상품 수정 API", description = "상품을 수정합니다.")
     public ResponseDto<ResPutProductDto> updateProduct(
             @AuthenticationPrincipal RequestUserDetails userDetails,
             @PathVariable UUID productId,
@@ -66,6 +71,7 @@ public class ProductController {
 
     @PatchMapping("/{productId}")
     @Secured({"ROLE_MASTER"})
+    @Operation(summary = "상품 상태 수정 API", description = "상품을 상태를 수정합니다.")
     public ResponseDto<ResPatchProductStatusDto> updateProductStatus(
             @AuthenticationPrincipal RequestUserDetails userDetails,
             @PathVariable UUID productId,
@@ -79,6 +85,7 @@ public class ProductController {
 
     @DeleteMapping("/{productId}")
     @Secured({"ROLE_MASTER", "ROLE_MANAGER", "ROLE_SELLER"})
+    @Operation(summary = "상품 삭제 API", description = "상품을 삭제합니다.")
     public ResponseDto<Void> deleteProduct(
             @AuthenticationPrincipal RequestUserDetails userDetails,
             @PathVariable UUID productId
@@ -90,6 +97,7 @@ public class ProductController {
 
     @PatchMapping("/reduceQuantity")
     @Secured({"ROLE_MASTER"})
+    @Operation(summary = "상품 수량 감소 API", description = "상품의 수량을 감소합니다.")
     public ResponseDto<List<ResPatchReduceProductQuantityDto>> reduceQuantity(
             @AuthenticationPrincipal RequestUserDetails userDetails,
             @RequestBody List<ReqPatchProductQuantityDto> reqPatchProductQuantityDto
@@ -102,6 +110,7 @@ public class ProductController {
 
     @PatchMapping("/restoreQuantity")
     @Secured({"ROLE_MASTER"})
+    @Operation(summary = "상품 수량 복구 API", description = "상품의 수량을 복구합니다.")
     public ResponseDto<List<ResPatchRestoreProductQuantityDto>> restoreQuantity(
             @AuthenticationPrincipal RequestUserDetails userDetails,
             @RequestBody List<ReqPatchProductQuantityDto> reqPatchProductQuantityDto
@@ -113,6 +122,7 @@ public class ProductController {
     }
 
     @GetMapping("/{productId}")
+    @Operation(summary = "상품 상세 조회 API", description = "상품을 조회합니다.")
     public ResponseDto<ResGetProductDto> getProduct(
             @AuthenticationPrincipal RequestUserDetails userDetails,
             @PathVariable UUID productId
@@ -123,6 +133,7 @@ public class ProductController {
     }
 
     @GetMapping()
+    @Operation(summary = "상품 목록 조회 API", description = "상품의 목록을 조회합니다.")
     public ResponseDto<Page<ResGetProductDto>> getAllProducts(
             @AuthenticationPrincipal RequestUserDetails userDetails,
             @RequestParam(defaultValue = "1") int page_number,
