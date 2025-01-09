@@ -47,7 +47,6 @@ public enum ErrorCode {
     COUPON_EXPIRED_EXCEPTION(HttpStatus.BAD_REQUEST, "OC005", "만료된 쿠폰입니다."),
     COUPON_INVALID_VALUE_EXCEPTION(HttpStatus.BAD_REQUEST, "OC006", "올바르지 않은 쿠폰 도메인 요청 값입니다.");
 
-
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;

@@ -18,13 +18,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(name = "product-service", configuration = CouponClientConfig.class)
 public interface ProductClient {
-    @GetMapping(value = "/{productId}")
+    @GetMapping(value = "/api/v1/products/{productId}")
     ResponseDto<ResGetProductByIdDto> getProduct(@PathVariable UUID productId);
 
-    @GetMapping
+    @GetMapping(value = "/api/v1/products")
     ResponseDto<Page<ResGetProductListDto>> getProductList(@RequestParam("productIds") List<UUID> productIds);
 
-    @PatchMapping("/reduceQuantity")
+    @PatchMapping("/api/v1/products/reduceQuantity")
     ResponseDto<List<ResPatchReduceProductQuantityDto>> reduceQuantity(
             @RequestBody List<ReqPatchProductQuantityDto> reqPatchProductQuantityDto);
 }

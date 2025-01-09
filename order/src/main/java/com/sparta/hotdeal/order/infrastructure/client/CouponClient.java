@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @FeignClient(name = "coupon-service", configuration = CouponClient.class)
 public interface CouponClient {
-    @PostMapping("/{couponId}/validate")
+    @PostMapping("/api/v1/coupons/{couponId}/validate")
     ResponseDto<ResPostCouponValidateDto> validateCoupon(@PathVariable UUID couponId,
                                                          @RequestBody ReqPostCouponValidateDto reqPostCouponValidateDto);
-    @PostMapping("/{couponId}/use")
+    @PostMapping("/api/v1/coupons/{couponId}/use")
     ResponseDto<Void> useCoupon(@PathVariable UUID couponId);
 
-    @PostMapping("/{couponId}/recover")
+    @PostMapping("/api/v1/coupons/{couponId}/recover")
     ResponseDto<Void> recoverCoupon(@PathVariable UUID couponId);
 }

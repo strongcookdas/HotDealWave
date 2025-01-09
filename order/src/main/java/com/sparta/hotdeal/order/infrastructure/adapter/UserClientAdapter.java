@@ -15,13 +15,13 @@ public class UserClientAdapter implements UserClientPort {
     private final UserClient userClient;
     @Override
     public AddressDto getAddress(UUID addressId) {
-        //return userClient.getAddressFromApi(addressId).getData().toAddressForOrderDto();
-        return AddressDto.createDummy();
+        return userClient.getAddress(addressId).getData().toAddressForOrderDto();
+//        return AddressDto.createDummy();
     }
 
     @Override
     public UserDto getUserById(UUID userId) {
-        //return getUserFromApi(userId).getData().toUserByIdForOrderDto();
-        return UserDto.createDummy();
+        return userClient.getUser(userId).getData().toUserByIdForOrderDto();
+//        return UserDto.createDummy();
     }
 }

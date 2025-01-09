@@ -1,13 +1,13 @@
 package com.sparta.hotdeal.order.infrastructure.config;
 
 import com.sparta.hotdeal.order.infrastructure.exception.decoder.CouponClientErrorDecoder;
-import com.sparta.hotdeal.order.infrastructure.exception.decoder.ProductClientErrorDecoder;
+import com.sparta.hotdeal.order.infrastructure.exception.decoder.UserClientErrorDecoder;
 import feign.RequestInterceptor;
 import feign.codec.ErrorDecoder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 
-public class ProductClientConfig {
+public class UserClientConfig {
 
     @Value("${admin.user-id}")
     private String userId;
@@ -29,6 +29,6 @@ public class ProductClientConfig {
 
     @Bean
     public ErrorDecoder errorDecoder() {
-        return new ProductClientErrorDecoder();
+        return new UserClientErrorDecoder();
     }
 }
