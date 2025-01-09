@@ -26,3 +26,7 @@ logging:
 
 server:
   port: 19093
+
+openapi:
+  service:
+    url: http://localhost:19091/product-service
