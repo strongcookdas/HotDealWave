@@ -26,10 +26,5 @@ service:
     access-expiration: 3600000
     secret-key: ${JWT_SECRET_KEY}
 
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:19090/eureka/
-
 server:
   port: 19092
