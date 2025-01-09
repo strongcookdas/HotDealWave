@@ -1,7 +1,7 @@
 package com.sparta.hotdeal.order.infrastructure.exception.decoder;
 
-import com.sparta.hotdeal.order.application.exception.ApplicationException;
-import com.sparta.hotdeal.order.application.exception.ErrorCode;
+import com.sparta.hotdeal.order.common.exception.ApplicationException;
+import com.sparta.hotdeal.order.common.exception.ErrorCode;
 import feign.Response;
 import feign.codec.ErrorDecoder;
 
