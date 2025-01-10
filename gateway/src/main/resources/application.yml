@@ -49,7 +49,7 @@ spring:
         - id: payment-service
           uri: lb://payment-service
           predicates:
-            - Path=/api/v1/payments/**, /payment-service/**
+            - Path=/api/v1/payments/**, /payment-service/**, /payment/**
           filters:
             - RewritePath=/payment-service/(?<segment>.*), /$\{segment}
 
