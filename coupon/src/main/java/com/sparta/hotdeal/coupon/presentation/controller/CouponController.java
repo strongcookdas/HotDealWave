@@ -67,12 +67,14 @@ public class CouponController {
 
 
     @PostMapping("/{couponId}/use")
+    @Secured({"ROLE_MASTER"})
     public ResponseDto<Void> useCoupon(@PathVariable UUID couponId) {
         couponService.useCoupon(couponId);
         return ResponseDto.of("쿠폰 사용 성공", null);
     }
 
     @PostMapping("/{couponId}/recover")
+    @Secured({"ROLE_MASTER"})
     public ResponseDto<Void> recoverCoupon(@PathVariable UUID couponId) {
         couponService.recoverCoupon(couponId);
         return ResponseDto.of("쿠폰 회복 성공", null);

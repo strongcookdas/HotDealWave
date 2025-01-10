@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.order.application.exception;
+package com.sparta.hotdeal.order.common.exception;
 
 import com.sparta.hotdeal.order.application.dtos.ErrorResponseDto;
 import java.util.Objects;

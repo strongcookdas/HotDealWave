@@ -18,7 +18,7 @@ public class OrderProductDto {
         return OrderProductDto.builder()
                 .id(orderProduct.getId())
                 .productId(orderProduct.getProductId())
-                .orderId(orderProduct.getOrderId())
+                .orderId(orderProduct.getId())
                 .quantity(orderProduct.getQuantity())
                 .price(orderProduct.getPrice())
                 .build();

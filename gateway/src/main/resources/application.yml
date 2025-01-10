@@ -2,6 +2,8 @@ server:
   port: 19091
 
 spring:
+  profiles:
+    active: ${ACTIVE_PROFILE}
   main:
     web-application-type: reactive
   application:
@@ -12,37 +14,66 @@ spring:
         - id: user-service
           uri: lb://user-service
           predicates:
-            - Path=/api/v1/auth/**, /api/v1/users/**, /api/v1/address/**, /api/v1/address-default/**
+            - Path=/api/v1/auth/**, /api/v1/users/**, /api/v1/address/**, /api/v1/address-default/**, /user-service/**
+          filters:
+            - RewritePath=/user-service/(?<segment>.*), /$\{segment}
 
         - id: company-service
           uri: lb://company-service
           predicates:
-            - Path=/api/v1/companies/**
+            - Path=/api/v1/companies/**, /company-service/**
+          filters:
+            - RewritePath=/company-service/(?<segment>.*), /$\{segment}
 
         - id: product-service
           uri: lb://product-service
           predicates:
-            - Path=/api/v1/products/**, /api/v1/promotions/**, /api/v1/reviews/**
+            - Path=/api/v1/products/**, /api/v1/promotions/**, /api/v1/reviews/**, /product-service/**
+          filters:
+            - RewritePath=/product-service/(?<segment>.*), /$\{segment}
 
         - id: coupon-service
           uri: lb://coupon-service
           predicates:
-            - Path=/api/v1/coupons/**, /api/v1/couponInfos/**
+            - Path=/api/v1/coupons/**, /api/v1/couponInfos/**, /coupon-service/**
+          filters:
+            - RewritePath=/coupon-service/(?<segment>.*), /$\{segment}
 
         - id: order-service
           uri: lb://order-service
           predicates:
-            - Path=/api/v1/orders/**, /api/v1/baskets/**
+            - Path=/api/v1/orders/**, /api/v1/baskets/**, /order-service/**
+          filters:
+            - RewritePath=/order-service/(?<segment>.*), /$\{segment}
 
         - id: payment-service
           uri: lb://payment-service
           predicates:
-            - Path=/api/v1/payments/**
+            - Path=/api/v1/payments/**, /payment-service/**, /payment/**
+          filters:
+            - RewritePath=/payment-service/(?<segment>.*), /$\{segment}
 
-eureka:
-  client:
-    service-url:
-      defaultZone: http://eureka-server:19090/eureka/
+springdoc:
+  swagger-ui:
+    path: /swagger-ui/index.html
+    urls:
+      - name: user-service
+        url: /user-service/v3/api-docs
+
+      - name: company-service
+        url: /company-service/v3/api-docs
+
+      - name: product-service
+        url: /product-service/v3/api-docs
+
+      - name: coupon-service
+        url: /coupon-service/v3/api-docs
+
+      - name: order-service
+        url: /order-service/v3/api-docs
+
+      - name: payment-service
+        url: /payment-service/v3/api-docs
 
 service:
   jwt:

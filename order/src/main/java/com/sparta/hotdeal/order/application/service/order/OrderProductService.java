@@ -2,12 +2,13 @@ package com.sparta.hotdeal.order.application.service.order;
 
 import com.sparta.hotdeal.order.application.dtos.order_product.OrderProductDto;
 import com.sparta.hotdeal.order.application.dtos.product.ProductDto;
-import com.sparta.hotdeal.order.application.exception.ApplicationException;
-import com.sparta.hotdeal.order.application.exception.ErrorCode;
+import com.sparta.hotdeal.order.common.exception.ApplicationException;
+import com.sparta.hotdeal.order.common.exception.ErrorCode;
 import com.sparta.hotdeal.order.domain.entity.basket.Basket;
 import com.sparta.hotdeal.order.domain.entity.order.Order;
 import com.sparta.hotdeal.order.domain.entity.order.OrderProduct;
 import com.sparta.hotdeal.order.domain.repository.OrderProductRepository;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -26,14 +27,15 @@ public class OrderProductService {
 
     private final OrderProductRepository orderProductRepository;
 
-    public void createOrderProductList(Order order, List<Basket> basketList,
-                                       Map<UUID, ProductDto> productMap) {
+    public void createOrderProductList(Order order, List<Basket> basketList, List<ProductDto> productDtoList) {
+        Map<UUID, ProductDto> productDtoMap = productDtoList.stream()
+                .collect(Collectors.toMap(ProductDto::getProductId, product -> product));
 
         List<OrderProduct> orderProductList = basketList.stream()
                 .map(basket -> {
-                    ProductDto product = getProductOrThrow(productMap, basket.getProductId());
+                    ProductDto product = getProductOrThrow(productDtoMap, basket.getProductId());
                     return OrderProduct.create(
-                            order.getId(),
+                            order,
                             product.getProductId(),
                             basket.getQuantity(),
                             (product.getDiscountPrice() == null) ? product.getPrice() : product.getDiscountPrice()
@@ -49,12 +51,14 @@ public class OrderProductService {
         return orderProductList.stream().map(OrderProductDto::of).toList();
     }
 
-    public Map<UUID, List<OrderProductDto>> getOrderProductsByOrderIds(List<UUID> orderIds) {
-        List<OrderProduct> orderProducts = orderProductRepository.findAllByOrderIdIn(orderIds);
+    public Map<UUID, List<OrderProduct>> getOrderProductsByOrderIds(List<Order> orderList) {
+        Map<UUID, List<OrderProduct>> orderProductMap = new HashMap<>();
+        for (Order order : orderList) {
+            List<OrderProduct> orderProductList = orderProductRepository.findAllByOrderId(order.getId());
+            orderProductMap.put(order.getId(), orderProductList);
+        }
 
-        return orderProducts.stream()
-                .map(OrderProductDto::of)
-                .collect(Collectors.groupingBy(OrderProductDto::getOrderId));
+        return orderProductMap;
     }
 
     private ProductDto getProductOrThrow(

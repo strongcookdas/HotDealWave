@@ -19,7 +19,9 @@ public enum ErrorCode {
     PROMOTION_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "P012", "존재하지 않는 타임세일입니다."),
     PROMOTION_DUPLICATE_EXCEPTION(HttpStatus.BAD_REQUEST, "P013", "동일한 시간대에 해당 상품에 대한 타임세일이 이미 존재합니다."),
     PROMOTION_IS_ACTIVE_EXCEPTION(HttpStatus.BAD_REQUEST, "P014", "현재 진행 중인 타임세일입니다."),
-    REVIEW_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "P015", "존재하지 않는 리뷰입니다.");
+    REVIEW_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "P015", "존재하지 않는 리뷰입니다."),
+    COMPANY_INVALID_VALUE_EXCEPTION(HttpStatus.BAD_REQUEST, "PC016", "올바르지 않은 업체 요청 값입니다."),
+    COMPANY_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "PC017", "존재하지 않는 업체입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
