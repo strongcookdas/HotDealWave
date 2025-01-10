@@ -13,15 +13,16 @@ import org.springframework.stereotype.Component;
 public class UserClientAdapter implements UserClientPort {
 
     private final UserClient userClient;
+
     @Override
-    public AddressDto getAddress(UUID addressId) {
-        return userClient.getAddress(addressId).getData().toAddressForOrderDto();
+    public AddressDto getAddress(UUID userId, String email, String role, UUID addressId) {
+        return userClient.getAddress(userId, email, role, addressId).getData().toAddressForOrderDto();
 //        return AddressDto.createDummy();
     }
 
     @Override
-    public UserDto getUserById(UUID userId) {
-        return userClient.getUser(userId).getData().toUserByIdForOrderDto();
+    public UserDto getUserById(UUID userId, String email, String role) {
+        return userClient.getUser(userId, email, role, userId).getData().toUserByIdForOrderDto();
 //        return UserDto.createDummy();
     }
 }

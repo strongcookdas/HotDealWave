@@ -8,6 +8,7 @@ import com.sparta.hotdeal.order.domain.entity.basket.Basket;
 import com.sparta.hotdeal.order.domain.entity.order.Order;
 import com.sparta.hotdeal.order.domain.entity.order.OrderProduct;
 import com.sparta.hotdeal.order.domain.repository.OrderProductRepository;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -50,12 +51,14 @@ public class OrderProductService {
         return orderProductList.stream().map(OrderProductDto::of).toList();
     }
 
-    public Map<UUID, List<OrderProductDto>> getOrderProductsByOrderIds(List<UUID> orderIds) {
-        List<OrderProduct> orderProducts = orderProductRepository.findAllByOrderIdIn(orderIds);
+    public Map<UUID, List<OrderProduct>> getOrderProductsByOrderIds(List<Order> orderList) {
+        Map<UUID, List<OrderProduct>> orderProductMap = new HashMap<>();
+        for (Order order : orderList) {
+            List<OrderProduct> orderProductList = orderProductRepository.findAllByOrderId(order.getId());
+            orderProductMap.put(order.getId(), orderProductList);
+        }
 
-        return orderProducts.stream()
-                .map(OrderProductDto::of)
-                .collect(Collectors.groupingBy(OrderProductDto::getOrderId));
+        return orderProductMap;
     }
 
     private ProductDto getProductOrThrow(

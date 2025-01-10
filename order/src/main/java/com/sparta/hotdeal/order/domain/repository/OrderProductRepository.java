@@ -9,5 +9,4 @@ import org.springframework.stereotype.Repository;
 public interface OrderProductRepository {
     List<OrderProduct> saveAllOrderProduct(List<OrderProduct> orderProductList);
     List<OrderProduct> findAllByOrderId(UUID orderId);
-    List<OrderProduct> findAllByOrderIdIn(List<UUID> orderIds);
 }

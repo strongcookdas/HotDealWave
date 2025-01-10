@@ -43,7 +43,7 @@ public class OrderController {
         log.info("userEmail : {}", userDetails.getEmail());
         log.info("userRole : {}", userDetails.getRole());
         return ResponseDto.of(OrderResponseMessage.CREATE_ORDER.getMessage(),
-                orderService.createOrder(userDetails.getUserId(), req));
+                orderService.createOrder(userDetails.getUserId(), userDetails.getEmail(), userDetails.getRole(), req));
     }
 
     @GetMapping
@@ -61,7 +61,9 @@ public class OrderController {
         log.info("userId : {}", userDetails.getUserId());
         log.info("userEmail : {}", userDetails.getEmail());
         log.info("userRole : {}", userDetails.getRole());
-        return ResponseDto.of("주문 상세 조회 성공", orderService.getOrderDetail(userDetails.getUserId(), orderId));
+        return ResponseDto.of("주문 상세 조회 성공",
+                orderService.getOrderDetail(userDetails.getUserId(), userDetails.getEmail(), userDetails.getRole(),
+                        orderId));
     }
 
     @PatchMapping("/{orderId}/status")

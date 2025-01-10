@@ -21,7 +21,7 @@ public class ProductClientConfig {
     @Bean
     public RequestInterceptor requestInterceptor() {
         return requestTemplate -> {
-            requestTemplate.header("X-User-Id", userId);
+            requestTemplate.header("X-User-UserId", userId);
             requestTemplate.header("X-User-Email", email);
             requestTemplate.header("X-User-Role", role);
         };
