@@ -22,7 +22,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        String userId = request.getHeader("X-User-Id");
+        String userId = request.getHeader("X-User-UserId");
         String email = request.getHeader("X-User-Email");
         String role = request.getHeader("X-User-Role");
 
@@ -36,7 +36,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (userId == null || role == null) {
+        if (userId == null || role == null || email == null) {
             /* 로그인 연동 전까지 mock user 사용
             log.warn("Missing authentication headers: X-User-Id or X-User-Role");
             SecurityContextHolder.clearContext();
