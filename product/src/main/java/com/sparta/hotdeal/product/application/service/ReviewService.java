@@ -35,7 +35,7 @@ public class ReviewService {
 
         // (2) 유효한 상품 확인
         productRepository.findById(reqPostReviewDto.getProductId())
-                .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+                .orElseThrow(() -> new ApplicationException(ErrorCode.PRODUCT_NOT_FOUND_EXCEPTION));
 
         File reviewImgs = fileService.saveFile();
         for (MultipartFile file : reqPostReviewDto.getReviewImgs()) {
@@ -52,11 +52,11 @@ public class ReviewService {
     public void updateReview(UUID reviewId, ReqPutReviewDto reqPutReviewDto, String username) {
         // (1) 리뷰 존재 유무 확인
         Review fetchedReview = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+                .orElseThrow(() -> new ApplicationException(ErrorCode.REVIEW_NOT_FOUND_EXCEPTION));
 
         // (2) 상품 존재 유무 확인
         Product fetchedProduct = productRepository.findById(fetchedReview.getProductID())
-                .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+                .orElseThrow(() -> new ApplicationException(ErrorCode.PRODUCT_NOT_FOUND_EXCEPTION));
 
         fetchedProduct.decrementReview(fetchedReview.getRating());
         fetchedProduct.incrementReview(reqPutReviewDto.getRating());
@@ -72,11 +72,11 @@ public class ReviewService {
     public void deleteReview(UUID reviewId, String username) {
         // (1) 리뷰 존재 유무 확인
         Review fetchedReview = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+                .orElseThrow(() -> new ApplicationException(ErrorCode.REVIEW_NOT_FOUND_EXCEPTION));
 
         // (2) 상품 존재 유무 확인
         Product fetchedProduct = productRepository.findById(fetchedReview.getProductID())
-                .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+                .orElseThrow(() -> new ApplicationException(ErrorCode.PRODUCT_NOT_FOUND_EXCEPTION));
 
         fetchedProduct.decrementReview(fetchedReview.getRating());
 
@@ -91,7 +91,7 @@ public class ReviewService {
     public ResGetReviewByIdDto getReviewById(UUID reviewId) {
         // (1) 리뷰 존재 유무 확인
         Review fetchedReview = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+                .orElseThrow(() -> new ApplicationException(ErrorCode.REVIEW_NOT_FOUND_EXCEPTION));
 
         return ResGetReviewByIdDto.create(fetchedReview);
     }
