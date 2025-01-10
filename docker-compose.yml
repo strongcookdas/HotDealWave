@@ -49,8 +49,107 @@ services:
     networks:
       - hotdealnetwork
 
+  company-service:
+    build:
+      context: ./company
+      dockerfile: Dockerfile
+    container_name: company-service
+    ports:
+      - "19097:19097"
+    environment:
+      - ACTIVE_PROFILE=${ACTIVE_PROFILE}
+      - PROD_DB_ENDPOINT=${PROD_DB_ENDPOINT}
+      - PROD_DB_USERNAME=${PROD_DB_USERNAME}
+      - PROD_DB_PASSWORD=${PROD_DB_PASSWORD}
+    depends_on:
+      - user-service
+    networks:
+      - hotdealnetwork
+
+  product-service:
+    build:
+      context: ./product
+      dockerfile: Dockerfile
+    container_name: product-service
+    ports:
+      - "19093:19093"
+    environment:
+      - ACTIVE_PROFILE=${ACTIVE_PROFILE}
+      - PROD_DB_ENDPOINT=${PROD_DB_ENDPOINT}
+      - PROD_DB_USERNAME=${PROD_DB_USERNAME}
+      - PROD_DB_PASSWORD=${PROD_DB_PASSWORD}
+      - ADMIN_USER_ID=${ADMIN_USER_ID}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - ADMIN_ROLE=${ADMIN_ROLE}
+    depends_on:
+      - company-service
+    networks:
+      - hotdealnetwork
+
+  coupon-service:
+    build:
+      context: ./coupon
+      dockerfile: Dockerfile
+    container_name: coupon-service
+    ports:
+      - "19096:19096"
+    environment:
+      - ACTIVE_PROFILE=${ACTIVE_PROFILE}
+      - PROD_DB_ENDPOINT=${PROD_DB_ENDPOINT}
+      - PROD_DB_USERNAME=${PROD_DB_USERNAME}
+      - PROD_DB_PASSWORD=${PROD_DB_PASSWORD}
+      - ADMIN_USER_ID=${ADMIN_USER_ID}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - ADMIN_ROLE=${ADMIN_ROLE}
+    depends_on:
+      - product-service
+    networks:
+      - hotdealnetwork
+
+  order-service:
+    build:
+      context: ./order
+      dockerfile: Dockerfile
+    container_name: order-service
+    ports:
+      - "19094:19094"
+    environment:
+      - ACTIVE_PROFILE=${ACTIVE_PROFILE}
+      - PROD_DB_ENDPOINT=${PROD_DB_ENDPOINT}
+      - PROD_DB_USERNAME=${PROD_DB_USERNAME}
+      - PROD_DB_PASSWORD=${PROD_DB_PASSWORD}
+      - ADMIN_USER_ID=${ADMIN_USER_ID}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - ADMIN_ROLE=${ADMIN_ROLE}
+    depends_on:
+      - coupon-service
+    networks:
+      - hotdealnetwork
+
+  payment-service:
+    build:
+      context: ./payment
+      dockerfile: Dockerfile
+    container_name: payment-service
+    ports:
+      - "19095:19095"
+    environment:
+      - ACTIVE_PROFILE=${ACTIVE_PROFILE}
+      - PROD_DB_ENDPOINT=${PROD_DB_ENDPOINT}
+      - PROD_DB_USERNAME=${PROD_DB_USERNAME}
+      - PROD_DB_PASSWORD=${PROD_DB_PASSWORD}
+      - ADMIN_USER_ID=${ADMIN_USER_ID}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - ADMIN_ROLE=${ADMIN_ROLE}
+      - PAY_KEY=${PAY_KEY}
+      - PAY_CID=${PAY_CID}
+      - PAY_HOST_DOMAIN=${PAY_HOST_DOMAIN}
+    depends_on:
+      - order-service
+    networks:
+      - hotdealnetwork
+
 networks:
   hotdealnetwork:
     external: true
     name: hotdeal-ecommerce_hotdealnetwork
-
