@@ -34,7 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Slf4j(topic = "ORDER-SERVICE")
+@Slf4j(topic = "[ORDER-SERVICE]")
 @Transactional
 @RequiredArgsConstructor
 public class OrderService {
@@ -51,35 +51,37 @@ public class OrderService {
     public ResPostOrderDto createOrder(UUID userId, String email, String role, ReqPostOrderDto req) {
         //1. 장바구니 조회
         List<Basket> basketList = orderBasketService.getBasketList(req.getBasketList());
-        log.info("basketList size : {}", basketList.size());
+        log.info("장바구니 조회");
 
         //2. 상품 정보 조회
         List<UUID> productIds = basketList.stream().map(Basket::getProductId).toList();
         List<ProductDto> productDtoList = productClientPort.getProductALL(productIds);
-        log.info("productIds size : {}", productIds.size());
+        log.info("상품 조회 정보");
+
         Map<UUID, ProductDto> productDtoMap = convertListToMap(productDtoList);
-        log.error("productMap convert");
+        log.info("productDto -> productMap");
 
         if (basketList.size() != productDtoList.size()) {
-            log.error("ORDER_INVALID_VALUE");
+            log.error("상품과 장바구니 수량 불일치 예외 발생");
             throw new ApplicationException(ErrorCode.ORDER_INVALID_VALUE_EXCEPTION);
         }
 
         //4. 총 금액 계산
         int totalAmount = calculateTotalAmount(basketList, productDtoMap);
+        log.info("총 금액 계산");
 
         //5. 쿠폰 유효성 및 쿠폰 적용
         int discountAmount = 0;
         UUID couponId = null;
-        log.info("쿠폰 유효성 체크 호출 전");
         CouponValidationDto couponValidationDto = couponClientPort.validateCoupon(req.getCouponId(), basketList,
                 productDtoMap);
-        log.info("couponValidationDto : {}", couponValidationDto);
+        log.info("쿠폰 유효성 체크 호출");
 
         if (!couponValidationDto.isValid()) {
             discountAmount = couponValidationDto.getTotalDiscountAmount();
             couponId = req.getCouponId();
             couponClientPort.useCoupon(couponId);
+            log.info("쿠폰 사용 api 호출");
         }
 
         //6. 상품 감소 처리
@@ -92,7 +94,7 @@ public class OrderService {
 
         //8. 주문 저장 및 주문-상품 저장
         AddressDto address = userClientPort.getAddress(userId, email, role, req.getAddressId());
-        log.info("AddressDto : {}", address);
+        log.info("주소 조회 api 호출");
         Order order = Order.create(
                 address.getAddressId(),
                 userId,
@@ -104,12 +106,13 @@ public class OrderService {
 
         order = orderRepository.save(order);
         orderProductService.createOrderProductList(order, basketList, productDtoList);
+        log.info("주문 정보 DB 저장");
 
         //주문 생성 이후 비동기 처리 (결제 요청)
         PaymentRequestDto paymentRequestDto = paymentClientPort.readyPayment(userId, email, role, OrderDto.of(order),
                 basketList);
-
         log.info("결제 요청");
+
         return ResPostOrderDto.of(order, paymentRequestDto);
     }
 
@@ -189,7 +192,7 @@ public class OrderService {
 
     private String getOrderName(List<ProductDto> productDtoList) {
         int listSize = productDtoList.size();
-        return productDtoList.get(0).getName() + "외 " + (listSize - 1) + "개";
+        return productDtoList.get(0).getName() + " 외 " + (listSize - 1) + "개";
     }
 
     private Map<UUID, ProductDto> convertListToMap(List<ProductDto> productDtoList) {

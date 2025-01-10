@@ -21,11 +21,13 @@ public class ReqPostCouponValidateDto {
     @NoArgsConstructor
     public static class Product {
         private UUID companyId;
+        private Integer quantity;
         private int price;
 
-        public static Product create(ProductDto productDto) {
+        public static Product create(ProductDto productDto, Integer quantity) {
             return Product.builder()
                     .companyId(productDto.getCompanyId())
+                    .quantity(quantity)
                     .price((productDto.getDiscountPrice() == null) ? productDto.getPrice()
                             : productDto.getDiscountPrice())
                     .build();
