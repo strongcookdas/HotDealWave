@@ -3,6 +3,8 @@ package com.sparta.hotdeal.order.domain.entity.order;
 import com.sparta.hotdeal.order.domain.entity.AuditingDate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -35,6 +37,7 @@ public class Order extends AuditingDate {
     private UUID userId;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
     @Column(nullable = false)
@@ -46,7 +49,6 @@ public class Order extends AuditingDate {
     private UUID couponId;
 
     private Integer couponDiscountAmount;
-
 
 
     public static Order create(
@@ -66,5 +68,9 @@ public class Order extends AuditingDate {
                 .couponId(couponId)
                 .couponDiscountAmount(couponDiscountAmount)
                 .build();
+    }
+
+    public void updateStatus(OrderStatus status) {
+        this.status = status;
     }
 }

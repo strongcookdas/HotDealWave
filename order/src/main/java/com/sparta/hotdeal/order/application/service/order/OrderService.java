@@ -3,6 +3,7 @@ package com.sparta.hotdeal.order.application.service.order;
 import com.sparta.hotdeal.order.application.dtos.address.AddressDto;
 import com.sparta.hotdeal.order.application.dtos.coupon.CouponValidationDto;
 import com.sparta.hotdeal.order.application.dtos.order.OrderDto;
+import com.sparta.hotdeal.order.application.dtos.order.req.ReqPutOrderDto;
 import com.sparta.hotdeal.order.application.dtos.order.req.ReqPostOrderDto;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrderByIdDto;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrderListDto;
@@ -166,6 +167,13 @@ public class OrderService {
                 orderProductMap.get(order.getId()),
                 productMap
         ));
+    }
+
+    public void updateOrderStatus(UUID orderId, ReqPutOrderDto reqPutOrderDto) {
+        Order order = orderRepository.findByIdAndDeletedAtIsNull(orderId)
+                .orElseThrow(() -> new ApplicationException(ErrorCode.ORDER_NOT_FOUND_EXCEPTION));
+
+        order.updateStatus(reqPutOrderDto.getOrderStatus());
     }
 
     private int calculateTotalAmount(List<Basket> basketList, Map<UUID, ProductDto> productDtoMap) {

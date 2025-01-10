@@ -1,6 +1,5 @@
 package com.sparta.hotdeal.order.infrastructure.config;
 
-import com.sparta.hotdeal.order.infrastructure.exception.decoder.CouponClientErrorDecoder;
 import com.sparta.hotdeal.order.infrastructure.exception.decoder.ProductClientErrorDecoder;
 import feign.RequestInterceptor;
 import feign.codec.ErrorDecoder;
