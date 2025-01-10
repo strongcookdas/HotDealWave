@@ -6,9 +6,9 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ErrorCode {
 
-    NOT_FOUND_COUPONINFO(HttpStatus.NOT_FOUND, "CO001", "해당 쿠폰 정보 ID가 존재하지 않습니다."),
+    NOT_FOUND_COUPON_INFO(HttpStatus.NOT_FOUND, "CO001", "해당 쿠폰 정보 ID가 존재하지 않습니다."),
     NOT_FOUND_COUPON(HttpStatus.NOT_FOUND, "CO002", "해당 쿠폰 ID가 존재하지 않습니다."),
-    ALREADY_SET_COUPONINFO_STATUS(HttpStatus.BAD_REQUEST, "CO003", "이미 쿠폰이 해당 상태로 설정되어 있습니다."),
+    ALREADY_SET_COUPON_INFO_STATUS(HttpStatus.BAD_REQUEST, "CO003", "이미 쿠폰이 해당 상태로 설정되어 있습니다."),
     INVALID_COUPON_STATUS(HttpStatus.BAD_REQUEST, "CO004", "쿠폰 상태가 유효하지 않습니다."),
     COUPON_OUT_OF_STOCK(HttpStatus.BAD_REQUEST, "CO005", "쿠폰이 품절되었습니다."),
     ALREADY_ISSUED_COUPON(HttpStatus.BAD_REQUEST, "CO006", "사용자가 이미 해당 쿠폰을 발급받았습니다."),
@@ -20,7 +20,10 @@ public enum ErrorCode {
     UNAUTHORIZED_ACCESS(HttpStatus.FORBIDDEN, "CO012", "권한이 없습니다."),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "CO013", "예기치 못한 오류가 발생했습니다."),
     INVALID_VALUE_EXCEPTION(HttpStatus.BAD_REQUEST, "CO014", "올바르지 않은 요청 값입니다."),
-    COMPANY_NOT_APPROVED(HttpStatus.BAD_REQUEST, "CO015", "회사가 APPROVED 상태가 아닙니다.");
+    COMPANY_NOT_APPROVED(HttpStatus.BAD_REQUEST, "CO015", "회사가 APPROVED 상태가 아닙니다."),
+    INTERNAL_SERVER_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "CO016", "예기치 못한 오류가 발생했습니다."),
+    COMPANY_INVALID_VALUE_EXCEPTION(HttpStatus.BAD_REQUEST, "CO017", "올바르지 않은 업체 요청 값입니다."),
+    COMPANY_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "CO018", "존재하지 않는 업체입니다.");
 
     private final HttpStatus status;
     private final String code;
