@@ -1,13 +1,12 @@
-package com.sparta.hotdeal.order.infrastructure.config;
+package com.sparta.hotdeal.payment.infrastructure.config;
 
-import com.sparta.hotdeal.order.infrastructure.exception.decoder.ProductClientErrorDecoder;
+import com.sparta.hotdeal.payment.infrastructure.exception.decoder.OrderClientErrorDecoder;
 import feign.RequestInterceptor;
 import feign.codec.ErrorDecoder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 
-public class ProductClientConfig {
-
+public class OrderClientConfig {
     @Value("${admin.user-id}")
     private String userId;
 
@@ -25,9 +24,8 @@ public class ProductClientConfig {
             requestTemplate.header("X-User-Role", role);
         };
     }
-
     @Bean
     public ErrorDecoder errorDecoder() {
-        return new ProductClientErrorDecoder();
+        return new OrderClientErrorDecoder();
     }
 }

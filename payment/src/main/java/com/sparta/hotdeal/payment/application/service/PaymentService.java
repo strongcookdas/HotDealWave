@@ -12,6 +12,7 @@ import com.sparta.hotdeal.payment.application.dtos.payment.res.ResPostPaymentsDt
 import com.sparta.hotdeal.payment.application.exception.ApplicationException;
 import com.sparta.hotdeal.payment.application.exception.ErrorCode;
 import com.sparta.hotdeal.payment.application.port.KakaoPayClientPort;
+import com.sparta.hotdeal.payment.application.port.OrderClientPort;
 import com.sparta.hotdeal.payment.domain.entity.payment.Payment;
 import com.sparta.hotdeal.payment.domain.entity.payment.PaymentStatus;
 import com.sparta.hotdeal.payment.domain.repository.PaymentRepository;
@@ -29,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class PaymentService {
     private final KakaoPayClientPort kakaoPayClientPort;
+    private final OrderClientPort orderClientPort;
     private final PaymentRepository paymentRepository;
 
     public ResPostPaymentsDto readyPayment(UUID userId, ReqPostPaymentDto reqPostPaymentDto) {
@@ -46,12 +48,15 @@ public class PaymentService {
     }
 
     public ResPostPaymentConfirmDto approvePayment(UUID userId, ReqPostPaymentConfirmDto reqPostPaymentConfirmDto) {
-        log.info("tid:{}",reqPostPaymentConfirmDto.getTid());
         Payment payment = paymentRepository.findByTid(reqPostPaymentConfirmDto.getTid())
                 .orElseThrow(() -> new ApplicationException(ErrorCode.PAYMENT_NOT_FOUND_EXCEPTION));
+
         KakaoPayApproveDto kakaoPayApproveDto = kakaoPayClientPort.approve(userId, reqPostPaymentConfirmDto,
                 PaymentDto.from(payment));
+
         payment.updateStatus(PaymentStatus.COMPLETE);
+        orderClientPort.updateOrderStatus(payment.getOrderId(), "COMPLETE");
+
         return ResPostPaymentConfirmDto.of(kakaoPayApproveDto);
     }
 

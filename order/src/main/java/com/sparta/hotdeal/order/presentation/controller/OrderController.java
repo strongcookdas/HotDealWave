@@ -1,7 +1,7 @@
 package com.sparta.hotdeal.order.presentation.controller;
 
 import com.sparta.hotdeal.order.application.dtos.ResponseDto;
-import com.sparta.hotdeal.order.application.dtos.order.req.ReqPatchOrderDto;
+import com.sparta.hotdeal.order.application.dtos.order.req.ReqPutOrderDto;
 import com.sparta.hotdeal.order.application.dtos.order.req.ReqPostOrderDto;
 import com.sparta.hotdeal.order.application.dtos.order.res.OrderResponseMessage;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrderByIdDto;
@@ -21,9 +21,9 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -63,10 +63,11 @@ public class OrderController {
                         orderId));
     }
 
-    @PatchMapping("/{orderId}/status")
+    @PutMapping("/{orderId}/status")
     @Secured({"ROLE_MASTER"})
-    @Operation(summary = "주문 상태 수정 API", description = "주문 상태를 수정합니다. (추후 구현 예정)")
-    public ResponseDto<Void> updateOrderStatus(@PathVariable UUID orderId, @RequestBody ReqPatchOrderDto req) {
+    @Operation(summary = "주문 상태 수정 API", description = "주문 상태를 수정합니다.")
+    public ResponseDto<Void> updateOrderStatus(@PathVariable UUID orderId, @RequestBody ReqPutOrderDto req) {
+        orderService.updateOrderStatus(orderId, req);
         return ResponseDto.of("주문 상태가 수정되었습니다.", null);
     }
 

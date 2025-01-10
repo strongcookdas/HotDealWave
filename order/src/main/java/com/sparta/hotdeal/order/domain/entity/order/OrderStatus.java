@@ -1,5 +1,18 @@
 package com.sparta.hotdeal.order.domain.entity.order;
 
-public enum OrderStatus { // 상태 추가 필요
-    CREATE,PENDING, COMPLETE
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
+public enum OrderStatus {
+    CREATE, PENDING, COMPLETE, CANCEL;
+
+    @JsonCreator
+    public static OrderStatus fromString(String status) {
+        return OrderStatus.valueOf(status.toUpperCase());
+    }
+
+    @JsonValue
+    public String toValue() {
+        return this.name();
+    }
 }

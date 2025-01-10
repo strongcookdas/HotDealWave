@@ -1,5 +1,6 @@
 package com.sparta.hotdeal.order.application.dtos.order.req;
 
+import com.sparta.hotdeal.order.domain.entity.order.OrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,6 +12,6 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReqPatchOrderDto {
-    private String orderStatus;
+public class ReqPutOrderDto {
+    private OrderStatus orderStatus;
 }
