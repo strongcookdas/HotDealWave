@@ -37,7 +37,10 @@ public class Review extends AuditingDate {
     private UUID productID;
 
     @Column(nullable = false)
-    private Long userId;
+    private UUID userId;
+
+    @Column(nullable = false)
+    private String nickname;
 
     @Column(nullable = false)
     private double rating;
@@ -52,7 +55,8 @@ public class Review extends AuditingDate {
     public static Review create(
             UUID orderID,
             UUID productID,
-            Long userId,
+            UUID userId,
+            String nickname,
             double rating,
             String review,
             File reviewImgs
@@ -61,6 +65,7 @@ public class Review extends AuditingDate {
                 .orderID(orderID)
                 .productID(productID)
                 .userId(userId)
+                .nickname(nickname)
                 .rating(rating)
                 .review(review)
                 .reviewImgs(reviewImgs)

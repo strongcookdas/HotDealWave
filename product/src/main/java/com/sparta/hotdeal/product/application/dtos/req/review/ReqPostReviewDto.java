@@ -15,7 +15,7 @@ public class ReqPostReviewDto {
     @NotNull(message = "상품 ID를 입력해주세요.")
     private UUID productId;
     @NotNull(message = "사용자 ID를 입력해주세요.")
-    private Long userId;
+    private UUID userId;
     @NotNull(message = "평점을 입력해주세요.")
     private double rating;
     @NotNull(message = "내용을 입력해주세요.")
