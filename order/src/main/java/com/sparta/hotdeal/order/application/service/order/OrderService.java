@@ -50,7 +50,7 @@ public class OrderService {
 
     public ResPostOrderDto createOrder(UUID userId, String email, String role, ReqPostOrderDto req) {
         //1. 장바구니 조회
-        List<Basket> basketList = orderBasketService.getBasketList(req.getBasketList());
+        List<Basket> basketList = orderBasketService.getBasketList(userId, req.getBasketList());
         log.info("장바구니 조회");
 
         //2. 상품 정보 조회
