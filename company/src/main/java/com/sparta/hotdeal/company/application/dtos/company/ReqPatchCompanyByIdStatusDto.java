@@ -8,6 +8,6 @@ import lombok.Getter;
 @Getter
 @Builder
 public class ReqPatchCompanyByIdStatusDto {
-    @NotNull
+    @NotNull(message = "상태를 입력해주세요.")
     private CompanyStatusEnum status;
 }
