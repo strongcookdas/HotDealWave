@@ -8,6 +8,8 @@ import com.sparta.hotdeal.company.application.dtos.company.ReqPostCompanyDto;
 import com.sparta.hotdeal.company.application.dtos.company.ResGetCompanyByIdDto;
 import com.sparta.hotdeal.company.application.dtos.ResponseDto;
 import com.sparta.hotdeal.company.infrastructure.security.RequestUserDetails;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,12 +32,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/companies")
 @RequiredArgsConstructor
+@Tag(name = "Company API", description = "업체 관련 API")
 public class CompanyController {
     private final CompanyService companyService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Secured({"ROLE_SELLER", "ROLE_MASTER", "ROLE_MANAGER"})
+    @Operation(summary = "업체 생성 API", description = "업체를 생성합니다.")
     public ResponseDto<Void> createCompany(@AuthenticationPrincipal RequestUserDetails userDetails,
                                            @Valid @RequestBody ReqPostCompanyDto reqPostCompanyDto) {
         companyService.createCompany(reqPostCompanyDto);
@@ -44,6 +48,7 @@ public class CompanyController {
 
     @PatchMapping("/{companyId}")
     @Secured({"ROLE_SELLER", "ROLE_MASTER", "ROLE_MANAGER"})
+    @Operation(summary = "업체 수정 API", description = "업체를 수정합니다.")
     public ResponseDto<Void> updateCompany(@AuthenticationPrincipal RequestUserDetails userDetails,
                                            @Valid @PathVariable UUID companyId,
                                            @RequestBody ReqPatchCompanyByIdDto reqPatchCompanyByIdDto) {
@@ -53,6 +58,7 @@ public class CompanyController {
 
     @PatchMapping("/{companyId}/status")
     @Secured({"ROLE_MASTER", "ROLE_MANAGER"})
+    @Operation(summary = "업체 상태 변경 API", description = "업체 상태를 변경합니다.")
     public ResponseDto<Void> updateCompanyStatus(@AuthenticationPrincipal RequestUserDetails userDetails,
                                                  @Valid @PathVariable UUID companyId,
                                                  @RequestBody ReqPatchCompanyByIdStatusDto reqPatchCompanyByIdStatusDto) {
@@ -62,6 +68,7 @@ public class CompanyController {
 
     @GetMapping("/{companyId}")
     @Secured({"ROLE_SELLER", "ROLE_MASTER", "ROLE_MANAGER"})
+    @Operation(summary = "업체 상세 조회 API", description = "업체 ID로 상세 정보를 조회합니다.")
     public ResponseDto<ResGetCompanyByIdDto> getCompanyById(@AuthenticationPrincipal RequestUserDetails userDetails,
                                                             @PathVariable UUID companyId) {
         ResGetCompanyByIdDto resGetCompanyByIdDto = companyService.getCompanyById(companyId);
@@ -70,6 +77,7 @@ public class CompanyController {
 
     @GetMapping
     @Secured({"ROLE_SELLER", "ROLE_MASTER", "ROLE_MANAGER"})
+    @Operation(summary = "업체 목록 조회 API", description = "업체 목록을 조회합니다.")
     public ResponseDto<Page<ResGetCompanyByIdDto>> getCompanyList(
             @AuthenticationPrincipal RequestUserDetails userDetails, Pageable pageable) {
         return ResponseDto.of("업체목록이 조회되었습니다.", companyService.getCompanyList(pageable));

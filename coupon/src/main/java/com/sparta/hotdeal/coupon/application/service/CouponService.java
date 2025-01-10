@@ -80,12 +80,12 @@ public class CouponService {
         int applicableTotalPrice;
         if (couponInfo.getCompanyId() == null) {
             applicableTotalPrice = reqDto.getProducts().stream()
-                    .mapToInt(ReqPostCouponValidateDto.Product::getPrice)
+                    .mapToInt(product -> product.getPrice() * product.getQuantity())
                     .sum();
         } else {
             applicableTotalPrice = reqDto.getProducts().stream()
                     .filter(product -> product.getCompanyId().equals(couponInfo.getCompanyId()))
-                    .mapToInt(ReqPostCouponValidateDto.Product::getPrice)
+                    .mapToInt(product -> product.getPrice() * product.getQuantity())
                     .sum();
 
             if (applicableTotalPrice == 0) {

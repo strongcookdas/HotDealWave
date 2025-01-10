@@ -19,3 +19,8 @@ eureka:
       defaultZone: http://localhost:19090/eureka/
 server:
   port: 19097
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
