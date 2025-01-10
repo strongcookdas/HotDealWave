@@ -59,7 +59,7 @@ public class AuthenticationFilter implements GlobalFilter {
         }
 
         // payment 경로
-        if (path.startsWith("/api/v1/payment")) {
+        if (path.startsWith("/api/v1/payment") || path.startsWith("/payment/")) {
             return true;
         }
 
