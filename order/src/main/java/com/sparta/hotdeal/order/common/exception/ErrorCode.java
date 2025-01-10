@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.order.application.exception;
+package com.sparta.hotdeal.order.common.exception;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -29,6 +29,7 @@ public enum ErrorCode {
     PRODUCT_FORBIDDEN_EXCEPTION(HttpStatus.FORBIDDEN, "OP002", "인가되지 않는 상품 요청입니다."),
     PRODUCT_NOT_ON_SALE_EXCEPTION(HttpStatus.BAD_REQUEST,"OP003","판매하지 않는 상품입니다."),
     PRODUCT_INVALID_QUANTITY_EXCEPTION(HttpStatus.BAD_REQUEST,"OP004","상품 수량이 부족합니다."),
+    PRODUCT_INVALID_VALUE_EXCEPTION(HttpStatus.BAD_REQUEST, "OP005", "올바르지 않은 상품 요청 값입니다."),
 
     //Basket
     BASKET_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "OB001", "존재하지 않는 장바구니 리소스입니다."),
@@ -43,8 +44,8 @@ public enum ErrorCode {
     COUPON_ALREADY_USED_EXCEPTION(HttpStatus.BAD_REQUEST, "OC002", "이미 사용한 쿠폰입니다."),
     COUPON_MINIMUM_PRICE_EXCEPTION(HttpStatus.BAD_REQUEST, "OC003", "쿠폰을 사용할 수 있는 최소금액이 아닙니다."),
     COUPON_INVALID_COMPANY_EXCEPTION(HttpStatus.BAD_REQUEST, "OC004", "쿠폰을 사용할 수 있는 회사 상품이 없습니다."),
-    COUPON_EXPIRED_EXCEPTION(HttpStatus.BAD_REQUEST, "OC005", "만료된 쿠폰입니다.");
-
+    COUPON_EXPIRED_EXCEPTION(HttpStatus.BAD_REQUEST, "OC005", "만료된 쿠폰입니다."),
+    COUPON_INVALID_VALUE_EXCEPTION(HttpStatus.BAD_REQUEST, "OC006", "올바르지 않은 쿠폰 도메인 요청 값입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

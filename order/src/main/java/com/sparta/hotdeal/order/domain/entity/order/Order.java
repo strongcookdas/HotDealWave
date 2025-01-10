@@ -3,10 +3,13 @@ package com.sparta.hotdeal.order.domain.entity.order;
 import com.sparta.hotdeal.order.domain.entity.AuditingDate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.List;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -35,7 +38,10 @@ public class Order extends AuditingDate {
     private OrderStatus status;
 
     @Column(nullable = false)
-    private Long totalAmount;
+    private Integer totalAmount;
+
+    @Column(nullable = false)
+    private String name;
 
     private UUID couponId;
 
@@ -46,7 +52,8 @@ public class Order extends AuditingDate {
     public static Order create(
             UUID addressId,
             UUID userId,
-            Long totalAmount,
+            Integer totalAmount,
+            String name,
             UUID couponId,
             Integer couponDiscountAmount
     ) {
@@ -54,6 +61,7 @@ public class Order extends AuditingDate {
                 .addressId(addressId)
                 .userId(userId)
                 .totalAmount(totalAmount)
+                .name(name)
                 .status(OrderStatus.CREATE)
                 .couponId(couponId)
                 .couponDiscountAmount(couponDiscountAmount)

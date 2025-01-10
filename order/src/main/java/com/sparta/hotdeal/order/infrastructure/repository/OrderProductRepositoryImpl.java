@@ -19,12 +19,4 @@ public interface OrderProductRepositoryImpl extends JpaRepository<OrderProduct, 
     default List<OrderProduct> findAllByOrderId(UUID orderId) {
         return findAllByOrderIdAndDeletedAtIsNull(orderId);
     }
-
-    List<OrderProduct> findAllByOrderIdInAndDeletedAtIsNull(List<UUID> orderIds);
-
-    @Override
-    default List<OrderProduct> findAllByOrderIdIn(List<UUID> orderIds){
-        return findAllByOrderIdInAndDeletedAtIsNull(orderIds);
-    }
-
 }

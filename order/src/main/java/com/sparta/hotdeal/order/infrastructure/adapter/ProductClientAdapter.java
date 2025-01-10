@@ -2,12 +2,11 @@ package com.sparta.hotdeal.order.infrastructure.adapter;
 
 import com.sparta.hotdeal.order.application.dtos.product.ProductByIdtDto;
 import com.sparta.hotdeal.order.application.dtos.product.ProductDto;
-import com.sparta.hotdeal.order.application.dtos.product.req.ReqProductReduceQuantityDto;
 import com.sparta.hotdeal.order.application.port.ProductClientPort;
 import com.sparta.hotdeal.order.domain.entity.basket.Basket;
 import com.sparta.hotdeal.order.infrastructure.client.ProductClient;
-import com.sparta.hotdeal.order.infrastructure.dtos.product.ResGetProductByIdDto;
-import com.sparta.hotdeal.order.infrastructure.dtos.product.ResGetProductListDto;
+import com.sparta.hotdeal.order.infrastructure.dtos.product.req.ReqPatchProductQuantityDto;
+import com.sparta.hotdeal.order.infrastructure.dtos.product.res.ResGetProductListDto;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -23,9 +22,9 @@ public class ProductClientAdapter implements ProductClientPort {
 
     @Override
     public Map<UUID, ProductDto> getProductAll(List<UUID> productIds) {
-//        List<ResGetProductListDto> resGetProductListDtoList = productClient.getProductListFromAPI(productIds).getData()
-//                .toList();
-        List<ResGetProductListDto> resGetProductListDtoList = ResGetProductListDto.createDummyDataList();
+        List<ResGetProductListDto> resGetProductListDtoList = productClient.getProductList(productIds).getData()
+                .toList();
+//        List<ResGetProductListDto> resGetProductListDtoList = ResGetProductListDto.createDummyDataList();
         return resGetProductListDtoList.stream()
                 .map(ResGetProductListDto::toGetProductListForOrderDto)
                 .collect(Collectors.toMap(
@@ -35,20 +34,25 @@ public class ProductClientAdapter implements ProductClientPort {
     }
 
     @Override
-    public void reduceProductQuantity(List<Basket> basketList, Map<UUID, ProductDto> productMap) {
+    public void reduceProductQuantity(List<Basket> basketList) {
         // API 호출 구현 예정
-        List<ReqProductReduceQuantityDto> reqProductReduceQuantityDtos = basketList.stream()
-                .map(basket -> {
-                    //이부분 수정이 필요 장바구니 상품이 조회되지 않았을 경우에 대해서 체크가 필요
-                    ProductDto product = productMap.get(basket.getProductId());
-                    return ReqProductReduceQuantityDto.of(product.getProductId(), basket.getQuantity());
-                })
+        List<ReqPatchProductQuantityDto> reqProductReduceQuantityDtoList = basketList.stream()
+                .map(basket -> ReqPatchProductQuantityDto.create(basket.getProductId(), basket.getQuantity()))
                 .toList();
+        productClient.reduceQuantity(reqProductReduceQuantityDtoList);
     }
 
     @Override
     public ProductByIdtDto getProduct(UUID productId) {
-//        return productClient.getProductFromAPI(productId).getData().toDto();
-        return ResGetProductByIdDto.createDummyData(productId).toDto();
+        return productClient.getProduct(productId).getData().toDto();
+//        return ResGetProductByIdDto.createDummyData(productId).toDto();
+    }
+
+    @Override
+    public List<ProductDto> getProductALL(List<UUID> productIds) {
+        List<ResGetProductListDto> resGetProductListDtoList = productClient.getProductList(productIds).getData()
+                .stream().toList();
+
+        return resGetProductListDtoList.stream().map(ResGetProductListDto::toGetProductListForOrderDto).toList();
     }
 }

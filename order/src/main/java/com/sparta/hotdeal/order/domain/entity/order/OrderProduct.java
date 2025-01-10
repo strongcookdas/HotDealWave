@@ -1,10 +1,13 @@
 package com.sparta.hotdeal.order.domain.entity.order;
 
 import com.sparta.hotdeal.order.domain.entity.AuditingDate;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.util.UUID;
 import lombok.AccessLevel;
@@ -23,19 +26,28 @@ public class OrderProduct extends AuditingDate {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    private UUID orderId;
+
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    private Order order;
+
+    @Column(nullable = false)
     private UUID productId;
+
+    @Column(nullable = false)
     private Integer quantity;
+
+    @Column(nullable = false)
     private Integer price;
 
     public static OrderProduct create(
-            UUID orderId,
+            Order order,
             UUID productId,
             Integer quantity,
             Integer price
     ) {
         return OrderProduct.builder()
-                .orderId(orderId)
+                .order(order)
                 .productId(productId)
                 .quantity(quantity)
                 .price(price)

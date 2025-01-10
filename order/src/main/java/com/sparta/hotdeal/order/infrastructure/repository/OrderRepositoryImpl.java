@@ -16,10 +16,10 @@ public interface OrderRepositoryImpl extends JpaRepository<Order, UUID>, OrderRe
         return findByIdAndUserIdAndDeletedAtIsNull(orderId, userId);
     }
 
-    Page<Order> findAllByUserIdAndDeletedAtIsNull(UUID userId, Pageable pageable);
+    Page<Order> findByUserIdAndDeletedAtIsNull(UUID userId, Pageable pageable);
 
     @Override
     default Page<Order> findAllByUserId(UUID userId, Pageable pageable) {
-        return findAllByUserIdAndDeletedAtIsNull(userId, pageable);
+        return findByUserIdAndDeletedAtIsNull(userId, pageable);
     }
 }

@@ -27,6 +27,11 @@ logging:
   level:
     org.springframework.security: DEBUG
 
+admin:
+  user-id: ${ADMIN_USER_ID}
+  email: ${ADMIN_EMAIL}
+  role: ${ADMIN_ROLE}
+
 #openapi:
 #  service:
 #    url : http://localhost:19091/order-service

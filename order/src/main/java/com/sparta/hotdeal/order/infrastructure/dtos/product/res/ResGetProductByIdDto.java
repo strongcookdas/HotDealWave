@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.order.infrastructure.dtos.product;
+package com.sparta.hotdeal.order.infrastructure.dtos.product.res;
 
 import com.sparta.hotdeal.order.application.dtos.product.ProductByIdtDto;
 import java.util.List;
