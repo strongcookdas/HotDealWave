@@ -28,10 +28,12 @@ public class CouponInfoService {
 
     // 쿠폰 생성
     public ResPostCouponInfosDto createCoupon(ReqPostCouponInfosDto reqDto) {
-        ResGetCompanyByIdDto companyResponse = companyClientService.getCompanyDataById(reqDto.getCompanyId());
+        if (reqDto.getCompanyId() != null) {
+            ResGetCompanyByIdDto companyResponse = companyClientService.getCompanyDataById(reqDto.getCompanyId());
 
-        if (!"APPROVED".equalsIgnoreCase(companyResponse.getStatus())) {
-            throw new CustomException(ErrorCode.COMPANY_NOT_APPROVED);
+            if (!"APPROVED".equalsIgnoreCase(companyResponse.getStatus())) {
+                throw new CustomException(ErrorCode.COMPANY_NOT_APPROVED);
+            }
         }
 
         CouponInfo couponInfo = CouponInfoMapper.toEntity(reqDto);
