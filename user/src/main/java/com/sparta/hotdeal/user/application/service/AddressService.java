@@ -14,6 +14,7 @@ import com.sparta.hotdeal.user.domain.entity.Address;
 import com.sparta.hotdeal.user.domain.entity.User;
 import com.sparta.hotdeal.user.domain.repository.AddressRepository;
 import com.sparta.hotdeal.user.domain.repository.UserRepository;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -60,7 +61,8 @@ public class AddressService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.USER_NOT_FOUND.getMessage()));
 
-        Address address = user.getDefaultAddress();
+        Address address = Optional.ofNullable(user.getDefaultAddress())
+                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.NOT_EXISTS_DEFAULT_ADDRESS.getMessage()));
 
         return ResGetDefaultAddressDto.from(address);
     }
@@ -103,7 +105,7 @@ public class AddressService {
 
         User user = address.getUser();
 
-        if (user.getUserId().equals(userId)) {
+        if (!user.getUserId().equals(userId)) {
             throw new IllegalArgumentException(ErrorMessage.NOT_ALLOWED_CONTENT.getMessage());
         }
 
@@ -119,9 +121,11 @@ public class AddressService {
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.ADDRESS_NOT_FOUND.getMessage()));
 
+        checkDeletedAddress(address);
+
         User user = address.getUser();
 
-        if (user.getUserId().equals(userId)) {
+        if (!user.getUserId().equals(userId)) {
             throw new IllegalArgumentException(ErrorMessage.NOT_ALLOWED_CONTENT.getMessage());
         }
 

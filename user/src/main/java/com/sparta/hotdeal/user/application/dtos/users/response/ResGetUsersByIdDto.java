@@ -11,14 +11,12 @@ public class ResGetUsersByIdDto {
     private UUID userId;
     private String email;
     private String nickname;
-    private UUID defaultAddressId;
 
     public static ResGetUsersByIdDto from(User user) {
         return ResGetUsersByIdDto.builder()
                 .userId(user.getUserId())
                 .email(user.getEmail())
                 .nickname(user.getNickname())
-                .defaultAddressId(null)
                 .build();
     }
 }

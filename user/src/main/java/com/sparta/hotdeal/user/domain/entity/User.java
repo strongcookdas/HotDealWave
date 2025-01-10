@@ -20,6 +20,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Where;
 
 @Entity
 @NoArgsConstructor
@@ -27,6 +28,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Builder
 @Table(name = "p_user")
+@Where(clause = "deleted_at IS NULL")
 public class User extends Audit{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
