@@ -121,6 +121,8 @@ public class AddressService {
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.ADDRESS_NOT_FOUND.getMessage()));
 
+        checkDeletedAddress(address);
+
         User user = address.getUser();
 
         if (!user.getUserId().equals(userId)) {
