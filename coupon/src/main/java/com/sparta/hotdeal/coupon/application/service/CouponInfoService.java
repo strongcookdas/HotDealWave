@@ -55,7 +55,7 @@ public class CouponInfoService {
         CouponInfo couponInfo = findByIdOrThrow(couponInfoId);
 
         if (couponInfo.getStatus() == status) {
-            throw new CustomException(ErrorCode.ALREADY_SET_COUPONINFO_STATUS);
+            throw new CustomException(ErrorCode.ALREADY_SET_COUPON_INFO_STATUS);
         }
         couponInfo.updateStatus(status);
     }
@@ -78,6 +78,6 @@ public class CouponInfoService {
 
     public CouponInfo findByIdOrThrow(UUID couponInfoId) {
         return couponInfoRepository.findByIdAndDeletedAtIsNull(couponInfoId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_COUPONINFO));
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_COUPON_INFO));
     }
 }
