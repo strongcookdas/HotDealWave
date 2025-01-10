@@ -103,7 +103,7 @@ public class AddressService {
 
         User user = address.getUser();
 
-        if (user.getUserId().equals(userId)) {
+        if (!user.getUserId().equals(userId)) {
             throw new IllegalArgumentException(ErrorMessage.NOT_ALLOWED_CONTENT.getMessage());
         }
 
@@ -121,7 +121,7 @@ public class AddressService {
 
         User user = address.getUser();
 
-        if (user.getUserId().equals(userId)) {
+        if (!user.getUserId().equals(userId)) {
             throw new IllegalArgumentException(ErrorMessage.NOT_ALLOWED_CONTENT.getMessage());
         }
 
