@@ -16,9 +16,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrderBasketService {
 
     private final BasketRepository basketRepository;
+
     @Transactional(readOnly = true)
-    public List<Basket> getBasketList(List<UUID> basketIds) {
-        List<Basket> baskets = basketRepository.findByIdIn(basketIds);
+    public List<Basket> getBasketList(UUID userId, List<UUID> basketIds) {
+        List<Basket> baskets = basketRepository.findByIdInAndUserId(basketIds, userId);
         if (baskets.isEmpty()) {
             throw new ApplicationException(ErrorCode.BASKET_NOT_FOUND_EXCEPTION);
         }

@@ -24,7 +24,7 @@ public interface ProductClient {
     @GetMapping(value = "/api/v1/products")
     ResponseDto<Page<ResGetProductListDto>> getProductList(@RequestParam("productIds") List<UUID> productIds);
 
-    @PutMapping("/api/v1/products/reduceQuantity")
+    @PutMapping("/api/v1/products/reduce-quantity")
     ResponseDto<List<ResPatchReduceProductQuantityDto>> reduceQuantity(
             @RequestBody List<ReqPatchProductQuantityDto> reqPatchProductQuantityDto);
 }

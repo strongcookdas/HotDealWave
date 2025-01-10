@@ -35,13 +35,12 @@ public class CouponClientAdapter implements CouponClientPort {
     public CouponValidationDto validateCoupon(UUID couponId, List<Basket> basketList,
                                               Map<UUID, ProductDto> productDtoMap) {
 
-        List<ReqPostCouponValidateDto.Product> productList = basketList.stream().flatMap(basket -> {
+        List<ReqPostCouponValidateDto.Product> productList = basketList.stream().map(basket -> {
 
                     ProductDto productDto = Optional.ofNullable(productDtoMap.get(basket.getProductId())).orElseThrow(
                             () -> new ApplicationException(ErrorCode.PRODUCT_NOT_FOUND_EXCEPTION));
 
-                    return IntStream.range(0, basket.getQuantity())
-                            .mapToObj(i -> ReqPostCouponValidateDto.Product.create(productDto));
+                    return ReqPostCouponValidateDto.Product.create(productDto, basket.getQuantity());
                 }
         ).toList();
 

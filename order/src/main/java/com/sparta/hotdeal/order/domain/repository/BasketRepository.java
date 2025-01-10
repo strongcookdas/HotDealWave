@@ -17,7 +17,7 @@ import org.springframework.stereotype.Repository;
 public interface BasketRepository {
     Basket save(Basket basket);
 
-    List<Basket> findByIdIn(List<UUID> ids);
+    List<Basket> findByIdInAndUserId(List<UUID> ids, UUID userId);
 
     Optional<Basket> findByIdAndUserId(UUID basketId, UUID userId);
 
