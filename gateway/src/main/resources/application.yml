@@ -35,7 +35,7 @@ spring:
         - id: coupon-service
           uri: lb://coupon-service
           predicates:
-            - Path=/api/v1/coupons/**, /api/v1/couponInfos/**, /coupon-service/**
+            - Path=/api/v1/coupons/**, /api/v1/coupon-infos/**, /coupon-service/**
           filters:
             - RewritePath=/coupon-service/(?<segment>.*), /$\{segment}
 
