@@ -35,7 +35,6 @@ public class AuthenticationFilter extends OncePerRequestFilter {
                 requestURI.startsWith("/v3/api-docs") ||
                 requestURI.startsWith("/swagger-resources") ||
                 requestURI.startsWith("/webjars")) {
-            System.out.println("여기!!!!!");
             filterChain.doFilter(request, response);
             return;
         }
