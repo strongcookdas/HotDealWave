@@ -22,3 +22,8 @@ eureka:
 
 server:
   port: 19096
+
+admin:
+  user-id: ${ADMIN_USER_ID}
+  email: ${ADMIN_EMAIL}
+  role: ${ADMIN_ROLE}
