@@ -51,8 +51,8 @@ public class AuthService {
         String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
 
         User user = requestDto.toEntity(encodedPassword);
-        user.updateCreatedByAndUpdateBy(user.getEmail());
         userRepository.save(user);
+        user.updateCreatedByAndUpdateBy(user.getEmail());
 
         return ResPostSignUpDto.builder()
                 .userId(user.getUserId())
@@ -69,7 +69,7 @@ public class AuthService {
     public void sendVerifyEmail(ReqPostVerifyEmailDto requestDto) {
         checkEmail(requestDto.getEmail());
 
-        if (emailRepository.existsById(requestDto.getEmail())) {
+        if (!emailRepository.existsById(requestDto.getEmail())) {
             Email email = requestDto.toEntity();
             emailRepository.save(email);
         }

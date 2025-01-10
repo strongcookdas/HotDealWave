@@ -1,11 +1,19 @@
 package com.sparta.hotdeal.product.domain.repository.product;
 
 import com.sparta.hotdeal.product.domain.entity.product.Product;
-import com.sparta.hotdeal.product.infrastructure.repository.product.ProductRepositoryCustom;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-@Repository
-public interface ProductRepository extends JpaRepository<Product, UUID>, ProductRepositoryCustom {
+public interface ProductRepository {
+
+    Page<Product> findAllWithSearchAndPaging(String search, List<UUID> productIds, Pageable pageable);
+
+    Optional<Product> findById(UUID id);
+
+    Product save(Product product);
+
+    List<Product> findAllByIdIn(List<UUID> productIds);
 }

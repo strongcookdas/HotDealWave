@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  eureka-server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: eureka-server
+    ports:
+      - "19090:19090"
+    networks:
+      - hotdealnetwork
+
+  gateway-service:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    container_name: gateway-service
+    ports:
+      - "19091:19091"
+    environment:
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+    depends_on:
+      - eureka-server
+    networks:
+      - hotdealnetwork
+
+  user-service:
+    build:
+      context: ./user
+      dockerfile: Dockerfile
+    container_name: user-service
+    ports:
+      - "19092:19092"
+    environment:
+      - ACTIVE_PROFILE=${ACTIVE_PROFILE}
+      - EMAIL_SERVICE_USERNAME=${EMAIL_SERVICE_USERNAME}
+      - EMAIL_SERVICE_PASSWORD=${EMAIL_SERVICE_PASSWORD}
+      - PROD_DB_ENDPOINT=${PROD_DB_ENDPOINT}
+      - PROD_DB_USERNAME=${PROD_DB_USERNAME}
+      - PROD_DB_PASSWORD=${PROD_DB_PASSWORD}
+      - REDIS_PROD_HOST=${REDIS_PROD_HOST}
+      - REDIS_PROD_PORT=${REDIS_PROD_PORT}
+      - REDIS_PROD_USERNAME=${REDIS_PROD_USERNAME}
+      - REDIS_PROD_PASSWORD=${REDIS_PROD_PASSWORD}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+    depends_on:
+      - gateway-service
+    networks:
+      - hotdealnetwork
+
+networks:
+  hotdealnetwork:
+    external: true
+    name: hotdeal-ecommerce_hotdealnetwork
+

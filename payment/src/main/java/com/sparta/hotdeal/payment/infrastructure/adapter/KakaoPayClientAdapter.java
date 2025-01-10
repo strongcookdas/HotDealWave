@@ -27,15 +27,19 @@ public class KakaoPayClientAdapter implements KakaoPayClientPort {
     private String authorization;
     @Value("${pay.cid}")
     private String cid;
+    @Value("${pay.host.domain}")
+    private String domain;
 
     @Override
-    public KakaoPayReadyDto ready(ReqPostPaymentDto reqPostPaymentDto) {
+    public KakaoPayReadyDto ready(UUID userId, ReqPostPaymentDto reqPostPaymentDto) {
         ReqPostKakaoPayReadyDto reqPostKakaoPayReadyDto = ReqPostKakaoPayReadyDto.create(
+                cid,
                 reqPostPaymentDto.getOrderId(),
-                reqPostPaymentDto.getUserId(),
+                userId,
                 reqPostPaymentDto.getOrderName(),
                 reqPostPaymentDto.getQuantity(),
-                reqPostPaymentDto.getTotalAmount()
+                reqPostPaymentDto.getTotalAmount(),
+                domain
         );
         ResPostKakaoPayReadyDto resPostKakaoPayReadyDto = kakaoPayClient.ready(authorization, reqPostKakaoPayReadyDto);
         KakaoPayReadyDto kakaoPayReadyDto = KakaoPayReadyDto.create(

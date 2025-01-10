@@ -42,4 +42,19 @@ public class PromotionRepositoryImpl implements PromotionRepository {
     public void save(Promotion promotion) {
         promotionRepositoryJpa.save(promotion);
     }
+
+    @Override
+    public Optional<Promotion> findByProductIdAndStatus(UUID productId, PromotionStatusEnum status) {
+        return promotionRepositoryJpa.findByProductIdAndStatus(productId, status);
+    }
+
+    @Override
+    public List<Promotion> findByStart(LocalDateTime startTime) {
+        return promotionRepositoryJpa.findByStart(startTime);
+    }
+
+    @Override
+    public List<Promotion> findByEnd(LocalDateTime endTime) {
+        return promotionRepositoryJpa.findByEnd(endTime);
+    }
 }

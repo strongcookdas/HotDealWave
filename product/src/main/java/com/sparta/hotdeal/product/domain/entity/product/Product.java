@@ -145,7 +145,7 @@ public class Product extends AuditingDate {
         this.reviewCnt--;
     }
 
-    public void updateDiscountPrice(int discountPrice) {
+    public void updateDiscountPrice(Integer discountPrice) {
         this.discountPrice = discountPrice;
     }
 }

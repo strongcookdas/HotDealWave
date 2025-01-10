@@ -3,6 +3,8 @@ package com.sparta.hotdeal.payment.domain.entity.payment;
 import com.sparta.hotdeal.payment.domain.entity.AuditingDate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -33,6 +35,7 @@ public class Payment extends AuditingDate {
     private UUID userId;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private PaymentStatus status;
 
     @Column(nullable = false)
@@ -54,6 +57,7 @@ public class Payment extends AuditingDate {
     ) {
         return Payment.builder()
                 .orderId(orderId)
+                .userId(userId)
                 .status(status)
                 .amount(amount)
                 .refundAmount(refundAmount)
