@@ -28,10 +28,10 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
         // 특정 경로(Swagger 등)는 필터링 제외
         String requestURI = request.getRequestURI();
-        if (requestURI.startsWith("/swagger-ui") ||
-                requestURI.startsWith("/v3/api-docs") ||
-                requestURI.startsWith("/swagger-resources") ||
-                requestURI.startsWith("/webjars")) {
+        if ((requestURI.startsWith("/api/v1/products") && "GET".equalsIgnoreCase(request.getMethod())) ||
+                (requestURI.startsWith("/api/v1/promotions") && "GET".equalsIgnoreCase(request.getMethod())) ||
+                requestURI.startsWith("/swagger-ui/") ||
+                requestURI.startsWith("/v3/api-docs")) {
             filterChain.doFilter(request, response);
             return;
         }
