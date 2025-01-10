@@ -19,6 +19,7 @@ services:
     ports:
       - "19091:19091"
     environment:
+      - ACTIVE_PROFILE=${ACTIVE_PROFILE}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
     depends_on:
       - eureka-server
