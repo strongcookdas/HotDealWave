@@ -9,6 +9,7 @@ import com.sparta.hotdeal.payment.application.dtos.payment.res.ResPostPaymentCon
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResPostPaymentsDto;
 import com.sparta.hotdeal.payment.application.service.PaymentService;
 import com.sparta.hotdeal.payment.infrastructure.custom.RequestUserDetails;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -30,18 +31,21 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @PostMapping
+    @Operation(summary = "결제 요청 API", description = "결제를 요청합니다.")
     public ResponseDto<ResPostPaymentsDto> readyPayment(@AuthenticationPrincipal RequestUserDetails userDetails,
                                                         @RequestBody @Valid ReqPostPaymentDto req) {
         return ResponseDto.of("결제 요청이 처리되었습니다.", paymentService.readyPayment(userDetails.getUserId(), req));
     }
 
     @PostMapping("/confirm")
+    @Operation(summary = "결제 승인 API", description = "결제를 승인합니다.")
     public ResponseDto<ResPostPaymentConfirmDto> confirmPayment(@AuthenticationPrincipal RequestUserDetails userDetails,
                                                                 @RequestBody @Valid ReqPostPaymentConfirmDto req) {
         return ResponseDto.of("결제 승인 처리되었습니다.", paymentService.approvePayment(userDetails.getUserId(), req));
     }
 
     @GetMapping
+    @Operation(summary = "결제 단건 조회 API", description = "결제를 조회합니다.")
     public ResponseDto<Page<ResGetPaymentForListDto>> getPayments(
             @AuthenticationPrincipal RequestUserDetails userDetails,
             Pageable pageable) {
@@ -49,6 +53,7 @@ public class PaymentController {
     }
 
     @GetMapping("/{paymentId}")
+    @Operation(summary = "결제 내역 조회 API", description = "결제 내역을 조회합니다.")
     public ResponseDto<ResGetPaymentByIdDto> getPaymentById(@AuthenticationPrincipal RequestUserDetails userDetails,
                                                             @PathVariable UUID paymentId) {
         return ResponseDto.of("결제 단건 조회 성공", paymentService.getPaymentById(userDetails.getUserId(), paymentId));
