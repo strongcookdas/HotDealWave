@@ -19,7 +19,8 @@ public enum ErrorCode {
     COUPON_NOT_USED(HttpStatus.BAD_REQUEST, "CO011", "쿠폰이 사용된 상태가 아닙니다."),
     UNAUTHORIZED_ACCESS(HttpStatus.FORBIDDEN, "CO012", "권한이 없습니다."),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "CO013", "예기치 못한 오류가 발생했습니다."),
-    INVALID_VALUE_EXCEPTION(HttpStatus.BAD_REQUEST, "CO014", "올바르지 않은 요청 값입니다.");
+    INVALID_VALUE_EXCEPTION(HttpStatus.BAD_REQUEST, "CO014", "올바르지 않은 요청 값입니다."),
+    COMPANY_NOT_APPROVED(HttpStatus.BAD_REQUEST, "CO015", "회사가 APPROVED 상태가 아닙니다.");
 
     private final HttpStatus status;
     private final String code;
