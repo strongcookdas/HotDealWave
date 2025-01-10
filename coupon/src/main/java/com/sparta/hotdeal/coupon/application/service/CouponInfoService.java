@@ -7,9 +7,11 @@ import com.sparta.hotdeal.coupon.application.dto.res.ResPostCouponInfosDto;
 import com.sparta.hotdeal.coupon.application.exception.CustomException;
 import com.sparta.hotdeal.coupon.application.exception.ErrorCode;
 import com.sparta.hotdeal.coupon.application.mapper.CouponInfoMapper;
+import com.sparta.hotdeal.coupon.application.service.client.CompanyClientService;
 import com.sparta.hotdeal.coupon.domain.entity.CouponInfo;
 import com.sparta.hotdeal.coupon.domain.entity.CouponStatus;
 import com.sparta.hotdeal.coupon.domain.repository.CouponInfoRepository;
+import com.sparta.hotdeal.coupon.infrastructure.dto.ResGetCompanyByIdDto;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,10 +23,17 @@ import java.util.UUID;
 public class CouponInfoService {
 
     private final CouponInfoRepository couponInfoRepository;
+    private final CompanyClientService companyClientService;
 
 
     // 쿠폰 생성
     public ResPostCouponInfosDto createCoupon(ReqPostCouponInfosDto reqDto) {
+        ResGetCompanyByIdDto companyResponse = companyClientService.getCompanyDataById(reqDto.getCompanyId());
+
+        if (!"APPROVED".equalsIgnoreCase(companyResponse.getStatus())) {
+            throw new CustomException(ErrorCode.COMPANY_NOT_APPROVED);
+        }
+
         CouponInfo couponInfo = CouponInfoMapper.toEntity(reqDto);
         CouponInfo savedCouponInfo = couponInfoRepository.save(couponInfo);
 

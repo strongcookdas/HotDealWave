@@ -18,6 +18,7 @@ public class ReqPostCouponValidateDto {
     @NoArgsConstructor
     public static class Product {
         private UUID companyId;
+        private Integer quantity;
         private int price;
     }
 }
