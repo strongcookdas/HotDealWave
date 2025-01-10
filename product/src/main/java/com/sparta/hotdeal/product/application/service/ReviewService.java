@@ -6,12 +6,14 @@ import com.sparta.hotdeal.product.application.dtos.res.review.ResGetReviewByIdDt
 import com.sparta.hotdeal.product.application.exception.ApplicationException;
 import com.sparta.hotdeal.product.application.exception.ErrorCode;
 import com.sparta.hotdeal.product.application.service.client.OrderClientService;
+import com.sparta.hotdeal.product.application.service.client.UserClientService;
 import com.sparta.hotdeal.product.domain.entity.product.File;
 import com.sparta.hotdeal.product.domain.entity.product.Product;
 import com.sparta.hotdeal.product.domain.entity.review.Review;
 import com.sparta.hotdeal.product.domain.repository.product.ProductRepository;
 import com.sparta.hotdeal.product.domain.repository.review.ReviewRepository;
 import com.sparta.hotdeal.product.infrastructure.dtos.ResGetOrderByIdDto;
+import com.sparta.hotdeal.product.infrastructure.dtos.ResGetUserByIdDto;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,6 +28,7 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final ProductRepository productRepository;
     private final OrderClientService orderClientService;
+    private final UserClientService userClientService;
     private final FileService fileService;
     private final SubFileService subFileService;
 
@@ -37,13 +40,17 @@ public class ReviewService {
         productRepository.findById(reqPostReviewDto.getProductId())
                 .orElseThrow(() -> new ApplicationException(ErrorCode.PRODUCT_NOT_FOUND_EXCEPTION));
 
+        // (3) 유효한 사용자 확인
+        ResGetUserByIdDto fetchedUser = userClientService.getUser(reqPostReviewDto.getUserId());
+
         File reviewImgs = fileService.saveFile();
         for (MultipartFile file : reqPostReviewDto.getReviewImgs()) {
             subFileService.saveImg(file, reviewImgs);
         }
 
         Review review = Review.create(reqPostReviewDto.getOrderId(), reqPostReviewDto.getProductId(),
-                reqPostReviewDto.getUserId(), reqPostReviewDto.getRating(), reqPostReviewDto.getReview(), reviewImgs);
+                reqPostReviewDto.getUserId(), fetchedUser.getNickname(), reqPostReviewDto.getRating(),
+                reqPostReviewDto.getReview(), reviewImgs);
 
         reviewRepository.save(review);
     }

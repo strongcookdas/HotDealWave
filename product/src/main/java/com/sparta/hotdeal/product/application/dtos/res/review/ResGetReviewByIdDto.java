@@ -20,7 +20,7 @@ public class ResGetReviewByIdDto {
         List<String> reviewImgs = reviewImgsFile.getSubFiles().stream().map(SubFile::getResource).toList();
 
         return ResGetReviewByIdDto.builder()
-                .nickname(review.getCreatedBy())
+                .nickname(review.getNickname())
                 .rating(review.getRating())
                 .review(review.getReview())
                 .reviewImgs(reviewImgs)
