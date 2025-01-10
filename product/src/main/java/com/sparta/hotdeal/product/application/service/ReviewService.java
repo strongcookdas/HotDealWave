@@ -16,12 +16,14 @@ import com.sparta.hotdeal.product.infrastructure.dtos.ResGetOrderByIdDto;
 import com.sparta.hotdeal.product.infrastructure.dtos.ResGetUserByIdDto;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ReviewService {
@@ -35,13 +37,16 @@ public class ReviewService {
     public void createReview(ReqPostReviewDto reqPostReviewDto) {
         // (1) 유효한 주문 확인
         ResGetOrderByIdDto fetchedOrder = orderClientService.getOrder(reqPostReviewDto.getOrderId());
+        log.info("Order Info : {}", fetchedOrder);
 
         // (2) 유효한 상품 확인
-        productRepository.findById(reqPostReviewDto.getProductId())
+        Product fetchedProduct = productRepository.findById(reqPostReviewDto.getProductId())
                 .orElseThrow(() -> new ApplicationException(ErrorCode.PRODUCT_NOT_FOUND_EXCEPTION));
+        log.info("Product Info : {}", fetchedProduct);
 
         // (3) 유효한 사용자 확인
         ResGetUserByIdDto fetchedUser = userClientService.getUser(reqPostReviewDto.getUserId());
+        log.info("User Info : {}", fetchedUser);
 
         File reviewImgs = fileService.saveFile();
         for (MultipartFile file : reqPostReviewDto.getReviewImgs()) {
@@ -60,10 +65,12 @@ public class ReviewService {
         // (1) 리뷰 존재 유무 확인
         Review fetchedReview = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.REVIEW_NOT_FOUND_EXCEPTION));
+        log.info("Review Info : {}", fetchedReview);
 
         // (2) 상품 존재 유무 확인
         Product fetchedProduct = productRepository.findById(fetchedReview.getProductID())
                 .orElseThrow(() -> new ApplicationException(ErrorCode.PRODUCT_NOT_FOUND_EXCEPTION));
+        log.info("Product Info : {}", fetchedProduct);
 
         fetchedProduct.decrementReview(fetchedReview.getRating());
         fetchedProduct.incrementReview(reqPutReviewDto.getRating());
@@ -80,10 +87,12 @@ public class ReviewService {
         // (1) 리뷰 존재 유무 확인
         Review fetchedReview = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.REVIEW_NOT_FOUND_EXCEPTION));
+        log.info("Review Info : {}", fetchedReview);
 
         // (2) 상품 존재 유무 확인
         Product fetchedProduct = productRepository.findById(fetchedReview.getProductID())
                 .orElseThrow(() -> new ApplicationException(ErrorCode.PRODUCT_NOT_FOUND_EXCEPTION));
+        log.info("Product Info : {}", fetchedProduct);
 
         fetchedProduct.decrementReview(fetchedReview.getRating());
 
@@ -99,6 +108,7 @@ public class ReviewService {
         // (1) 리뷰 존재 유무 확인
         Review fetchedReview = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.REVIEW_NOT_FOUND_EXCEPTION));
+        log.info("Review Info : {}", fetchedReview);
 
         return ResGetReviewByIdDto.create(fetchedReview);
     }
