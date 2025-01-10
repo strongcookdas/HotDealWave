@@ -14,6 +14,7 @@ import com.sparta.hotdeal.user.domain.entity.Address;
 import com.sparta.hotdeal.user.domain.entity.User;
 import com.sparta.hotdeal.user.domain.repository.AddressRepository;
 import com.sparta.hotdeal.user.domain.repository.UserRepository;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -60,7 +61,8 @@ public class AddressService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.USER_NOT_FOUND.getMessage()));
 
-        Address address = user.getDefaultAddress();
+        Address address = Optional.ofNullable(user.getDefaultAddress())
+                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.NOT_EXISTS_DEFAULT_ADDRESS.getMessage()));
 
         return ResGetDefaultAddressDto.from(address);
     }
