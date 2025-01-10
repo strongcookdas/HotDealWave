@@ -19,8 +19,9 @@ public class AuthenticationFilter implements GlobalFilter {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String path = exchange.getRequest().getURI().getPath();
+        String method = exchange.getRequest().getMethod().name();
 
-        if (path.startsWith("/api/v1/auth") || path.startsWith("/swagger-ui/") || path.startsWith("/v3/api-docs")) {
+        if (checkRequestIsNotRequireFilter(path, method)) {
             return chain.filter(exchange);
         }
 
@@ -43,5 +44,40 @@ public class AuthenticationFilter implements GlobalFilter {
                 .build();
 
         return chain.filter(exchange);
+    }
+
+    // 추후 리팩토링 진행
+    private boolean checkRequestIsNotRequireFilter(String path, String method) {
+        //swagger 경로
+        if (path.startsWith("/swagger-ui/") || path.startsWith("/v3/api-docs")) {
+            return true;
+        }
+
+        // auth 경로
+        if (path.startsWith("/api/v1/auth")) {
+            return true;
+        }
+
+        // payment 경로
+        if (path.startsWith("/api/v1/payment")) {
+            return true;
+        }
+
+        // product 경로
+        if (path.startsWith("/api/v1/products") && method.equalsIgnoreCase("GET")) {
+            return true;
+        }
+
+        // promotion 경로
+        if (path.startsWith("/api/v1/promotions") && method.equalsIgnoreCase("GET")) {
+            return true;
+        }
+
+        // review 경로
+        if (path.startsWith("/api/v1/reviews") && method.equalsIgnoreCase("GET")) {
+            return true;
+        }
+
+        return false;
     }
 }
