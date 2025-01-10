@@ -27,12 +27,17 @@ logging:
 server:
   port: 19093
 
-openapi:
-  service:
-    url: http://localhost:19091/product-service
+#openapi:
+#  service:
+#    url: http://localhost:19091/product-service
 
 springdoc:
   api-docs:
     enabled: true
   swagger-ui:
     path: /swagger-ui.html
+
+admin:
+  user-id: ${ADMIN_USER_ID}
+  email: ${ADMIN_EMAIL}
+  role: ${ADMIN_ROLE}
