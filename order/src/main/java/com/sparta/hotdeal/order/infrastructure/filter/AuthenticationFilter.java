@@ -41,16 +41,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
         if (userId == null || email == null || role == null) {
             log.warn("Missing authentication headers");
-            // 다음 필터로 넘어가서 security 에서 401 자동 리턴
             //spring security는 context가 비어있을 때 401 리턴
-//            SecurityContextHolder.clearContext();
-//            filterChain.doFilter(request, response);
-//            return;
-
-            //mock user
-//            userId = "8fbd655f-dc52-4bf9-ab23-ef89e923db44";
-//            email = "mock@email.com";
-//            role = "MASTER";
 
             //401 핸들러에서 처리
             throw new AuthenticationException("Missing authentication headers");

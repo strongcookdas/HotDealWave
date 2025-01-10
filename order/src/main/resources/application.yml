@@ -32,6 +32,8 @@ admin:
   email: ${ADMIN_EMAIL}
   role: ${ADMIN_ROLE}
 
-#openapi:
-#  service:
-#    url : http://localhost:19091/order-service
+springdoc:
+   api-docs:
+     enabled: true
+   swagger-ui:
+     path: /swagger-ui.html
