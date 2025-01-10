@@ -19,7 +19,10 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        if (request.getRequestURI().startsWith("/api/v1/auth/")) {
+        if (request.getRequestURI().startsWith("/api/v1/auth/") ||
+                request.getRequestURI().startsWith("/swagger-ui/") ||
+                request.getRequestURI().startsWith("/v3/api-docs"))
+        {
             filterChain.doFilter(request, response);
             return;
         }

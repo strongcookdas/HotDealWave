@@ -20,7 +20,7 @@ public class AuthenticationFilter implements GlobalFilter {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String path = exchange.getRequest().getURI().getPath();
 
-        if (path.startsWith("/api/v1/auth")) {
+        if (path.startsWith("/api/v1/auth") || path.startsWith("/swagger-ui/") || path.startsWith("/v3/api-docs")) {
             return chain.filter(exchange);
         }
 
