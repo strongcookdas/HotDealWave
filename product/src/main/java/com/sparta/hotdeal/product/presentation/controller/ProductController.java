@@ -95,7 +95,7 @@ public class ProductController {
         return ResponseDto.of("상품이 삭제되었습니다.", null);
     }
 
-    @PatchMapping("/reduceQuantity")
+    @PutMapping("/reduce-quantity")
     @Secured({"ROLE_MASTER"})
     @Operation(summary = "상품 수량 감소 API", description = "상품의 수량을 감소합니다.")
     public ResponseDto<List<ResPatchReduceProductQuantityDto>> reduceQuantity(
@@ -108,7 +108,7 @@ public class ProductController {
         return ResponseDto.of("상품이 수정되었습니다.", resPatchReduceProductQuantityDto);
     }
 
-    @PatchMapping("/restoreQuantity")
+    @PutMapping("/restore-quantity")
     @Secured({"ROLE_MASTER"})
     @Operation(summary = "상품 수량 복구 API", description = "상품의 수량을 복구합니다.")
     public ResponseDto<List<ResPatchRestoreProductQuantityDto>> restoreQuantity(
