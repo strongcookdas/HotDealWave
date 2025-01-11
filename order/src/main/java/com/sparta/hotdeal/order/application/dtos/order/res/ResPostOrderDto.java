@@ -2,6 +2,7 @@ package com.sparta.hotdeal.order.application.dtos.order.res;
 
 import com.sparta.hotdeal.order.application.dtos.payment.PaymentRequestDto;
 import com.sparta.hotdeal.order.domain.entity.order.Order;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,6 +21,16 @@ public class ResPostOrderDto {
                 .tid(paymentRequestDto.getTid())
                 .nextRedirectPcUrl(paymentRequestDto.getNextRedirectPcUrl())
                 .createdAt(paymentRequestDto.getCreatedAt())
+                .build();
+    }
+
+
+    public static ResPostOrderDto ofForTest(Order order) {
+        return ResPostOrderDto.builder()
+                .orderId(order.getId())
+                .tid("tid")
+                .nextRedirectPcUrl("url")
+                .createdAt(LocalDateTime.now().toString())
                 .build();
     }
 }
