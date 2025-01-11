@@ -66,9 +66,10 @@ public class ProductService {
         subFileService.saveImg(productDto.getThumbImg(), thumbImg);
 
         // 상품 저장
-        Product product = Product.create(productDto.getName(), productDto.getPrice(), productDto.getQuantity(),
+        Product product = Product.create(productDto.getName(), (Integer) productDto.getPrice(),
+                productDto.getQuantity(),
                 productDto.getCategory(), productDto.getDescription(), detailImgs, thumbImg, productDto.getCompanyId(),
-                ProductStatusEnum.ON_SALE);
+                ProductStatusEnum.ON_SALE, 0D, 0);
 
         product = productRepository.save(product);
 
