@@ -66,9 +66,10 @@ public class ProductService {
         subFileService.saveImg(productDto.getThumbImg(), thumbImg);
 
         // 상품 저장
-        Product product = Product.create(productDto.getName(), productDto.getPrice(), productDto.getQuantity(),
+        Product product = Product.create(productDto.getName(), (Integer) productDto.getPrice(),
+                productDto.getQuantity(),
                 productDto.getCategory(), productDto.getDescription(), detailImgs, thumbImg, productDto.getCompanyId(),
-                ProductStatusEnum.ON_SALE);
+                ProductStatusEnum.ON_SALE, 0D, 0);
 
         product = productRepository.save(product);
 
@@ -176,7 +177,7 @@ public class ProductService {
     private ResGetProductDto convertToResGetProductDto(Product product) {
         // 평점 계산
         BigDecimal rating =
-                product.getRatingSum() == null ? BigDecimal.valueOf(0.0) : BigDecimal.valueOf(product.getRatingSum())
+                product.getRatingSum() == 0 ? BigDecimal.valueOf(0.0) : BigDecimal.valueOf(product.getRatingSum())
                         .divide(BigDecimal.valueOf(product.getReviewCnt()), 1, RoundingMode.HALF_UP);
 
         // 파일 정보
