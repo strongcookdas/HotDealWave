@@ -177,7 +177,7 @@ public class ProductService {
     private ResGetProductDto convertToResGetProductDto(Product product) {
         // 평점 계산
         BigDecimal rating =
-                product.getRatingSum() == null ? BigDecimal.valueOf(0.0) : BigDecimal.valueOf(product.getRatingSum())
+                product.getRatingSum() == 0 ? BigDecimal.valueOf(0.0) : BigDecimal.valueOf(product.getRatingSum())
                         .divide(BigDecimal.valueOf(product.getReviewCnt()), 1, RoundingMode.HALF_UP);
 
         // 파일 정보
