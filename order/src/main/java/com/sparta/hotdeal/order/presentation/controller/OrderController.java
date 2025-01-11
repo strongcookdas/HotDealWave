@@ -42,7 +42,7 @@ public class OrderController {
     @Operation(summary = "주문 생성 API", description = "주문을 생성합니다.")
     public ResponseDto<ResPostOrderDto> createOrder(@AuthenticationPrincipal RequestUserDetails userDetails,
                                                     @RequestBody ReqPostOrderDto req) {
-
+        log.info("ReqPostOrderDto : {}", req);
         return ResponseDto.of(OrderResponseMessage.CREATE_ORDER.getMessage(),
                 orderService.createOrder(userDetails.getUserId(), userDetails.getEmail(), userDetails.getRole(), req));
     }

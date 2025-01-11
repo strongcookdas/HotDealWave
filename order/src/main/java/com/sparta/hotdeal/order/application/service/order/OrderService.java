@@ -78,7 +78,7 @@ public class OrderService {
                 productDtoMap);
         log.info("쿠폰 유효성 체크 호출");
 
-        if (!couponValidationDto.isValid()) {
+        if (couponValidationDto.isValid()) {
             discountAmount = couponValidationDto.getTotalDiscountAmount();
             couponId = req.getCouponId();
             couponClientPort.useCoupon(couponId);

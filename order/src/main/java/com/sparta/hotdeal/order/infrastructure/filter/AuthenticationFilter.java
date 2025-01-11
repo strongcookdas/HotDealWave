@@ -23,11 +23,11 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String userId = request.getHeader("X-User-UserId");
-        log.info("userId : {}", userId);
+//        log.info("userId : {}", userId);
         String email = request.getHeader("X-User-Email");
-        log.info("email : {}", email);
+//        log.info("email : {}", email);
         String role = request.getHeader("X-User-Role");
-        log.info("role : {}", role);
+//        log.info("role : {}", role);
 
         // 특정 경로(Swagger 등)는 필터링 제외
         String requestURI = request.getRequestURI();
