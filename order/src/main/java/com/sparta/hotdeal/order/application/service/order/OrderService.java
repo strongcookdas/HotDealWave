@@ -110,11 +110,11 @@ public class OrderService {
         log.info("주문 정보 DB 저장");
 
         //주문 생성 이후 비동기 처리 (결제 요청)
-//        PaymentRequestDto paymentRequestDto = paymentClientPort.readyPayment(userId, email, role, OrderDto.of(order),
-//                basketList);
-//        log.info("결제 요청");
+        PaymentRequestDto paymentRequestDto = paymentClientPort.readyPayment(userId, email, role, OrderDto.of(order),
+                basketList);
+        log.info("결제 요청");
 
-        return ResPostOrderDto.ofForTest(order);
+        return ResPostOrderDto.of(order, paymentRequestDto);
     }
 
     @Transactional(readOnly = true)
