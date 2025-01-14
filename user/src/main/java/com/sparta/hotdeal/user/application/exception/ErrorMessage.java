@@ -18,8 +18,7 @@ public enum ErrorMessage {
     NOT_ALLOWED_CONTENT("접근 권한이 없습니다."),
     DELETED_ADDRESS("삭제된 주소입니다."),
     NOT_EXISTS_DEFAULT_ADDRESS("기본 배송지가 설정되지 않았습니다."),
-    EXPIRED_REFRESH_TOKEN("만료된 리프레시 토큰입니다."),
-    NOT_VALID_REFRESH_TOKEN("리프레시 토큰 형식이 잘못되었습니다.");
+    EXPIRED_REFRESH_TOKEN("만료된 리프레시 토큰입니다.");
 
     private final String message;
 }
