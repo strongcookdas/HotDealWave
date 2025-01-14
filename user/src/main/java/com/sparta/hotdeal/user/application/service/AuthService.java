@@ -6,7 +6,6 @@ import com.sparta.hotdeal.user.application.dtos.auth.request.ReqPostVerifyEmailD
 import com.sparta.hotdeal.user.application.dtos.auth.response.ResPostLoginDto;
 import com.sparta.hotdeal.user.application.dtos.auth.response.ResPostRefreshDto;
 import com.sparta.hotdeal.user.application.dtos.auth.response.ResPostSignUpDto;
-import com.sparta.hotdeal.user.application.exception.CustomJwtExcpetion;
 import com.sparta.hotdeal.user.application.exception.ErrorMessage;
 import com.sparta.hotdeal.user.application.util.JwtUtil;
 import com.sparta.hotdeal.user.application.util.RedisUtil;
@@ -188,9 +187,5 @@ public class AuthService {
         if (currentRefreshToken == null || !currentRefreshToken.equals(requestRefreshToken)) {
             throw new IllegalArgumentException(ErrorMessage.EXPIRED_REFRESH_TOKEN.getMessage());
         }
-    }
-
-    private void checkJwtError(String refreshToken) {
-
     }
 }
