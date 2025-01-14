@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -44,6 +45,8 @@ public class Payment extends AuditingDate {
     @Column(nullable = false)
     private Integer refundAmount;
 
+    private LocalDateTime refundedAt;
+
     @Column(nullable = false)
     private String tid;
 
@@ -69,7 +72,9 @@ public class Payment extends AuditingDate {
         this.status = status;
     }
 
-    public void updateRefundInfo(Integer refundAmount){
+    public void updateRefundInfo(Integer refundAmount) {
         this.refundAmount = refundAmount;
+        this.status = PaymentStatus.REFUND;
+        this.refundedAt = LocalDateTime.now();
     }
 }
