@@ -39,6 +39,9 @@ public class AuthService {
     @Value("${spring.mail.auth-code-expiration-millis}")
     private long authCodeExpirationMillis;
 
+    @Value("${service.jwt.refresh-expiration}")
+    private long refreshTokenExpirationMillis;
+
     @Transactional
     public ResPostSignUpDto signup(ReqPostSignUpDto requestDto) {
         Email email = emailRepository.findById(requestDto.getEmail())
@@ -102,9 +105,14 @@ public class AuthService {
 
         checkDeletedUser(user);
 
+        String accessToken = jwtUtil.createAccessToken(user.getUserId(), user.getEmail(), user.getRole());
+        String refreshToken = jwtUtil.createRefreshToken(user.getUserId());
+
+        redisUtil.setValues(user.getUserId().toString(), refreshToken, refreshTokenExpirationMillis);
+
         return ResPostLoginDto.builder()
-                .accessToken(jwtUtil.createToken(user.getUserId(), user.getEmail(), user.getRole()))
-                .refreshToken(null)
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .build();
     }
 

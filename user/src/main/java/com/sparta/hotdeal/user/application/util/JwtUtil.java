@@ -18,7 +18,10 @@ public class JwtUtil {
     public static final String BEARER_PREFIX = "Bearer ";
     // 토큰 만료시간
     @Value("${service.jwt.access-expiration}")
-    private long TOKEN_TIME;
+    private long ACCESS_TOKEN_TIME;
+
+    @Value("${service.jwt.refresh-expiration}")
+    private long REFRESH_TOKEN_TIME;
 
     @Value("${service.jwt.secret-key}") // Base64 Encode 한 SecretKey
     private String secretKey;
@@ -30,8 +33,7 @@ public class JwtUtil {
         key = Keys.hmacShaKeyFor(bytes);
     }
 
-    // 토큰 생성
-    public String createToken(UUID userId, String email, UserRole role) {
+    public String createAccessToken(UUID userId, String email, UserRole role) {
         Date date = new Date();
 
         return BEARER_PREFIX +
@@ -39,9 +41,20 @@ public class JwtUtil {
                         .claim("userId", userId.toString()) // 사용자 식별자값(userId)
                         .claim("email", email)
                         .claim("role", role)
-                        .setExpiration(new Date(date.getTime() + TOKEN_TIME)) // 만료 시간
+                        .setExpiration(new Date(date.getTime() + ACCESS_TOKEN_TIME)) // 만료 시간
                         .setIssuedAt(date) // 발급일
                         .signWith(key, SignatureAlgorithm.HS256) // 암호화 알고리즘
                         .compact();
+    }
+
+    public String createRefreshToken(UUID userId) {
+        Date date = new Date();
+
+        return Jwts.builder()
+                .claim("userId", userId.toString())
+                .setExpiration(new Date(date.getTime() + REFRESH_TOKEN_TIME)) // 만료 시간
+                .setIssuedAt(date) // 발급일
+                .signWith(key, SignatureAlgorithm.HS256) // 암호화 알고리즘
+                .compact();
     }
 }
