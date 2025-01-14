@@ -19,7 +19,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -71,11 +70,19 @@ public class OrderController {
         return ResponseDto.of("주문 상태가 수정되었습니다.", null);
     }
 
-    @DeleteMapping("/{orderId}")
+    @PostMapping("/{orderId}/cancel")
     @Operation(summary = "주문 취소 API", description = "주문을 취소합니다.")
     public ResponseDto<Void> cancelOrder(@AuthenticationPrincipal RequestUserDetails userDetails,
                                          @PathVariable UUID orderId) {
         orderService.cancelOrder(userDetails.getUserId(), orderId);
         return ResponseDto.of("주문 취소가 처리 되었습니다.", null);
+    }
+
+    @PostMapping("/{orderId}/refund")
+    @Operation(summary = "주문 환불 API", description = "주문을 환불합니다.")
+    public ResponseDto<Void> refundOrder(@AuthenticationPrincipal RequestUserDetails userDetails,
+                                         @PathVariable UUID orderId) {
+        orderService.refundOrder(userDetails.getUserId(), orderId);
+        return ResponseDto.of("주문 환불 처리 되었습니다.", null);
     }
 }

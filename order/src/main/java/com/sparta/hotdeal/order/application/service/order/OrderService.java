@@ -23,6 +23,8 @@ import com.sparta.hotdeal.order.domain.entity.order.Order;
 import com.sparta.hotdeal.order.domain.entity.order.OrderProduct;
 import com.sparta.hotdeal.order.domain.entity.order.OrderStatus;
 import com.sparta.hotdeal.order.domain.repository.OrderRepository;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -192,6 +194,26 @@ public class OrderService {
         order.updateStatus(OrderStatus.CANCEL);
     }
 
+    public void refundOrder(UUID userId, UUID orderId) {
+        Order order = orderRepository.findByIdAndUserId(orderId, userId)
+                .orElseThrow(() -> new ApplicationException(ErrorCode.ORDER_NOT_FOUND_EXCEPTION));
+
+        LocalDateTime orderCreatedAt = order.getCreatedAt();
+        LocalDateTime now = LocalDateTime.now();
+
+        Duration duration = Duration.between(orderCreatedAt, now);
+
+        OrderStatus orderStatus = order.getStatus();
+        if (!orderStatus.equals(OrderStatus.COMPLETE) || duration.toHours() > 24) {
+            throw new ApplicationException(ErrorCode.ORDER_NOT_CANCELLABLE_EXCEPTION);
+        }
+
+        //비동기 처리
+        //수량 복구
+        //주문 취소
+        order.updateStatus(OrderStatus.REFUND);
+    }
+
     private int calculateTotalAmount(List<Basket> basketList, Map<UUID, ProductDto> productDtoMap) {
         int totalAmount = 0;
         for (Basket basket : basketList) {
@@ -215,7 +237,7 @@ public class OrderService {
     }
 
     private String getOrderName(List<ProductDto> productDtoList) {
-        if(productDtoList.size()==1){
+        if (productDtoList.size() == 1) {
             return productDtoList.get(0).getName();
         }
         return productDtoList.get(0).getName() + "외 " + ((productDtoList.size() - 1) + "개");

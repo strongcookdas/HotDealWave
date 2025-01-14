@@ -24,6 +24,7 @@ public enum ErrorCode {
     ORDER_FORBIDDEN_EXCEPTION(HttpStatus.FORBIDDEN, "O005", "인가되지 않는 주문 요청입니다."),
     ORDER_ALREADY_EXIST_EXCEPTION(HttpStatus.BAD_REQUEST, "O006", "이미 존재하는 주문 리소스입니다."),
     ORDER_ALREADY_PROCESSED_EXCEPTION(HttpStatus.BAD_REQUEST, "O007", "이미 처리된 주문입니다."),
+    ORDER_NOT_CANCELLABLE_EXCEPTION(HttpStatus.BAD_REQUEST, "O008", "환불 정책에 의해 환불할 수 없는 주문입니다."),
 
     //Product
     PRODUCT_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "OP001", "존재하지 않는 상품 리소스입니다."),
