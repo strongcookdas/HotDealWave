@@ -72,8 +72,10 @@ public class OrderController {
     }
 
     @DeleteMapping("/{orderId}")
-    @Operation(summary = "주문 취소 API", description = "주문을 취소합니다. (추후 구현 예정)")
-    public ResponseDto<Void> deleteOrder(@AuthenticationPrincipal RequestUserDetails userDetails, @PathVariable UUID orderId) {
+    @Operation(summary = "주문 취소 API", description = "주문을 취소합니다.")
+    public ResponseDto<Void> cancelOrder(@AuthenticationPrincipal RequestUserDetails userDetails,
+                                         @PathVariable UUID orderId) {
+        orderService.cancelOrder(userDetails.getUserId(), orderId);
         return ResponseDto.of("주문 취소가 처리 되었습니다.", null);
     }
 }

@@ -3,8 +3,8 @@ package com.sparta.hotdeal.order.application.service.order;
 import com.sparta.hotdeal.order.application.dtos.address.AddressDto;
 import com.sparta.hotdeal.order.application.dtos.coupon.CouponValidationDto;
 import com.sparta.hotdeal.order.application.dtos.order.OrderDto;
-import com.sparta.hotdeal.order.application.dtos.order.req.ReqPutOrderDto;
 import com.sparta.hotdeal.order.application.dtos.order.req.ReqPostOrderDto;
+import com.sparta.hotdeal.order.application.dtos.order.req.ReqPutOrderDto;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrderByIdDto;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrderListDto;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResPostOrderDto;
@@ -21,6 +21,7 @@ import com.sparta.hotdeal.order.common.exception.ErrorCode;
 import com.sparta.hotdeal.order.domain.entity.basket.Basket;
 import com.sparta.hotdeal.order.domain.entity.order.Order;
 import com.sparta.hotdeal.order.domain.entity.order.OrderProduct;
+import com.sparta.hotdeal.order.domain.entity.order.OrderStatus;
 import com.sparta.hotdeal.order.domain.repository.OrderRepository;
 import java.util.List;
 import java.util.Map;
@@ -176,6 +177,21 @@ public class OrderService {
         order.updateStatus(reqPutOrderDto.getOrderStatus());
     }
 
+    public void cancelOrder(UUID userId, UUID orderId) {
+        Order order = orderRepository.findByIdAndUserId(orderId, userId)
+                .orElseThrow(() -> new ApplicationException(ErrorCode.ORDER_NOT_FOUND_EXCEPTION));
+
+        OrderStatus orderStatus = order.getStatus();
+        if (!(orderStatus.equals(OrderStatus.CREATE) || orderStatus.equals(OrderStatus.PENDING))) {
+            throw new ApplicationException(ErrorCode.ORDER_ALREADY_PROCESSED_EXCEPTION);
+        }
+
+        //비동기 처리
+        //수량 복구
+        //pending 일 경우 주문 취소 로직까지 필요
+        order.updateStatus(OrderStatus.CANCEL);
+    }
+
     private int calculateTotalAmount(List<Basket> basketList, Map<UUID, ProductDto> productDtoMap) {
         int totalAmount = 0;
         for (Basket basket : basketList) {
@@ -199,8 +215,10 @@ public class OrderService {
     }
 
     private String getOrderName(List<ProductDto> productDtoList) {
-        int listSize = productDtoList.size();
-        return productDtoList.get(0).getName() + " 외 " + (listSize - 1) + "개";
+        if(productDtoList.size()==1){
+            return productDtoList.get(0).getName();
+        }
+        return productDtoList.get(0).getName() + "외 " + ((productDtoList.size() - 1) + "개");
     }
 
     private Map<UUID, ProductDto> convertListToMap(List<ProductDto> productDtoList) {

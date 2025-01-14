@@ -23,12 +23,13 @@ public enum ErrorCode {
     ORDER_ALREADY_DELETE_EXCEPTION(HttpStatus.BAD_REQUEST, "O004", "이미 삭제된 주문 리소스입니다."),
     ORDER_FORBIDDEN_EXCEPTION(HttpStatus.FORBIDDEN, "O005", "인가되지 않는 주문 요청입니다."),
     ORDER_ALREADY_EXIST_EXCEPTION(HttpStatus.BAD_REQUEST, "O006", "이미 존재하는 주문 리소스입니다."),
+    ORDER_ALREADY_PROCESSED_EXCEPTION(HttpStatus.BAD_REQUEST, "O007", "이미 처리된 주문입니다."),
 
     //Product
     PRODUCT_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "OP001", "존재하지 않는 상품 리소스입니다."),
     PRODUCT_FORBIDDEN_EXCEPTION(HttpStatus.FORBIDDEN, "OP002", "인가되지 않는 상품 요청입니다."),
-    PRODUCT_NOT_ON_SALE_EXCEPTION(HttpStatus.BAD_REQUEST,"OP003","판매하지 않는 상품입니다."),
-    PRODUCT_INVALID_QUANTITY_EXCEPTION(HttpStatus.BAD_REQUEST,"OP004","상품 수량이 부족합니다."),
+    PRODUCT_NOT_ON_SALE_EXCEPTION(HttpStatus.BAD_REQUEST, "OP003", "판매하지 않는 상품입니다."),
+    PRODUCT_INVALID_QUANTITY_EXCEPTION(HttpStatus.BAD_REQUEST, "OP004", "상품 수량이 부족합니다."),
     PRODUCT_INVALID_VALUE_EXCEPTION(HttpStatus.BAD_REQUEST, "OP005", "올바르지 않은 상품 요청 값입니다."),
 
     //Basket
