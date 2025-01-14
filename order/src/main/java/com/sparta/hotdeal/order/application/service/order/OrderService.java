@@ -38,7 +38,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Slf4j(topic = "[ORDER-SERVICE]")
+@Slf4j
 @Transactional
 @RequiredArgsConstructor
 public class OrderService {
