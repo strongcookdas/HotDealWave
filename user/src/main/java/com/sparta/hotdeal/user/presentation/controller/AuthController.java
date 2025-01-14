@@ -12,9 +12,11 @@ import com.sparta.hotdeal.user.application.dtos.auth.response.ResPostLoginDto;
 import com.sparta.hotdeal.user.application.dtos.auth.response.ResPostRefreshDto;
 import com.sparta.hotdeal.user.application.dtos.auth.response.ResPostSignUpDto;
 import com.sparta.hotdeal.user.application.service.AuthService;
+import com.sparta.hotdeal.user.infrastructure.security.RequestUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -70,13 +72,12 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseDto<ResPostRefreshDto> refresh(@RequestBody ReqPostRefreshDto requestDto) {
+    public ResponseDto<ResPostRefreshDto> refresh(
+            @RequestBody ReqPostRefreshDto requestDto
+    ) {
 
-        ResPostRefreshDto resPostRefreshDto = ResPostRefreshDto.builder()
-                .accessToken("exampleAccessToken")
-                .refreshToken("exampleRefreshToken")
-                .build();
+        ResPostRefreshDto resPostRefreshDto = authService.refresh(requestDto.getRefreshToken());
 
-        return ResponseDto.of("토큰 재발급 성공", resPostRefreshDto);
+        return ResponseDto.of(ResponseMessage.TOKEN_REISSUE_SUCCESS.getMessage(), resPostRefreshDto);
     }
 }
