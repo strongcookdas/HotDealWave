@@ -16,4 +16,6 @@ public interface PaymentRepository {
     Optional<Payment> findByIdAndUserId(UUID paymentId, UUID userId);
 
     Page<Payment> findAllByUserId(UUID userId, Pageable pageable);
+
+    Optional<Payment> findByOrderIdAndUserId(UUID orderId, UUID userId);
 }

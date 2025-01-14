@@ -68,4 +68,8 @@ public class Payment extends AuditingDate {
     public void updateStatus(PaymentStatus status) {
         this.status = status;
     }
+
+    public void updateRefundInfo(Integer refundAmount){
+        this.refundAmount = refundAmount;
+    }
 }

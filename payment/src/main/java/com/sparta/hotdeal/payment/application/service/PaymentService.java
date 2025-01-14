@@ -1,12 +1,14 @@
 package com.sparta.hotdeal.payment.application.service;
 
 import com.sparta.hotdeal.payment.application.dtos.kakaopay.KakaoPayApproveDto;
+import com.sparta.hotdeal.payment.application.dtos.kakaopay.KakaoPayCancelDto;
 import com.sparta.hotdeal.payment.application.dtos.kakaopay.KakaoPayReadyDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.PaymentDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.req.ReqPostPaymentConfirmDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.req.ReqPostPaymentDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResGetPaymentByIdDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResGetPaymentForListDto;
+import com.sparta.hotdeal.payment.application.dtos.payment.res.ResPostPaymentCancelDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResPostPaymentConfirmDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResPostPaymentsDto;
 import com.sparta.hotdeal.payment.application.exception.ApplicationException;
@@ -60,15 +62,24 @@ public class PaymentService {
         return ResPostPaymentConfirmDto.of(kakaoPayApproveDto);
     }
 
+    @Transactional(readOnly = true)
     public ResGetPaymentByIdDto getPaymentById(UUID userId, UUID paymentId) {
         Payment payment = paymentRepository.findByIdAndUserId(paymentId, userId)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.PAYMENT_NOT_FOUND_EXCEPTION));
         return ResGetPaymentByIdDto.of(payment);
     }
 
+    @Transactional(readOnly = true)
     public Page<ResGetPaymentForListDto> getPaymentList(UUID userId, Pageable pageable) {
         return paymentRepository.findAllByUserId(userId, pageable).map(ResGetPaymentForListDto::of);
     }
 
+    public ResPostPaymentCancelDto cancelPayment(UUID userId, UUID orderId) {
+        Payment payment = paymentRepository.findByOrderIdAndUserId(orderId, userId)
+                .orElseThrow(() -> new ApplicationException(ErrorCode.PAYMENT_NOT_FOUND_EXCEPTION));
+        KakaoPayCancelDto kakaoPayCancelDto = kakaoPayClientPort.cancel(PaymentDto.from(payment));
+        payment.updateRefundInfo(kakaoPayCancelDto.getApprovedCancelAmount().getTotal());
+        return ResPostPaymentCancelDto.from(kakaoPayCancelDto);
+    }
 
 }
