@@ -38,6 +38,6 @@ public class BasketRepositoryImpl implements BasketRepository {
 
     @Override
     public Page<Basket> findAllByUserId(UUID userId, Pageable pageable) {
-        return basketRepositoryJpa.findAllByUserId(userId, pageable);
+        return basketRepositoryJpa.findAllByUserIdAndDeletedAtIsNull(userId, pageable);
     }
 }

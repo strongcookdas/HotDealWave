@@ -27,7 +27,7 @@ public class OrderBasketService {
     }
 
     public void deleteBasketList(List<Basket> basketList) {
-        basketList.forEach(basket -> basket.delete("email@email.com"));
+        basketList.forEach(basket -> basket.remove("email@email.com"));
     }
 
     public void recoverBasketList(List<Basket> basketList) {

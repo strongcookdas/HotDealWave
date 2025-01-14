@@ -15,5 +15,5 @@ public interface BasketRepositoryJpa extends JpaRepository<Basket, UUID> {
 
     Optional<Basket> findByIdAndUserIdAndDeletedAtIsNull(UUID basketId, UUID userId);
 
-    Page<Basket> findAllByUserId(UUID userId, Pageable pageable);
+    Page<Basket> findAllByUserIdAndDeletedAtIsNull(UUID userId, Pageable pageable);
 }
