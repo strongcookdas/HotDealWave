@@ -253,9 +253,12 @@ public class ProductService {
         // 상품 수량 처리
         for (ReqPatchProductQuantityDto dto : reqPatchProductQuantityDto) {
             Product product = findProductById(dto.getProductId(), products);
-            int quantityChange = isRestore ? dto.getQuantity() : -dto.getQuantity(); // 재고 복구 시 수량을 더함
-            int newQuantity = product.getQuantity() + quantityChange;
-            product.updateQuantity(newQuantity);
+
+            if (isRestore) {
+                product.increaseQuantity(dto.getQuantity());
+            } else {
+                product.decreaseQuantity(dto.getQuantity());
+            }
 
             // 결과 DTO 생성 후 추가
             if (isRestore) {
