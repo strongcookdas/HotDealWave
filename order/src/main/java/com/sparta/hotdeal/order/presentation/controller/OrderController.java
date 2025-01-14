@@ -1,8 +1,8 @@
 package com.sparta.hotdeal.order.presentation.controller;
 
 import com.sparta.hotdeal.order.application.dtos.ResponseDto;
-import com.sparta.hotdeal.order.application.dtos.order.req.ReqPutOrderDto;
 import com.sparta.hotdeal.order.application.dtos.order.req.ReqPostOrderDto;
+import com.sparta.hotdeal.order.application.dtos.order.req.ReqPutOrderDto;
 import com.sparta.hotdeal.order.application.dtos.order.res.OrderResponseMessage;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrderByIdDto;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrderListDto;
@@ -73,7 +73,7 @@ public class OrderController {
 
     @DeleteMapping("/{orderId}")
     @Operation(summary = "주문 취소 API", description = "주문을 취소합니다. (추후 구현 예정)")
-    public ResponseDto<Void> deleteOrder(@PathVariable UUID orderId) {
+    public ResponseDto<Void> deleteOrder(@AuthenticationPrincipal RequestUserDetails userDetails, @PathVariable UUID orderId) {
         return ResponseDto.of("주문 취소가 처리 되었습니다.", null);
     }
 }
