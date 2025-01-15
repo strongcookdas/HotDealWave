@@ -9,12 +9,14 @@ import com.sparta.hotdeal.product.application.exception.ErrorCode;
 import com.sparta.hotdeal.product.application.service.ProductPromotionHelperService;
 import com.sparta.hotdeal.product.domain.entity.product.Product;
 import com.sparta.hotdeal.product.domain.repository.product.ProductRepository;
+import com.sparta.hotdeal.product.infrastructure.kafka.ProductKafkaProducer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,10 +28,22 @@ public class ProductInventoryService {
 
     private final ProductRepository productRepository;
     private final ProductPromotionHelperService productPromotionHelperService;
+    private final ProductKafkaProducer productKafkaProducer;
+
+    @Value("${spring.kafka.topics.rollback-reduce-quantity}")
+    private String rollbackReduceQuantityTopic;
 
     public List<ResPatchReduceProductQuantityDto> reduceQuantity(
-            List<ReqPutProductQuantityDto> reqPatchProductQuantityDto) {
-        return processProductQuantity(reqPatchProductQuantityDto, false); // 재고 차감
+            List<ReqPutProductQuantityDto> reqPutProductQuantityDto) {
+        try {
+            // 재고 차감 처리 로직
+            return processProductQuantity(reqPutProductQuantityDto, false);
+        } catch (Exception e) {
+            log.error("재고 차감 처리 중 오류 발생: {}", e.getMessage());
+            // 오류 발생 시 롤백 요청
+            sendRollbackRequest(rollbackReduceQuantityTopic, "재고 차감 처리 중 오류 발생");
+            throw new ApplicationException(ErrorCode.PRODUCT_INVENTORY_UPDATE_FAILED_EXCEPTION);
+        }
     }
 
     public List<ResPatchRestoreProductQuantityDto> restoreQuantity(
@@ -106,5 +120,15 @@ public class ProductInventoryService {
 
     private void processDiscountedProducts(List<ReqPromotionQuantityDto> reqPromotionQuantityDtos, Boolean isRestore) {
         productPromotionHelperService.processPromotionQuantity(reqPromotionQuantityDtos, isRestore);
+    }
+
+    public void sendRollbackRequest(String topic, String message) {
+        try {
+            productKafkaProducer.sendRollbackMessage(topic, message);
+            log.info("롤백 요청 메시지 전송 완료: {}", message);
+        } catch (Exception e) {
+            log.error("롤백 요청 메시지 생성 실패: {}", e.getMessage());
+            throw new ApplicationException(ErrorCode.INTERNAL_SERVER_EXCEPTION);
+        }
     }
 }

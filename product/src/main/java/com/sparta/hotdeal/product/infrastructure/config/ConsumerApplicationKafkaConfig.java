@@ -11,6 +11,7 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.listener.ContainerProperties;
 
 @EnableKafka
 @Configuration
@@ -37,6 +38,8 @@ public class ConsumerApplicationKafkaConfig {
         ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
         // 컨슈머 팩토리를 리스너 컨테이너 팩토리에 설정
         factory.setConsumerFactory(consumerFactory());
+        factory.setConcurrency(3); // 동시 처리 스레드 수 설정
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
         return factory;
     }
 }
