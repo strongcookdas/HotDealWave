@@ -13,6 +13,7 @@ import com.sparta.hotdeal.coupon.domain.entity.CouponStatus;
 import com.sparta.hotdeal.coupon.domain.repository.CouponRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -22,6 +23,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CouponService {
@@ -32,32 +34,39 @@ public class CouponService {
     @Transactional
     @Retryable(value = OptimisticLockingFailureException.class, maxAttempts = 5, backoff = @Backoff(delay = 1000))
     public void issueFirstComeFirstServeCoupon(UUID userId, ReqPostCouponsIssueDto reqDto) {
-        // 1. 쿠폰 정보 조회
-        CouponInfo couponInfo = couponInfoService.findByIdOrThrow(reqDto.getCouponInfoId());
-        // 2. 유효성 검증: 쿠폰 상태 확인
-        if (couponInfo.getStatus() != CouponStatus.ISSUED) {
-            throw new CustomException(ErrorCode.INVALID_COUPON_STATUS);
+        try {
+            // 1. 쿠폰 정보 조회
+            CouponInfo couponInfo = couponInfoService.findByIdOrThrow(reqDto.getCouponInfoId());
+            log.info("쿠폰 정보 조회 완료: ID = {}", couponInfo.getId());
+            // 2. 유효성 검증: 쿠폰 상태 확인
+            if (couponInfo.getStatus() != CouponStatus.ISSUED) {
+                throw new CustomException(ErrorCode.INVALID_COUPON_STATUS);
+            }
+            // 3. 발급 가능 수량 확인
+            if (couponInfo.getIssuedCount() >= couponInfo.getQuantity()) {
+                throw new CustomException(ErrorCode.COUPON_OUT_OF_STOCK);
+            }
+            // 4. 사용자 중복 발급 확인
+            boolean alreadyIssued = couponRepository.existsByUserIdAndCouponInfoId(userId, couponInfo.getId());
+            if (alreadyIssued) {
+                throw new CustomException(ErrorCode.ALREADY_ISSUED_COUPON);
+            }
+            // 5. 쿠폰 발급 처리
+            couponInfo.incrementIssuedCount();
+            // 6. 쿠폰 엔티티 저장
+            Coupon coupon = Coupon.builder()
+                    .userId(userId)
+                    .couponInfo(couponInfo)
+                    .dailyIssuedDate(LocalDate.now())
+                    .isUsed(false)
+                    .usedDate(null)
+                    .build();
+            couponRepository.save(coupon);
+        } catch (OptimisticLockingFailureException ex) {
+            // 낙관적 락 충돌 발생 시 로그 출력
+            log.error("낙관적 락 충돌 발생! 요청 ID: {}, 쿠폰 정보 ID: {}", userId, reqDto.getCouponInfoId());
+            throw ex;
         }
-        // 3. 발급 가능 수량 확인
-        if (couponInfo.getIssuedCount() >= couponInfo.getQuantity()) {
-            throw new CustomException(ErrorCode.COUPON_OUT_OF_STOCK);
-        }
-        // 4. 사용자 중복 발급 확인
-        boolean alreadyIssued = couponRepository.existsByUserIdAndCouponInfoId(userId, couponInfo.getId());
-        if (alreadyIssued) {
-            throw new CustomException(ErrorCode.ALREADY_ISSUED_COUPON);
-        }
-        // 5. 쿠폰 발급 처리
-        couponInfo.incrementIssuedCount();
-        // 6. 쿠폰 엔티티 저장
-        Coupon coupon = Coupon.builder()
-                .userId(userId)
-                .couponInfo(couponInfo)
-                .dailyIssuedDate(LocalDate.now())
-                .isUsed(false)
-                .usedDate(null)
-                .build();
-        couponRepository.save(coupon);
     }
 
     public ResPostCouponValidateDto validateCoupon(UUID couponId, ReqPostCouponValidateDto reqDto) {
