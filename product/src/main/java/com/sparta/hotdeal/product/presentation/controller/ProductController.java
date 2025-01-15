@@ -11,6 +11,7 @@ import com.sparta.hotdeal.product.application.dtos.res.product.ResPatchReducePro
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPatchRestoreProductQuantityDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPostProductDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPutProductDto;
+import com.sparta.hotdeal.product.application.service.product.ProductInventoryService;
 import com.sparta.hotdeal.product.application.service.product.ProductService;
 import com.sparta.hotdeal.product.infrastructure.custom.RequestUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,6 +43,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProductController {
 
     private final ProductService productService;
+    private final ProductInventoryService productInventoryService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -102,7 +104,7 @@ public class ProductController {
             @AuthenticationPrincipal RequestUserDetails userDetails,
             @RequestBody List<ReqPatchProductQuantityDto> reqPatchProductQuantityDto
     ) {
-        List<ResPatchReduceProductQuantityDto> resPatchReduceProductQuantityDto = productService.reduceQuantity(
+        List<ResPatchReduceProductQuantityDto> resPatchReduceProductQuantityDto = productInventoryService.reduceQuantity(
                 reqPatchProductQuantityDto);
 
         return ResponseDto.of("상품이 수정되었습니다.", resPatchReduceProductQuantityDto);
@@ -115,7 +117,7 @@ public class ProductController {
             @AuthenticationPrincipal RequestUserDetails userDetails,
             @RequestBody List<ReqPatchProductQuantityDto> reqPatchProductQuantityDto
     ) {
-        List<ResPatchRestoreProductQuantityDto> resPatchRestoreProductQuantityDto = productService.restoreQuantity(
+        List<ResPatchRestoreProductQuantityDto> resPatchRestoreProductQuantityDto = productInventoryService.restoreQuantity(
                 reqPatchProductQuantityDto);
 
         return ResponseDto.of("상품이 수정되었습니다.", resPatchRestoreProductQuantityDto);
