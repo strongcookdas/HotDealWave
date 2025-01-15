@@ -1,5 +1,7 @@
 package com.sparta.hotdeal.coupon.domain.entity;
 
+import com.sparta.hotdeal.coupon.application.exception.CustomException;
+import com.sparta.hotdeal.coupon.application.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -48,6 +50,9 @@ public class CouponInfo extends AuditingDate {
     @Column(name = "company_id")
     private UUID companyId;
 
+    @Version
+    private Integer version; // 낙관적 락을 위한 버전 필드
+
     public void updateStatus(CouponStatus status) {
         this.status = status;
     }
@@ -63,6 +68,16 @@ public class CouponInfo extends AuditingDate {
     }
 
     public void incrementIssuedCount() {
+        if (this.issuedCount >= this.quantity) {
+            throw new CustomException(ErrorCode.COUPON_ISSUED_LIMIT_REACHED);
+        }
+
         this.issuedCount++;
+
+        // 최대치 도달 시 상태 변경
+        if (this.issuedCount == this.quantity) {
+            this.updateStatus(CouponStatus.OUT_OF_STOCK);
+        }
     }
+
 }

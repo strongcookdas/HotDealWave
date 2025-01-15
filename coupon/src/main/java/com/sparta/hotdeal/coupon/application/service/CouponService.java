@@ -13,6 +13,9 @@ import com.sparta.hotdeal.coupon.domain.entity.CouponStatus;
 import com.sparta.hotdeal.coupon.domain.repository.CouponRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -27,6 +30,7 @@ public class CouponService {
     private final CouponRepository couponRepository;
 
     @Transactional
+    @Retryable(value = OptimisticLockingFailureException.class, maxAttempts = 5, backoff = @Backoff(delay = 1000))
     public void issueFirstComeFirstServeCoupon(UUID userId, ReqPostCouponsIssueDto reqDto) {
         // 1. 쿠폰 정보 조회
         CouponInfo couponInfo = couponInfoService.findByIdOrThrow(reqDto.getCouponInfoId());
@@ -45,9 +49,6 @@ public class CouponService {
         }
         // 5. 쿠폰 발급 처리
         couponInfo.incrementIssuedCount();
-        if (couponInfo.getIssuedCount() == couponInfo.getQuantity()) {
-            couponInfo.updateStatus(CouponStatus.OUT_OF_STOCK);
-        }
         // 6. 쿠폰 엔티티 저장
         Coupon coupon = Coupon.builder()
                 .userId(userId)
