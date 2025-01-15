@@ -47,7 +47,11 @@ public class Basket extends AuditingDate {
                 .build();
     }
 
-    public void updateQuantity(Integer quantity){
+    public void updateQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    public void delete(String email){
+        remove(email);
     }
 }

@@ -1,14 +1,17 @@
 package com.sparta.hotdeal.payment.infrastructure.adapter;
 
 import com.sparta.hotdeal.payment.application.dtos.kakaopay.KakaoPayApproveDto;
+import com.sparta.hotdeal.payment.application.dtos.kakaopay.KakaoPayCancelDto;
 import com.sparta.hotdeal.payment.application.dtos.kakaopay.KakaoPayReadyDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.PaymentDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.req.ReqPostPaymentConfirmDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.req.ReqPostPaymentDto;
 import com.sparta.hotdeal.payment.application.port.KakaoPayClientPort;
 import com.sparta.hotdeal.payment.infrastructure.client.KakaoPayClient;
+import com.sparta.hotdeal.payment.infrastructure.dto.kakaopay.req.ReqDeleteKakaoPayCancelDto;
 import com.sparta.hotdeal.payment.infrastructure.dto.kakaopay.req.ReqPostKakaoPayApproveDto;
 import com.sparta.hotdeal.payment.infrastructure.dto.kakaopay.req.ReqPostKakaoPayReadyDto;
+import com.sparta.hotdeal.payment.infrastructure.dto.kakaopay.res.ResDeleteKakaoPayCancelDto;
 import com.sparta.hotdeal.payment.infrastructure.dto.kakaopay.res.ResPostKakaoPayApproveDto;
 import com.sparta.hotdeal.payment.infrastructure.dto.kakaopay.res.ResPostKakaoPayReadyDto;
 import com.sparta.hotdeal.payment.infrastructure.mapper.KakaoPayMapper;
@@ -66,5 +69,19 @@ public class KakaoPayClientAdapter implements KakaoPayClientPort {
                 reqPostKakaoPayApproveDto);
 
         return KakaoPayMapper.toKakaoPayApproveDto(resPostKakaoPayApproveDto);
+    }
+
+    @Override
+    public KakaoPayCancelDto cancel(PaymentDto paymentDto) {
+        ReqDeleteKakaoPayCancelDto reqDeleteKakaoPayCancelDto = ReqDeleteKakaoPayCancelDto.create(
+                cid,
+                paymentDto.getTid(),
+                paymentDto.getAmount(),
+                0,
+                0,
+                paymentDto.getAmount()
+        );
+        ResDeleteKakaoPayCancelDto resDeleteKakaoPayCancelDto = kakaoPayClient.cancel(authorization,reqDeleteKakaoPayCancelDto);
+        return resDeleteKakaoPayCancelDto.toKakaoPayCancelDto();
     }
 }

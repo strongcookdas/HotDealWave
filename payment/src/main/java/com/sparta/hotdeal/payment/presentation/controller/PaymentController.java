@@ -5,6 +5,7 @@ import com.sparta.hotdeal.payment.application.dtos.payment.req.ReqPostPaymentCon
 import com.sparta.hotdeal.payment.application.dtos.payment.req.ReqPostPaymentDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResGetPaymentByIdDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResGetPaymentForListDto;
+import com.sparta.hotdeal.payment.application.dtos.payment.res.ResPostPaymentCancelDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResPostPaymentConfirmDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResPostPaymentsDto;
 import com.sparta.hotdeal.payment.application.service.PaymentService;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -59,9 +61,9 @@ public class PaymentController {
         return ResponseDto.of("결제 단건 조회 성공", paymentService.getPaymentById(userDetails.getUserId(), paymentId));
     }
 
-    @DeleteMapping("/{paymentId}")
-    public ResponseDto<Void> deletePayment(@AuthenticationPrincipal RequestUserDetails userDetails,
-                                           @PathVariable UUID paymentId) {// 추후 구현
-        return ResponseDto.of("결제 환불 처리되었습니다.", null);
+    @PostMapping("/cancel")
+    public ResponseDto<ResPostPaymentCancelDto> cancelPayment(@AuthenticationPrincipal RequestUserDetails userDetails,
+                                                              @RequestParam UUID orderId) {
+        return ResponseDto.of("결제 환불 처리되었습니다.", paymentService.cancelPayment(userDetails.getUserId(), orderId));
     }
 }

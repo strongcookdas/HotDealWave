@@ -5,9 +5,6 @@ import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Repository;
-
-@Repository
 public interface PaymentRepository {
     Optional<Payment> findByTid(String tid);
 
@@ -16,4 +13,6 @@ public interface PaymentRepository {
     Optional<Payment> findByIdAndUserId(UUID paymentId, UUID userId);
 
     Page<Payment> findAllByUserId(UUID userId, Pageable pageable);
+
+    Optional<Payment> findByOrderIdAndUserId(UUID orderId, UUID userId);
 }

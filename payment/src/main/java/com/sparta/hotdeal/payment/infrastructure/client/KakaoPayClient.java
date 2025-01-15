@@ -1,7 +1,9 @@
 package com.sparta.hotdeal.payment.infrastructure.client;
 
+import com.sparta.hotdeal.payment.infrastructure.dto.kakaopay.req.ReqDeleteKakaoPayCancelDto;
 import com.sparta.hotdeal.payment.infrastructure.dto.kakaopay.req.ReqPostKakaoPayApproveDto;
 import com.sparta.hotdeal.payment.infrastructure.dto.kakaopay.req.ReqPostKakaoPayReadyDto;
+import com.sparta.hotdeal.payment.infrastructure.dto.kakaopay.res.ResDeleteKakaoPayCancelDto;
 import com.sparta.hotdeal.payment.infrastructure.dto.kakaopay.res.ResPostKakaoPayApproveDto;
 import com.sparta.hotdeal.payment.infrastructure.dto.kakaopay.res.ResPostKakaoPayReadyDto;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -21,6 +23,12 @@ public interface KakaoPayClient {
     ResPostKakaoPayApproveDto approve(
             @RequestHeader("Authorization") String authorization,
             @RequestBody ReqPostKakaoPayApproveDto request
+    );
+
+    @PostMapping("/cancel")
+    ResDeleteKakaoPayCancelDto cancel(
+            @RequestHeader("Authorization") String authorization,
+            @RequestBody ReqDeleteKakaoPayCancelDto request
     );
 
 }

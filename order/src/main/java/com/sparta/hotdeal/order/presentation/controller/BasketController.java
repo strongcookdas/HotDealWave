@@ -76,6 +76,6 @@ public class BasketController {
                                                         @PathVariable UUID basketId) {
 
         return ResponseDto.of("해당 장바구니가 삭제되었습니다.",
-                basketService.deleteBasket(userDetails.getUserId(), basketId));
+                basketService.deleteBasket(userDetails.getUserId(), userDetails.getEmail(), basketId));
     }
 }

@@ -23,6 +23,7 @@ public class PaymentDto {
                 .orderId(payment.getOrderId())
                 .userId(payment.getUserId())
                 .status(payment.getStatus())
+                .amount(payment.getAmount())
                 .refundAmount(payment.getRefundAmount())
                 .tid(payment.getTid())
                 .build();

@@ -1,6 +1,8 @@
 package com.sparta.hotdeal.payment.infrastructure.mapper;
 
 import com.sparta.hotdeal.payment.application.dtos.kakaopay.KakaoPayApproveDto;
+import com.sparta.hotdeal.payment.application.dtos.kakaopay.KakaoPayCancelDto;
+import com.sparta.hotdeal.payment.infrastructure.dto.kakaopay.res.ResDeleteKakaoPayCancelDto;
 import com.sparta.hotdeal.payment.infrastructure.dto.kakaopay.res.ResPostKakaoPayApproveDto;
 
 public class KakaoPayMapper {
