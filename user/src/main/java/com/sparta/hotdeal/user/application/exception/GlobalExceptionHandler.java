@@ -26,6 +26,21 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler({CustomJwtExcpetion.class})
+    public ResponseEntity<RestApiException> jwtException(final CustomJwtExcpetion ex) {
+
+        log.warn(ex.getMessage());
+
+        RestApiException restApiException = RestApiException.builder()
+                .errorMessage(ex.getMessage())
+                .build();
+
+        return new ResponseEntity<>(
+                restApiException,
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
     // @Valid 유효성 검사 에러 처리
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<RestApiException> handleValidationExceptions(MethodArgumentNotValidException ex) {

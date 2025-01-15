@@ -11,6 +11,7 @@ public enum ResponseMessage {
     EMAIL_SENT("이메일 인증이 요청되었습니다. 메일을 확인해주세요."),
     EMAIL_CONFIRMED("이메일 인증이 처리되었습니다."),
     LOGIN_SUCCESS("로그인 성공"),
+    TOKEN_REISSUE_SUCCESS("토큰 재발급 성공"),
     GET_USER_SUCCESS("회원정보조회 성공"),
     UPDATE_USER_SUCCESS("회원정보수정 성공"),
     UPDATE_USER_PASSWORD_SUCCESS("비밀번호수정 성공"),

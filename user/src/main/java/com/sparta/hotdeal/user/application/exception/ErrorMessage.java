@@ -17,7 +17,8 @@ public enum ErrorMessage {
     ADDRESS_NOT_FOUND("주소를 찾을 수 없습니다."),
     NOT_ALLOWED_CONTENT("접근 권한이 없습니다."),
     DELETED_ADDRESS("삭제된 주소입니다."),
-    NOT_EXISTS_DEFAULT_ADDRESS("기본 배송지가 설정되지 않았습니다.");
+    NOT_EXISTS_DEFAULT_ADDRESS("기본 배송지가 설정되지 않았습니다."),
+    EXPIRED_REFRESH_TOKEN("만료된 리프레시 토큰입니다.");
 
     private final String message;
 }
