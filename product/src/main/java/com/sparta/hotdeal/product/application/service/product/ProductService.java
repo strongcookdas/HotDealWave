@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.product.application.service;
+package com.sparta.hotdeal.product.application.service.product;
 
 import com.sparta.hotdeal.product.application.dtos.req.product.ReqPatchProductQuantityDto;
 import com.sparta.hotdeal.product.application.dtos.req.product.ReqPatchProductStatusDto;
@@ -13,7 +13,10 @@ import com.sparta.hotdeal.product.application.dtos.res.product.ResPostProductDto
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPutProductDto;
 import com.sparta.hotdeal.product.application.exception.ApplicationException;
 import com.sparta.hotdeal.product.application.exception.ErrorCode;
+import com.sparta.hotdeal.product.application.service.ProductPromotionHelperService;
 import com.sparta.hotdeal.product.application.service.client.CompanyClientService;
+import com.sparta.hotdeal.product.application.service.file.FileService;
+import com.sparta.hotdeal.product.application.service.file.SubFileService;
 import com.sparta.hotdeal.product.domain.entity.product.File;
 import com.sparta.hotdeal.product.domain.entity.product.Product;
 import com.sparta.hotdeal.product.domain.entity.product.ProductStatusEnum;

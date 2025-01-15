@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.product.application.service;
+package com.sparta.hotdeal.product.application.service.promotion;
 
 import com.sparta.hotdeal.product.application.dtos.req.promotion.ReqPostPromotionDto;
 import com.sparta.hotdeal.product.application.dtos.req.promotion.ReqPutPromotionDto;
@@ -8,6 +8,7 @@ import com.sparta.hotdeal.product.application.dtos.res.promotion.ResPostPromotio
 import com.sparta.hotdeal.product.application.dtos.res.promotion.ResPutPromotionDto;
 import com.sparta.hotdeal.product.application.exception.ApplicationException;
 import com.sparta.hotdeal.product.application.exception.ErrorCode;
+import com.sparta.hotdeal.product.application.service.product.ProductService;
 import com.sparta.hotdeal.product.domain.entity.promotion.Promotion;
 import com.sparta.hotdeal.product.domain.entity.promotion.PromotionStatusEnum;
 import com.sparta.hotdeal.product.domain.repository.product.PromotionRepository;

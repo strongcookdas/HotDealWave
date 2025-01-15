@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.product.application.service;
+package com.sparta.hotdeal.product.application.service.review;
 
 import com.sparta.hotdeal.product.application.dtos.req.review.ReqPostReviewDto;
 import com.sparta.hotdeal.product.application.dtos.req.review.ReqPutReviewDto;
@@ -7,6 +7,8 @@ import com.sparta.hotdeal.product.application.exception.ApplicationException;
 import com.sparta.hotdeal.product.application.exception.ErrorCode;
 import com.sparta.hotdeal.product.application.service.client.OrderClientService;
 import com.sparta.hotdeal.product.application.service.client.UserClientService;
+import com.sparta.hotdeal.product.application.service.file.FileService;
+import com.sparta.hotdeal.product.application.service.file.SubFileService;
 import com.sparta.hotdeal.product.domain.entity.product.File;
 import com.sparta.hotdeal.product.domain.entity.product.Product;
 import com.sparta.hotdeal.product.domain.entity.review.Review;

@@ -6,7 +6,7 @@ import com.sparta.hotdeal.product.application.dtos.res.ResponseDto;
 import com.sparta.hotdeal.product.application.dtos.res.promotion.ResGetPromotionDto;
 import com.sparta.hotdeal.product.application.dtos.res.promotion.ResPostPromotionDto;
 import com.sparta.hotdeal.product.application.dtos.res.promotion.ResPutPromotionDto;
-import com.sparta.hotdeal.product.application.service.PromotionService;
+import com.sparta.hotdeal.product.application.service.promotion.PromotionService;
 import com.sparta.hotdeal.product.domain.entity.promotion.PromotionStatusEnum;
 import com.sparta.hotdeal.product.infrastructure.custom.RequestUserDetails;
 import io.swagger.v3.oas.annotations.Operation;

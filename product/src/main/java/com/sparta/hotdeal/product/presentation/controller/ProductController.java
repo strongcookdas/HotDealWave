@@ -11,7 +11,7 @@ import com.sparta.hotdeal.product.application.dtos.res.product.ResPatchReducePro
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPatchRestoreProductQuantityDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPostProductDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPutProductDto;
-import com.sparta.hotdeal.product.application.service.ProductService;
+import com.sparta.hotdeal.product.application.service.product.ProductService;
 import com.sparta.hotdeal.product.infrastructure.custom.RequestUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
