@@ -6,6 +6,7 @@ import com.sparta.hotdeal.product.application.exception.ApplicationException;
 import com.sparta.hotdeal.product.application.exception.ErrorCode;
 import com.sparta.hotdeal.product.application.service.product.ProductInventoryService;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,27 +30,39 @@ public class ProductKafkaConsumer {
     @Transactional
     public void consumeReduceQuantity(String message, Acknowledgment acknowledgment) {
         try {
+            // 메시지 역직렬화
             List<ReqPutProductQuantityDto> requestDtos =
                     objectMapper.readValue(message, objectMapper.getTypeFactory()
                             .constructCollectionType(List.class, ReqPutProductQuantityDto.class));
 
+            // 재고 차감 요청 처리
             productInventoryService.reduceQuantity(requestDtos);
             acknowledgment.acknowledge(); // 메시지 처리 성공 후 명시적으로 커밋
             log.info("재고 차감 처리 완료: {}", message);
 
+        } catch (ApplicationException e) {
+            log.error("재고 차감 처리 실패: {}", e.getMessage());
+            sendRollbackMessage(rollbackReduceQuantityTopic, message); // 실패 시 전체 요청 롤백
+            acknowledgment.acknowledge();
         } catch (Exception e) {
-            log.error("재고 차감 처리 중 오류 발생: {}", e.getMessage());
-            // 재고 차감 중 오류 발생 시 롤백 요청
-            sendRollbackMessage(rollbackReduceQuantityTopic, "재고 차감 처리 중 오류 발생");
+            log.error("예기치 않은 오류 발생: {}", e.getMessage());
+            acknowledgment.acknowledge(); // 예외 발생 시에도 메시지 중복 처리를 방지
         }
     }
 
     private void sendRollbackMessage(String topic, String failedMessage) {
         try {
-            productInventoryService.sendRollbackRequest(topic, failedMessage);
+            String messageKey = generateMessageKey(failedMessage);
+            productInventoryService.sendRollbackRequest(topic, messageKey, failedMessage);
+            log.info("롤백 요청 메시지 전송 완료: {}", failedMessage);
         } catch (Exception e) {
             log.error("롤백 요청 메시지 전송 중 오류 발생: {}", e.getMessage());
             throw new ApplicationException(ErrorCode.INTERNAL_SERVER_EXCEPTION);
         }
+    }
+
+    private String generateMessageKey(String requestId) {
+        requestId = UUID.randomUUID().toString(); // 임시
+        return "rollback-" + requestId;
     }
 }

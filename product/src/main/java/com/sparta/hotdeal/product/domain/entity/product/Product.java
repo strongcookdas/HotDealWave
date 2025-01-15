@@ -1,5 +1,7 @@
 package com.sparta.hotdeal.product.domain.entity.product;
 
+import com.sparta.hotdeal.product.application.exception.ApplicationException;
+import com.sparta.hotdeal.product.application.exception.ErrorCode;
 import com.sparta.hotdeal.product.domain.entity.AuditingDate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -136,6 +138,9 @@ public class Product extends AuditingDate {
     }
 
     public void decreaseQuantity(int quantity) {
+        if (this.quantity < quantity) {
+            throw new ApplicationException(ErrorCode.INSUFFICIENT_PRODUCT_QUANTITY_EXCEPTION);
+        }
         this.quantity -= quantity;
     }
 

@@ -10,7 +10,7 @@ public class ProductKafkaProducer {
 
     private final KafkaTemplate<String, String> kafkaTemplate;
 
-    public void sendRollbackMessage(String topic, String message) {
-        kafkaTemplate.send(topic, message);
+    public void sendRollbackMessage(String topic, String key, String message) {
+        kafkaTemplate.send(topic, key, message);
     }
 }

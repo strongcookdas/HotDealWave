@@ -25,7 +25,8 @@ public enum ErrorCode {
     ORDER_INVALID_VALUE_EXCEPTION(HttpStatus.NOT_FOUND, "O018", "올바르지 않은 주문 요청 값입니다."),
     ORDER_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "O019", "존재하지 않는 주문입니다."),
     PRODUCT_INVENTORY_UPDATE_FAILED_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "P020",
-            "상품 재고 업데이트 중 예기치 못한 오류가 발생했습니다.");
+            "상품 재고 업데이트 중 예기치 못한 오류가 발생했습니다."),
+    INSUFFICIENT_PRODUCT_QUANTITY_EXCEPTION(HttpStatus.BAD_REQUEST, "P021", "상품의 재고가 부족합니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

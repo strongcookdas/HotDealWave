@@ -40,8 +40,6 @@ public class ProductInventoryService {
             return processProductQuantity(reqPutProductQuantityDto, false);
         } catch (Exception e) {
             log.error("재고 차감 처리 중 오류 발생: {}", e.getMessage());
-            // 오류 발생 시 롤백 요청
-            sendRollbackRequest(rollbackReduceQuantityTopic, "재고 차감 처리 중 오류 발생");
             throw new ApplicationException(ErrorCode.PRODUCT_INVENTORY_UPDATE_FAILED_EXCEPTION);
         }
     }
@@ -69,6 +67,16 @@ public class ProductInventoryService {
             throw new ApplicationException(ErrorCode.PRODUCT_NOT_FOUND_EXCEPTION);
         }
 
+        // 재고 부족 여부 검증
+        for (ReqPutProductQuantityDto dto : reqPatchProductQuantityDto) {
+            Product product = findProductById(dto.getProductId(), products);
+            if (!isRestore && product.getQuantity() < dto.getQuantity()) {
+                log.warn("재고 부족 상품 ID: {}, 요청 수량: {}, 재고 수량: {}",
+                        dto.getProductId(), dto.getQuantity(), product.getQuantity());
+                throw new ApplicationException(ErrorCode.PRODUCT_INVENTORY_UPDATE_FAILED_EXCEPTION);
+            }
+        }
+
         // 할인 중인 상품을 분리
         List<ReqPromotionQuantityDto> reqPromotionQuantityDtos = products.stream()
                 .filter(product -> product.getDiscountPrice() != null) // 할인 중인 상품만 필터
@@ -83,27 +91,20 @@ public class ProductInventoryService {
                 })
                 .collect(Collectors.toList());
 
-        log.info("ProductService reqPromotionQuantityDtos : {}", reqPromotionQuantityDtos.size());
+        log.info("할인 상품 처리 개수: {}", reqPromotionQuantityDtos.size());
 
         // 할인 중인 상품에 대한 별도 요청 처리
         processDiscountedProducts(reqPromotionQuantityDtos, isRestore);
 
-        List<T> resPatchProductQuantityDtos = new ArrayList<>();
-
         // 상품 수량 처리
+        List<T> resPatchProductQuantityDtos = new ArrayList<>();
         for (ReqPutProductQuantityDto dto : reqPatchProductQuantityDto) {
             Product product = findProductById(dto.getProductId(), products);
-
             if (isRestore) {
                 product.increaseQuantity(dto.getQuantity());
-            } else {
-                product.decreaseQuantity(dto.getQuantity());
-            }
-
-            // 결과 DTO 생성 후 추가
-            if (isRestore) {
                 resPatchProductQuantityDtos.add((T) ResPatchRestoreProductQuantityDto.of(product.getId()));
             } else {
+                product.decreaseQuantity(dto.getQuantity());
                 resPatchProductQuantityDtos.add((T) ResPatchReduceProductQuantityDto.of(product.getId()));
             }
         }
@@ -122,10 +123,9 @@ public class ProductInventoryService {
         productPromotionHelperService.processPromotionQuantity(reqPromotionQuantityDtos, isRestore);
     }
 
-    public void sendRollbackRequest(String topic, String message) {
+    public void sendRollbackRequest(String topic, String messageKey, String message) {
         try {
-            productKafkaProducer.sendRollbackMessage(topic, message);
-            log.info("롤백 요청 메시지 전송 완료: {}", message);
+            productKafkaProducer.sendRollbackMessage(topic, messageKey, message);
         } catch (Exception e) {
             log.error("롤백 요청 메시지 생성 실패: {}", e.getMessage());
             throw new ApplicationException(ErrorCode.INTERNAL_SERVER_EXCEPTION);
