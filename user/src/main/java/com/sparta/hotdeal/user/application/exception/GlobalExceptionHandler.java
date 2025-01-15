@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-@Slf4j(topic = "AuthExceptionHandler")
+@Slf4j(topic = "UserExceptionHandler")
 public class GlobalExceptionHandler {
 
     @ExceptionHandler({IllegalArgumentException.class})
@@ -30,6 +30,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<RestApiException> handleValidationExceptions(MethodArgumentNotValidException ex) {
         StringBuilder errorMessages = new StringBuilder();
+
+        log.warn(ex.getMessage());
 
         ex.getBindingResult().getFieldErrors().forEach(error ->
                 errorMessages.append(error.getField())
