@@ -1,6 +1,6 @@
 package com.sparta.hotdeal.product.application.service.product;
 
-import com.sparta.hotdeal.product.application.dtos.req.product.ReqPatchProductQuantityDto;
+import com.sparta.hotdeal.product.application.dtos.req.product.ReqPutProductQuantityDto;
 import com.sparta.hotdeal.product.application.dtos.req.promotion.ReqPromotionQuantityDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPatchReduceProductQuantityDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPatchRestoreProductQuantityDto;
@@ -28,23 +28,23 @@ public class ProductInventoryService {
     private final ProductPromotionHelperService productPromotionHelperService;
 
     public List<ResPatchReduceProductQuantityDto> reduceQuantity(
-            List<ReqPatchProductQuantityDto> reqPatchProductQuantityDto) {
+            List<ReqPutProductQuantityDto> reqPatchProductQuantityDto) {
         return processProductQuantity(reqPatchProductQuantityDto, false); // 재고 차감
     }
 
     public List<ResPatchRestoreProductQuantityDto> restoreQuantity(
-            List<ReqPatchProductQuantityDto> reqPatchProductQuantityDto) {
+            List<ReqPutProductQuantityDto> reqPatchProductQuantityDto) {
         return processProductQuantity(reqPatchProductQuantityDto, true); // 재고 복구
     }
 
     // 공통된 상품 수량 처리 메서드
     private <T> List<T> processProductQuantity(
-            List<ReqPatchProductQuantityDto> reqPatchProductQuantityDto,
+            List<ReqPutProductQuantityDto> reqPatchProductQuantityDto,
             boolean isRestore) {
 
         // 상품 ID 목록 추출
         List<UUID> productIds = reqPatchProductQuantityDto.stream()
-                .map(ReqPatchProductQuantityDto::getProductId)
+                .map(ReqPutProductQuantityDto::getProductId)
                 .collect(Collectors.toList());
 
         // 상품들 조회
@@ -62,7 +62,7 @@ public class ProductInventoryService {
                     // 해당 상품의 ID와 수량을 ReqPromotionQuantityDto로 매핑
                     int quantity = reqPatchProductQuantityDto.stream()
                             .filter(dto -> dto.getProductId().equals(product.getId()))
-                            .map(ReqPatchProductQuantityDto::getQuantity)
+                            .map(ReqPutProductQuantityDto::getQuantity)
                             .findFirst()
                             .orElse(0); // 수량을 찾고, 없으면 0으로 기본 설정
                     return new ReqPromotionQuantityDto(product.getId(), quantity);
@@ -77,7 +77,7 @@ public class ProductInventoryService {
         List<T> resPatchProductQuantityDtos = new ArrayList<>();
 
         // 상품 수량 처리
-        for (ReqPatchProductQuantityDto dto : reqPatchProductQuantityDto) {
+        for (ReqPutProductQuantityDto dto : reqPatchProductQuantityDto) {
             Product product = findProductById(dto.getProductId(), products);
 
             if (isRestore) {

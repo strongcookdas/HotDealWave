@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class ReqPatchProductQuantityDto {
+public class ReqPutProductQuantityDto {
     private UUID productId;
     private int quantity;
 }

@@ -1,9 +1,9 @@
 package com.sparta.hotdeal.product.presentation.controller;
 
-import com.sparta.hotdeal.product.application.dtos.req.product.ReqPatchProductQuantityDto;
 import com.sparta.hotdeal.product.application.dtos.req.product.ReqPatchProductStatusDto;
 import com.sparta.hotdeal.product.application.dtos.req.product.ReqPostProductDto;
 import com.sparta.hotdeal.product.application.dtos.req.product.ReqPutProductDto;
+import com.sparta.hotdeal.product.application.dtos.req.product.ReqPutProductQuantityDto;
 import com.sparta.hotdeal.product.application.dtos.res.ResponseDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResGetProductDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPatchProductStatusDto;
@@ -102,7 +102,7 @@ public class ProductController {
     @Operation(summary = "상품 수량 감소 API", description = "상품의 수량을 감소합니다.")
     public ResponseDto<List<ResPatchReduceProductQuantityDto>> reduceQuantity(
             @AuthenticationPrincipal RequestUserDetails userDetails,
-            @RequestBody List<ReqPatchProductQuantityDto> reqPatchProductQuantityDto
+            @RequestBody List<ReqPutProductQuantityDto> reqPatchProductQuantityDto
     ) {
         List<ResPatchReduceProductQuantityDto> resPatchReduceProductQuantityDto = productInventoryService.reduceQuantity(
                 reqPatchProductQuantityDto);
@@ -115,7 +115,7 @@ public class ProductController {
     @Operation(summary = "상품 수량 복구 API", description = "상품의 수량을 복구합니다.")
     public ResponseDto<List<ResPatchRestoreProductQuantityDto>> restoreQuantity(
             @AuthenticationPrincipal RequestUserDetails userDetails,
-            @RequestBody List<ReqPatchProductQuantityDto> reqPatchProductQuantityDto
+            @RequestBody List<ReqPutProductQuantityDto> reqPatchProductQuantityDto
     ) {
         List<ResPatchRestoreProductQuantityDto> resPatchRestoreProductQuantityDto = productInventoryService.restoreQuantity(
                 reqPatchProductQuantityDto);
