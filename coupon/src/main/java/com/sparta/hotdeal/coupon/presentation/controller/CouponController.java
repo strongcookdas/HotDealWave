@@ -29,12 +29,9 @@ public class CouponController {
     @PostMapping("/issue")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<Void> issueFirstComeFirstServeCoupon(
-            @RequestHeader(value = "Test-UserId", required = false) UUID testUserId,
             @AuthenticationPrincipal RequestUserDetails userDetails,
             @RequestBody ReqPostCouponsIssueDto reqDto) {
-        // 운영 환경에서는 testUserId를 사용하지 않음
-        UUID userId = (testUserId != null) ? testUserId : userDetails.getUserId();
-        couponService.issueFirstComeFirstServeCoupon(userId, reqDto);
+        couponService.issueFirstComeFirstServeCoupon(userDetails.getUserId(), reqDto);
         return ResponseDto.of("선착순 쿠폰 발급 성공", null);
     }
 

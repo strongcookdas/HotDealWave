@@ -50,9 +50,6 @@ public class CouponInfo extends AuditingDate {
     @Column(name = "company_id")
     private UUID companyId;
 
-//    @Version
-//    private Integer version; // 낙관적 락을 위한 버전 필드
-
     public void updateStatus(CouponStatus status) {
         this.status = status;
     }
