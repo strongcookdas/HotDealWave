@@ -1,12 +1,12 @@
 package com.sparta.hotdeal.product.infrastructure.kafka;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.hotdeal.product.application.dtos.req.product.ReqPutProductQuantityDto;
+import com.sparta.hotdeal.product.application.dtos.res.product.ResPutProductQuantityDto;
 import com.sparta.hotdeal.product.application.exception.ApplicationException;
 import com.sparta.hotdeal.product.application.exception.ErrorCode;
 import com.sparta.hotdeal.product.application.service.product.ProductInventoryService;
-import java.util.List;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,21 +28,20 @@ public class ProductKafkaConsumer {
 
     @KafkaListener(topics = "${spring.kafka.topics.reduce-quantity}", groupId = "product-group")
     @Transactional
-    public void consumeReduceQuantity(String message, Acknowledgment acknowledgment) {
+    public void consumeReduceQuantity(String message, Acknowledgment acknowledgment) throws JsonProcessingException {
+        // 메시지 역직렬화
+        ReqPutProductQuantityDto requestDto =
+                objectMapper.readValue(message, ReqPutProductQuantityDto.class);
         try {
-            // 메시지 역직렬화
-            List<ReqPutProductQuantityDto> requestDtos =
-                    objectMapper.readValue(message, objectMapper.getTypeFactory()
-                            .constructCollectionType(List.class, ReqPutProductQuantityDto.class));
-
             // 재고 차감 요청 처리
-            productInventoryService.reduceQuantity(requestDtos);
+            productInventoryService.reduceQuantity(requestDto);
             acknowledgment.acknowledge(); // 메시지 처리 성공 후 명시적으로 커밋
             log.info("재고 차감 처리 완료: {}", message);
 
         } catch (ApplicationException e) {
             log.error("재고 차감 처리 실패: {}", e.getMessage());
-            sendRollbackMessage(rollbackReduceQuantityTopic, message); // 실패 시 전체 요청 롤백
+            ResPutProductQuantityDto key = ResPutProductQuantityDto.of(requestDto.getOrderId());
+            sendRollbackMessage(rollbackReduceQuantityTopic, key, key.toString()); // 실패 시 전체 요청 롤백
             acknowledgment.acknowledge();
         } catch (Exception e) {
             log.error("예기치 않은 오류 발생: {}", e.getMessage());
@@ -50,19 +49,14 @@ public class ProductKafkaConsumer {
         }
     }
 
-    private void sendRollbackMessage(String topic, String failedMessage) {
+    private void sendRollbackMessage(String topic, ResPutProductQuantityDto key, String failedMessage) {
         try {
-            String messageKey = generateMessageKey(failedMessage);
+            String messageKey = key.toString();
             productInventoryService.sendRollbackRequest(topic, messageKey, failedMessage);
-            log.info("롤백 요청 메시지 전송 완료: {}", failedMessage);
+            log.info("롤백 요청 메시지 전송 완료: {}", messageKey);
         } catch (Exception e) {
             log.error("롤백 요청 메시지 전송 중 오류 발생: {}", e.getMessage());
             throw new ApplicationException(ErrorCode.INTERNAL_SERVER_EXCEPTION);
         }
-    }
-
-    private String generateMessageKey(String requestId) {
-        requestId = UUID.randomUUID().toString(); // 임시
-        return "rollback-" + requestId;
     }
 }
