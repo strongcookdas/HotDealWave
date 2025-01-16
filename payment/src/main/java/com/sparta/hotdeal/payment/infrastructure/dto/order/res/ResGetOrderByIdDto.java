@@ -17,7 +17,7 @@ public class ResGetOrderByIdDto {
     private String orderName;
     private UUID userId;
     private String username;
-    private Address address;
+    private UUID addressId;
     private Integer totalAmount;
     private Integer discountAmount;
     private String orderStatus;
@@ -38,18 +38,6 @@ public class ResGetOrderByIdDto {
                     .productPrice(productPrice)
                     .build();
         }
-    }
-
-    @Getter
-    @Builder
-    public static class Address {
-        private UUID addressId;
-        private String zipNum;
-        private String city;
-        private String district;
-        private String streetName;
-        private String streetNum;
-        private String detailAddr;
     }
 
     public OrderDto toOrderDto() {

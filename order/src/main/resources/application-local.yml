@@ -13,7 +13,7 @@ spring:
     show-sql: true
   kafka:
     bootstrap-servers: #node들의 주소 (외부 주소)
-      - ${LOCAL_KAFKA_HOST}:19092
+      - ${LOCAL_KAFKA_HOST}:9092
     consumer:
       group-id: order-group
       auto-offset-reset: earliest # 카프카에서 존재하는 offset중 가장 앞에 있는 것을 가져온다.

@@ -9,6 +9,7 @@ import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrderByIdDto;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrderListDto;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResPostOrderDto;
 import com.sparta.hotdeal.order.application.dtos.order_product.OrderProductDto;
+import com.sparta.hotdeal.order.application.dtos.payment.req.ReqReadyPaymentDto;
 import com.sparta.hotdeal.order.application.dtos.product.ProductDto;
 import com.sparta.hotdeal.order.application.dtos.product.req.ReqProductReduceQuantityDto;
 import com.sparta.hotdeal.order.application.dtos.user.UserDto;
@@ -105,14 +106,14 @@ public class OrderService {
         orderProductService.createOrderProductList(order, basketList, productDtoList);
         log.info("주문 정보 DB 저장");
 
-        sendReduceProductQuantityMessage(order, basketList);
+        //sendReduceProductQuantityMessage(order, basketList);
+        sendReadyPayment(order);
 
         return ResPostOrderDto.of(order.getId());
     }
 
     private void sendReduceProductQuantityMessage(Order order, List<Basket> basketList) {
         try {
-            // User 객체를 JSON으로 변환 추후 직렬화 개선 필요
             ReqProductReduceQuantityDto req = ReqProductReduceQuantityDto.create(order.getId(), basketList);
             String reqJson = objectMapper.writeValueAsString(req);
             kafkaTemplate.send("reduce-quantity-topic", reqJson);
@@ -121,16 +122,33 @@ public class OrderService {
         }
     }
 
+    private void sendReadyPayment(Order order) {
+        try {
+            ReqReadyPaymentDto req = ReqReadyPaymentDto.create(order.getId());
+            String reqJson = objectMapper.writeValueAsString(req);
+            kafkaTemplate.send("ready-payment-topic", reqJson);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("exception : {}", e.getMessage());
+        }
+    }
+
     @Transactional(readOnly = true)
     public ResGetOrderByIdDto getOrderDetail(UUID userId, String email, String role, UUID orderId) {
         //주문 조회
-        Order order = orderRepository.findByIdAndUserId(orderId, userId)
-                .orElseThrow(() -> new ApplicationException(ErrorCode.ORDER_NOT_FOUND_EXCEPTION));
+        Order order;
+        if (role.equals("ROLE_MASTER")) {
+            order = orderRepository.findByIdAndDeletedAtIsNull(orderId)
+                    .orElseThrow(() -> new ApplicationException(ErrorCode.ORDER_NOT_FOUND_EXCEPTION));
+        } else {
+            order = orderRepository.findByIdAndUserId(orderId, userId)
+                    .orElseThrow(() -> new ApplicationException(ErrorCode.ORDER_NOT_FOUND_EXCEPTION));
+        }
         log.info("주문 조회");
 
-        //주소 조회
-        AddressDto address = userClientPort.getAddress(userId, email, role, order.getAddressId());
-        log.info("주소 조회");
+        //주소 조회 - (현재 자신 저장한 주소만 볼 수 있도록 권한 설정이 되어 있어 주석)
+        //AddressDto address = userClientPort.getAddress(userId, email, role, order.getAddressId());
+        //log.info("주소 조회");
 
         //user 조회
         UserDto user = userClientPort.getUserById(userId, email, role);
@@ -146,7 +164,7 @@ public class OrderService {
         log.info("product 조회");
 
         //조합 후 반환
-        return ResGetOrderByIdDto.of(order, address, orderProductDtoList, productMap, user);
+        return ResGetOrderByIdDto.of(order, orderProductDtoList, productMap, user);
     }
 
     @Transactional(readOnly = true)

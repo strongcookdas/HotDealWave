@@ -1,6 +1,5 @@
 package com.sparta.hotdeal.order.application.dtos.order.res;
 
-import com.sparta.hotdeal.order.application.dtos.address.AddressDto;
 import com.sparta.hotdeal.order.application.dtos.order_product.OrderProductDto;
 import com.sparta.hotdeal.order.application.dtos.product.ProductDto;
 import com.sparta.hotdeal.order.application.dtos.user.UserDto;
@@ -22,7 +21,8 @@ public class ResGetOrderByIdDto {
     private UUID userId;
     private String username;
     private String orderName;
-    private Address address;
+    //    private Address address;
+    private UUID addressId;
     private Integer totalAmount;
     private Integer discountAmount;
     private OrderStatus orderStatus;
@@ -45,45 +45,46 @@ public class ResGetOrderByIdDto {
         }
     }
 
-    @Getter
-    @Builder
-    public static class Address {
-        private UUID addressId;
-        private String zipNum;
-        private String city;
-        private String district;
-        private String streetName;
-        private String streetNum;
-        private String detailAddr;
+//    @Getter
+//    @Builder
+//    public static class Address {
+//        private UUID addressId;
+//        private String zipNum;
+//        private String city;
+//        private String district;
+//        private String streetName;
+//        private String streetNum;
+//        private String detailAddr;
+//
+//        public static Address of(AddressDto address) {
+//            return Address.builder()
+//                    .addressId(address.getAddressId())
+//                    .zipNum(address.getZipNum())
+//                    .city(address.getCity())
+//                    .district(address.getDistrict())
+//                    .streetName(address.getStreetName())
+//                    .streetNum(address.getStreetNum())
+//                    .detailAddr(address.getDetailAddr())
+//                    .build();
+//        }
+//    }
 
-        public static Address of(AddressDto address) {
-            return Address.builder()
-                    .addressId(address.getAddressId())
-                    .zipNum(address.getZipNum())
-                    .city(address.getCity())
-                    .district(address.getDistrict())
-                    .streetName(address.getStreetName())
-                    .streetNum(address.getStreetNum())
-                    .detailAddr(address.getDetailAddr())
-                    .build();
-        }
-    }
-
-    public static ResGetOrderByIdDto of(Order order, AddressDto address,
+    public static ResGetOrderByIdDto of(Order order,
                                         List<OrderProductDto> orderProductDtoList,
                                         Map<UUID, ProductDto> productMap,
-                                        UserDto user
+                                        UserDto userDto
     ) {
         return ResGetOrderByIdDto.builder()
                 .orderId(order.getId())
                 .orderName(order.getName())
                 .createdAt(order.getCreatedAt())
                 .userId(order.getUserId())
-                .username(user.getNickname())
+                .username(userDto.getNickname())
                 .orderStatus(order.getStatus())
                 .totalAmount(order.getTotalAmount())
                 .discountAmount(order.getCouponDiscountAmount())
-                .address(Address.of(address))
+//                .address(Address.of(address))
+                .addressId(order.getAddressId())
                 .productList(orderProductDtoList.stream()
                         .map(orderProductDto -> Product.of(
                                 productMap.get(orderProductDto.getProductId()),
