@@ -195,6 +195,14 @@ public class OrderService {
         order.updateStatus(OrderStatus.CANCEL);
     }
 
+    public void cancelOrderById(UUID orderId) {
+        Order order = orderRepository.findByIdAndDeletedAtIsNull(orderId)
+                .orElseThrow(() -> new ApplicationException(ErrorCode.ORDER_NOT_FOUND_EXCEPTION));
+
+        order.updateStatus(OrderStatus.CANCEL);
+    }
+
+
     public void refundOrder(UUID userId, UUID orderId) {
         Order order = orderRepository.findByIdAndUserId(orderId, userId)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.ORDER_NOT_FOUND_EXCEPTION));
