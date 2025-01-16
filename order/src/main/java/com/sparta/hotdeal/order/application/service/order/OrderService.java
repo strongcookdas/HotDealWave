@@ -10,7 +10,7 @@ import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrderListDto;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResPostOrderDto;
 import com.sparta.hotdeal.order.application.dtos.order_product.OrderProductDto;
 import com.sparta.hotdeal.order.application.dtos.product.ProductDto;
-import com.sparta.hotdeal.order.application.dtos.product.req.ReqPatchProductQuantityDto;
+import com.sparta.hotdeal.order.application.dtos.product.req.ReqProductReduceQuantityDto;
 import com.sparta.hotdeal.order.application.dtos.user.UserDto;
 import com.sparta.hotdeal.order.application.port.CouponClientPort;
 import com.sparta.hotdeal.order.application.port.ProductClientPort;
@@ -113,11 +113,11 @@ public class OrderService {
     private void sendReduceProductQuantityMessage(Order order, List<Basket> basketList) {
         try {
             // User 객체를 JSON으로 변환 추후 직렬화 개선 필요
-            ReqPatchProductQuantityDto req = ReqPatchProductQuantityDto.create(order.getId(), basketList);
+            ReqProductReduceQuantityDto req = ReqProductReduceQuantityDto.create(order.getId(), basketList);
             String reqJson = objectMapper.writeValueAsString(req);
-            kafkaTemplate.send("reduce_quantity", reqJson);
+            kafkaTemplate.send("reduce-quantity-topic", reqJson);
         } catch (Exception e) {
-            log.error("상품 수량 감소 직렬화 실패");
+            log.error("exception : {}", e.getMessage());
         }
     }
 

@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReqPatchProductQuantityDto {
+public class ReqProductReduceQuantityDto {
     private UUID orderId;
     private List<Product> productList;
 
@@ -33,8 +33,8 @@ public class ReqPatchProductQuantityDto {
         }
     }
 
-    public static ReqPatchProductQuantityDto create(UUID orderId, List<Basket> basketList) {
-        return ReqPatchProductQuantityDto.builder()
+    public static ReqProductReduceQuantityDto create(UUID orderId, List<Basket> basketList) {
+        return ReqProductReduceQuantityDto.builder()
                 .orderId(orderId)
                 .productList(basketList.stream().map(Product::of).toList())
                 .build();

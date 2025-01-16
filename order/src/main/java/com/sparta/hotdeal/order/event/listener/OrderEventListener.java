@@ -17,12 +17,13 @@ public class OrderEventListener {
 
     private final ObjectMapper objectMapper;
 
-    @KafkaListener(topics = "cancel_order")
+    @KafkaListener(topics = "cancel-order-topic")
     public void consumeCancelOrder(String message) {
         try {
             ReqOrderCancelMessage reqOrderCancelMessage = objectMapper.readValue(message, ReqOrderCancelMessage.class);
             orderService.cancelOrderById(reqOrderCancelMessage.getOrderId());
         } catch (Exception e) {
+            // 주문 취소에서 에러나면 DLQ (Dead Letter Queue) 처리가 필요하지만 일단 log 찍는 것으로 대체
             log.error("error message : {}", e.getMessage());
         }
     }
