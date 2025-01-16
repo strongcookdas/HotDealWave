@@ -8,7 +8,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @EnableFeignClients
 @SpringBootApplication
-//@EnableRetry
 public class CouponApplication {
 
 	public static void main(String[] args) {
