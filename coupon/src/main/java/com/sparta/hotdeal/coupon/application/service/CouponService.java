@@ -9,14 +9,12 @@ import com.sparta.hotdeal.coupon.application.exception.ErrorCode;
 import com.sparta.hotdeal.coupon.application.mapper.CouponMapper;
 import com.sparta.hotdeal.coupon.domain.entity.Coupon;
 import com.sparta.hotdeal.coupon.domain.entity.CouponInfo;
-import com.sparta.hotdeal.coupon.domain.entity.CouponStatus;
 import com.sparta.hotdeal.coupon.domain.repository.CouponRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -32,51 +30,24 @@ public class CouponService {
     private final CouponInfoService couponInfoService;
     private final CouponRepository couponRepository;
     private final RedissonClient redissonClient;
+    private final CouponIssueHelper couponIssueHelper;
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void issueFirstComeFirstServeCoupon(UUID userId, ReqPostCouponsIssueDto reqDto) {
         String lockKey = "LOCK_COUPON_" + reqDto.getCouponInfoId();
         RLock lock = redissonClient.getLock(lockKey);
-
         try {
-            boolean available = lock.tryLock(10, 5, TimeUnit.SECONDS);
+            boolean available = lock.tryLock(10, 5, TimeUnit.SECONDS); // 락 획득
             if (!available) {
                 throw new CustomException(ErrorCode.REQUEST_TIMEOUT);
             }
-
-            // 1. 쿠폰 정보 조회
-            CouponInfo couponInfo = couponInfoService.findByIdOrThrow(reqDto.getCouponInfoId());
-            // 2. 유효성 검증: 쿠폰 상태 확인
-            if (couponInfo.getStatus() != CouponStatus.ISSUED) {
-                throw new CustomException(ErrorCode.INVALID_COUPON_STATUS);
-            }
-            // 3. 발급 가능 수량 확인
-            if (couponInfo.getIssuedCount() >= couponInfo.getQuantity()) {
-                throw new CustomException(ErrorCode.COUPON_OUT_OF_STOCK);
-            }
-            // 4. 사용자 중복 발급 확인
-            boolean alreadyIssued = couponRepository.existsByUserIdAndCouponInfoId(userId, couponInfo.getId());
-            if (alreadyIssued) {
-                throw new CustomException(ErrorCode.ALREADY_ISSUED_COUPON);
-            }
-            // 5. 쿠폰 발급 처리
-            couponInfo.incrementIssuedCount();
-            // 6. 쿠폰 엔티티 저장
-            Coupon coupon = Coupon.builder()
-                    .userId(userId)
-                    .couponInfo(couponInfo)
-                    .dailyIssuedDate(LocalDate.now())
-                    .isUsed(false)
-                    .usedDate(null)
-                    .build();
-            couponRepository.save(coupon);
+            // 실제 코드 발급 부분
+            couponIssueHelper.processCouponIssue(userId, reqDto);
         } catch (InterruptedException e) {
             throw new RuntimeException("Redis 락 처리 중 오류 발생", e);
         } finally {
-            // 락 해제
             if (lock.isHeldByCurrentThread()) {
                 lock.unlock();
-                log.info("unlock complete: {}", lock.getName());
+                log.info("Unlock complete: {}", lock.getName());
             }
         }
     }
@@ -161,11 +132,9 @@ public class CouponService {
         return CouponMapper.toResGetUserCouponsDto(coupon);
     }
 
-
     public Coupon findByIdOrThrow(UUID couponId) {
         return couponRepository.findByIdAndDeletedAtIsNull(couponId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_COUPON));
     }
-
 }
 
