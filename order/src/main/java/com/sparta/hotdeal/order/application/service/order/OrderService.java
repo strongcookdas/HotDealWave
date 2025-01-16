@@ -1,19 +1,18 @@
 package com.sparta.hotdeal.order.application.service.order;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.hotdeal.order.application.dtos.address.AddressDto;
 import com.sparta.hotdeal.order.application.dtos.coupon.CouponValidationDto;
-import com.sparta.hotdeal.order.application.dtos.order.OrderDto;
 import com.sparta.hotdeal.order.application.dtos.order.req.ReqPostOrderDto;
 import com.sparta.hotdeal.order.application.dtos.order.req.ReqPutOrderDto;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrderByIdDto;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrderListDto;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResPostOrderDto;
 import com.sparta.hotdeal.order.application.dtos.order_product.OrderProductDto;
-import com.sparta.hotdeal.order.application.dtos.payment.PaymentRequestDto;
 import com.sparta.hotdeal.order.application.dtos.product.ProductDto;
+import com.sparta.hotdeal.order.application.dtos.product.req.ReqPatchProductQuantityDto;
 import com.sparta.hotdeal.order.application.dtos.user.UserDto;
 import com.sparta.hotdeal.order.application.port.CouponClientPort;
-import com.sparta.hotdeal.order.application.port.PaymentClientPort;
 import com.sparta.hotdeal.order.application.port.ProductClientPort;
 import com.sparta.hotdeal.order.application.port.UserClientPort;
 import com.sparta.hotdeal.order.common.exception.ApplicationException;
@@ -34,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,17 +47,18 @@ public class OrderService {
     private final ProductClientPort productClientPort;
     private final CouponClientPort couponClientPort;
     private final UserClientPort userClientPort;
-    private final PaymentClientPort paymentClientPort;
 
     private final OrderProductService orderProductService;
     private final OrderBasketService orderBasketService;
 
+    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final ObjectMapper objectMapper;
+
+
     public ResPostOrderDto createOrder(UUID userId, String email, String role, ReqPostOrderDto req) {
-        //1. 장바구니 조회
         List<Basket> basketList = orderBasketService.getBasketList(userId, req.getBasketList());
         log.info("장바구니 조회");
 
-        //2. 상품 정보 조회
         List<UUID> productIds = basketList.stream().map(Basket::getProductId).toList();
         List<ProductDto> productDtoList = productClientPort.getProductALL(productIds);
         log.info("상품 조회 정보");
@@ -70,11 +71,9 @@ public class OrderService {
             throw new ApplicationException(ErrorCode.ORDER_INVALID_VALUE_EXCEPTION);
         }
 
-        //4. 총 금액 계산
         int totalAmount = calculateTotalAmount(basketList, productDtoMap);
         log.info("총 금액 계산");
 
-        //5. 쿠폰 유효성 및 쿠폰 적용
         int discountAmount = 0;
         UUID couponId = null;
         CouponValidationDto couponValidationDto = couponClientPort.validateCoupon(req.getCouponId(), basketList,
@@ -88,15 +87,9 @@ public class OrderService {
             log.info("쿠폰 사용 api 호출");
         }
 
-        //6. 상품 감소 처리
-        productClientPort.reduceProductQuantity(basketList);
-        log.info("product 감소 처리");
-
-        //7. 장바구니 삭제
         orderBasketService.deleteBasketList(basketList);
         log.info("장바구니 삭제 처리");
 
-        //8. 주문 저장 및 주문-상품 저장
         AddressDto address = userClientPort.getAddress(userId, email, role, req.getAddressId());
         log.info("주소 조회 api 호출");
         Order order = Order.create(
@@ -112,12 +105,20 @@ public class OrderService {
         orderProductService.createOrderProductList(order, basketList, productDtoList);
         log.info("주문 정보 DB 저장");
 
-        //주문 생성 이후 비동기 처리 (결제 요청)
-        PaymentRequestDto paymentRequestDto = paymentClientPort.readyPayment(userId, email, role, OrderDto.of(order),
-                basketList);
-        log.info("결제 요청");
+        sendReduceProductQuantityMessage(order, basketList);
 
-        return ResPostOrderDto.of(order, paymentRequestDto);
+        return ResPostOrderDto.of(order.getId());
+    }
+
+    private void sendReduceProductQuantityMessage(Order order, List<Basket> basketList) {
+        try {
+            // User 객체를 JSON으로 변환 추후 직렬화 개선 필요
+            ReqPatchProductQuantityDto req = ReqPatchProductQuantityDto.create(order.getId(), basketList);
+            String reqJson = objectMapper.writeValueAsString(req);
+            kafkaTemplate.send("reduce_quantity", reqJson);
+        } catch (Exception e) {
+            log.error("상품 수량 감소 직렬화 실패");
+        }
     }
 
     @Transactional(readOnly = true)
