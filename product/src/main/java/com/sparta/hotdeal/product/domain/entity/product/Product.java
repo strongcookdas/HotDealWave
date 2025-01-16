@@ -84,7 +84,9 @@ public class Product extends AuditingDate {
             File detailImgs,
             File thumbImg,
             UUID companyId,
-            ProductStatusEnum status
+            ProductStatusEnum status,
+            Double ratingSum,
+            Integer reviewCnt
     ) {
         return Product.builder()
                 .name(name)
@@ -96,6 +98,8 @@ public class Product extends AuditingDate {
                 .thumbImg(thumbImg)
                 .companyId(companyId)
                 .status(status)
+                .ratingSum(ratingSum)
+                .reviewCnt(reviewCnt)
                 .build();
     }
 

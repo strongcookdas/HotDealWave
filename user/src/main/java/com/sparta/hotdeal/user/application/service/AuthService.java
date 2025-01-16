@@ -4,6 +4,7 @@ import com.sparta.hotdeal.user.application.dtos.auth.request.ReqPostConfirmEmail
 import com.sparta.hotdeal.user.application.dtos.auth.request.ReqPostSignUpDto;
 import com.sparta.hotdeal.user.application.dtos.auth.request.ReqPostVerifyEmailDto;
 import com.sparta.hotdeal.user.application.dtos.auth.response.ResPostLoginDto;
+import com.sparta.hotdeal.user.application.dtos.auth.response.ResPostRefreshDto;
 import com.sparta.hotdeal.user.application.dtos.auth.response.ResPostSignUpDto;
 import com.sparta.hotdeal.user.application.exception.ErrorMessage;
 import com.sparta.hotdeal.user.application.util.JwtUtil;
@@ -13,7 +14,9 @@ import com.sparta.hotdeal.user.domain.entity.User;
 import com.sparta.hotdeal.user.domain.entity.UserRole;
 import com.sparta.hotdeal.user.domain.repository.EmailRepository;
 import com.sparta.hotdeal.user.domain.repository.UserRepository;
+import io.jsonwebtoken.Claims;
 import java.util.Random;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,6 +41,9 @@ public class AuthService {
 
     @Value("${spring.mail.auth-code-expiration-millis}")
     private long authCodeExpirationMillis;
+
+    @Value("${service.jwt.refresh-expiration}")
+    private long refreshTokenExpirationMillis;
 
     @Transactional
     public ResPostSignUpDto signup(ReqPostSignUpDto requestDto) {
@@ -102,9 +108,41 @@ public class AuthService {
 
         checkDeletedUser(user);
 
+        String accessToken = jwtUtil.createAccessToken(user.getUserId(), user.getEmail(), user.getRole());
+        String refreshToken = jwtUtil.createRefreshToken(user.getUserId());
+
+        redisUtil.setValues(user.getUserId().toString(), refreshToken, refreshTokenExpirationMillis);
+
         return ResPostLoginDto.builder()
-                .accessToken(jwtUtil.createToken(user.getUserId(), user.getEmail(), user.getRole()))
-                .refreshToken(null)
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
+    }
+
+    public ResPostRefreshDto refresh(
+            String requestRefreshToken
+    ) {
+        jwtUtil.validateToken(requestRefreshToken);
+        Claims token = jwtUtil.parseClaims(requestRefreshToken);
+
+        UUID requestUserId = UUID.fromString(token.get("userId", String.class));
+
+        String currentRefreshToken = redisUtil.getValues(requestUserId.toString());
+        checkExpiredRefreshToken(currentRefreshToken, requestRefreshToken);
+
+        User user = userRepository.findById(requestUserId)
+                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.USER_NOT_FOUND.getMessage()));
+
+        checkDeletedUser(user);
+
+        String accessToken = jwtUtil.createAccessToken(user.getUserId(), user.getEmail(), user.getRole());
+        String refreshToken = jwtUtil.createRefreshToken(user.getUserId());
+
+        redisUtil.setValues(requestUserId.toString(), refreshToken, refreshTokenExpirationMillis);
+
+        return ResPostRefreshDto.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .build();
     }
 
@@ -143,5 +181,11 @@ public class AuthService {
                 .limit(targetStringLength)
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
                 .toString();
+    }
+
+    private void checkExpiredRefreshToken(String currentRefreshToken, String requestRefreshToken) {
+        if (currentRefreshToken == null || !currentRefreshToken.equals(requestRefreshToken)) {
+            throw new IllegalArgumentException(ErrorMessage.EXPIRED_REFRESH_TOKEN.getMessage());
+        }
     }
 }

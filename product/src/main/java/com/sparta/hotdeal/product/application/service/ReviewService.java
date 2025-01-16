@@ -53,6 +53,8 @@ public class ReviewService {
             subFileService.saveImg(file, reviewImgs);
         }
 
+        fetchedProduct.incrementReview(reqPostReviewDto.getRating());
+
         Review review = Review.create(reqPostReviewDto.getOrderId(), reqPostReviewDto.getProductId(),
                 reqPostReviewDto.getUserId(), fetchedUser.getNickname(), reqPostReviewDto.getRating(),
                 reqPostReviewDto.getReview(), reviewImgs);

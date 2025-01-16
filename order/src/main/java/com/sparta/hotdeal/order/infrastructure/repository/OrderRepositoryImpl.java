@@ -2,24 +2,37 @@ package com.sparta.hotdeal.order.infrastructure.repository;
 
 import com.sparta.hotdeal.order.domain.entity.order.Order;
 import com.sparta.hotdeal.order.domain.repository.OrderRepository;
+import com.sparta.hotdeal.order.infrastructure.repository.jpa.OrderRepositoryJpa;
 import java.util.Optional;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface OrderRepositoryImpl extends JpaRepository<Order, UUID>, OrderRepository {
-    Optional<Order> findByIdAndUserIdAndDeletedAtIsNull(UUID orderId, UUID userId);
+@Repository
+@RequiredArgsConstructor
+public class OrderRepositoryImpl implements OrderRepository {
+
+    private final OrderRepositoryJpa orderRepositoryJpa;
 
     @Override
-    default Optional<Order> findByIdAndUserId(UUID orderId, UUID userId) {
-        return findByIdAndUserIdAndDeletedAtIsNull(orderId, userId);
+    public Order save(Order order) {
+        return orderRepositoryJpa.save(order);
     }
 
-    Page<Order> findByUserIdAndDeletedAtIsNull(UUID userId, Pageable pageable);
+    @Override
+    public Optional<Order> findByIdAndUserId(UUID orderId, UUID userId) {
+        return orderRepositoryJpa.findByIdAndUserIdAndDeletedAtIsNull(orderId, userId);
+    }
 
     @Override
-    default Page<Order> findAllByUserId(UUID userId, Pageable pageable) {
-        return findByUserIdAndDeletedAtIsNull(userId, pageable);
+    public Page<Order> findAllByUserId(UUID userId, Pageable pageable) {
+        return orderRepositoryJpa.findAllByUserIdAndDeletedAtIsNull(userId, pageable);
+    }
+
+    @Override
+    public Optional<Order> findByIdAndDeletedAtIsNull(UUID orderId) {
+        return orderRepositoryJpa.findByIdAndDeletedAtIsNull(orderId);
     }
 }

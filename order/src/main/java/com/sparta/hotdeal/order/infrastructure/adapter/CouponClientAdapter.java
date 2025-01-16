@@ -34,6 +34,9 @@ public class CouponClientAdapter implements CouponClientPort {
     @Override
     public CouponValidationDto validateCoupon(UUID couponId, List<Basket> basketList,
                                               Map<UUID, ProductDto> productDtoMap) {
+        if (couponId == null) {
+            return CouponValidationDto.create(false, 0);
+        }
 
         List<ReqPostCouponValidateDto.Product> productList = basketList.stream().map(basket -> {
 

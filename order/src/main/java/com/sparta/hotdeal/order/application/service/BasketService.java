@@ -72,11 +72,11 @@ public class BasketService { //판매중인 상품이 아닌 경우에 대해서
         return ResPatchBasketDto.of(basket);
     }
 
-    public ResDeleteBasketDto deleteBasket(UUID userId, UUID basketId) {
+    public ResDeleteBasketDto deleteBasket(UUID userId, String email, UUID basketId) {
         Basket basket = basketRepository.findByIdAndUserId(basketId, userId)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
 
-        basketRepository.delete(basket);
+        basket.delete(email);
         return ResDeleteBasketDto.of(basket);
     }
 

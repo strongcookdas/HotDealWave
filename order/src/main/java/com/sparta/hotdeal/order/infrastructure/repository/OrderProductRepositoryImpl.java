@@ -2,21 +2,25 @@ package com.sparta.hotdeal.order.infrastructure.repository;
 
 import com.sparta.hotdeal.order.domain.entity.order.OrderProduct;
 import com.sparta.hotdeal.order.domain.repository.OrderProductRepository;
+import com.sparta.hotdeal.order.infrastructure.repository.jpa.OrderProductRepositoryJpa;
 import java.util.List;
 import java.util.UUID;
-import org.springframework.data.jpa.repository.JpaRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
-public interface OrderProductRepositoryImpl extends JpaRepository<OrderProduct, UUID>, OrderProductRepository {
+@Repository
+@RequiredArgsConstructor
+public class OrderProductRepositoryImpl implements OrderProductRepository {
 
-    List<OrderProduct> findAllByOrderIdAndDeletedAtIsNull(UUID orderId);
+    private final OrderProductRepositoryJpa orderProductRepositoryJpa;
 
     @Override
-    default List<OrderProduct> saveAllOrderProduct(List<OrderProduct> orderProductList) {
-        return saveAllAndFlush(orderProductList);
+    public List<OrderProduct> saveAllOrderProduct(List<OrderProduct> orderProductList) {
+        return orderProductRepositoryJpa.saveAll(orderProductList);
     }
 
     @Override
-    default List<OrderProduct> findAllByOrderId(UUID orderId) {
-        return findAllByOrderIdAndDeletedAtIsNull(orderId);
+    public List<OrderProduct> findAllByOrderId(UUID orderId) {
+        return orderProductRepositoryJpa.findAllByOrderIdAndDeletedAtIsNull(orderId);
     }
 }
