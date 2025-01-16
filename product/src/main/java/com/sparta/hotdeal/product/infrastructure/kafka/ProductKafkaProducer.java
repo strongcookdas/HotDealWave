@@ -13,4 +13,8 @@ public class ProductKafkaProducer {
     public void sendRollbackMessage(String topic, String key, String message) {
         kafkaTemplate.send(topic, key, message);
     }
+
+    public void sendPaymentMessage(String topic, String key, String message) {
+        kafkaTemplate.send(topic, key, message);
+    }
 }

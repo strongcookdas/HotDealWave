@@ -28,8 +28,8 @@ public class ProductInventoryService {
     private final ProductPromotionHelperService productPromotionHelperService;
     private final ProductKafkaProducer productKafkaProducer;
 
-    @Value("${spring.kafka.topics.rollback-reduce-quantity}")
-    private String rollbackReduceQuantityTopic;
+    @Value("${spring.kafka.topics.request-payment}")
+    private String requestPaymentTopic;
 
     public ResPutProductQuantityDto reduceQuantity(ReqPutProductQuantityDto reqPutProductQuantityDto) {
         try {
@@ -120,9 +120,18 @@ public class ProductInventoryService {
     public void sendRollbackRequest(String topic, String messageKey, String message) {
         try {
             productKafkaProducer.sendRollbackMessage(topic, messageKey, message);
-            log.info("롤백");
         } catch (Exception e) {
             log.error("롤백 요청 메시지 생성 실패: {}", e.getMessage());
+            throw new ApplicationException(ErrorCode.INTERNAL_SERVER_EXCEPTION);
+        }
+    }
+
+    public void sendPaymentRequest(String messageKey, String message) {
+        try {
+            productKafkaProducer.sendPaymentMessage(requestPaymentTopic, messageKey, message);
+            log.info("결제 요청 메시지 전송 완료");
+        } catch (Exception e) {
+            log.error("결제 요청 메시지 생성 실패: {}", e.getMessage());
             throw new ApplicationException(ErrorCode.INTERNAL_SERVER_EXCEPTION);
         }
     }

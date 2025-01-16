@@ -22,6 +22,7 @@ spring:
     topics:
       reduce-quantity: ${KAFKA_REDUCE_QUANTITY_TOPIC}
       rollback-reduce-quantity: ${KAFKA_ROLLBACK_REDUCE_QUANTITY_TOPIC}
+      request-payment: ${KAFKA_REQUEST_PAYMENT_TOPIC}
 
 eureka:
   client:

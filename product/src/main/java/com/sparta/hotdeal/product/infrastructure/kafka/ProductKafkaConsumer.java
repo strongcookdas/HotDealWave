@@ -32,15 +32,17 @@ public class ProductKafkaConsumer {
         // 메시지 역직렬화
         ReqPutProductQuantityDto requestDto =
                 objectMapper.readValue(message, ReqPutProductQuantityDto.class);
+        ResPutProductQuantityDto key = ResPutProductQuantityDto.of(requestDto.getOrderId());
         try {
             // 재고 차감 요청 처리
             productInventoryService.reduceQuantity(requestDto);
             acknowledgment.acknowledge(); // 메시지 처리 성공 후 명시적으로 커밋
+            productInventoryService.sendPaymentRequest(key.toString(), key.toString());
+            log.info("결제 요청 메시지 전송 완료");
             log.info("재고 차감 처리 완료: {}", message);
 
         } catch (ApplicationException e) {
             log.error("재고 차감 처리 실패: {}", e.getMessage());
-            ResPutProductQuantityDto key = ResPutProductQuantityDto.of(requestDto.getOrderId());
             sendRollbackMessage(rollbackReduceQuantityTopic, key, key.toString()); // 실패 시 전체 요청 롤백
             acknowledgment.acknowledge();
         } catch (Exception e) {
