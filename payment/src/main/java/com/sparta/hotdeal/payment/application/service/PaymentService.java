@@ -3,6 +3,7 @@ package com.sparta.hotdeal.payment.application.service;
 import com.sparta.hotdeal.payment.application.dtos.kakaopay.KakaoPayApproveDto;
 import com.sparta.hotdeal.payment.application.dtos.kakaopay.KakaoPayCancelDto;
 import com.sparta.hotdeal.payment.application.dtos.kakaopay.KakaoPayReadyDto;
+import com.sparta.hotdeal.payment.application.dtos.order.OrderDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.PaymentDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.req.ReqPostPaymentConfirmDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.req.ReqPostPaymentDto;
@@ -43,10 +44,25 @@ public class PaymentService {
                 PaymentStatus.PENDING,
                 reqPostPaymentDto.getTotalAmount(),
                 0,
-                kakaoPayReadyDto.getTid()
+                kakaoPayReadyDto.getTid(),
+                kakaoPayReadyDto.getNext_redirect_pc_url()
         );
         paymentRepository.save(payment);
         return ResPostPaymentsDto.of(kakaoPayReadyDto);
+    }
+
+    public void readyPayment(OrderDto orderDto) {
+        KakaoPayReadyDto kakaoPayReadyDto = kakaoPayClientPort.readyPayment(orderDto);
+        Payment payment = Payment.create(
+                orderDto.getOrderId(),
+                orderDto.getUserId(),
+                PaymentStatus.PENDING,
+                orderDto.getTotalAmount(),
+                0,
+                kakaoPayReadyDto.getTid(),
+                kakaoPayReadyDto.getNext_redirect_pc_url()
+        );
+        paymentRepository.save(payment);
     }
 
     public ResPostPaymentConfirmDto approvePayment(UUID userId, ReqPostPaymentConfirmDto reqPostPaymentConfirmDto) {
@@ -81,5 +97,4 @@ public class PaymentService {
         payment.updateRefundInfo(kakaoPayCancelDto.getApprovedCancelAmount().getTotal());
         return ResPostPaymentCancelDto.from(kakaoPayCancelDto);
     }
-
 }

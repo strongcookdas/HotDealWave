@@ -50,6 +50,12 @@ dependencies {
 
 	//Thymeleaf
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+	//Kafka
+	implementation 'org.springframework.kafka:spring-kafka'
+
+	//직렬, 역직렬화 (json 말고 더 개선된 방법 찾을 필요있음)
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
 }
 
 dependencyManagement {

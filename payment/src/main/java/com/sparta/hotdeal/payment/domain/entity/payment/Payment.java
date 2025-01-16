@@ -45,10 +45,12 @@ public class Payment extends AuditingDate {
     @Column(nullable = false)
     private Integer refundAmount;
 
-    private LocalDateTime refundedAt;
 
     @Column(nullable = false)
     private String tid;
+
+    private LocalDateTime refundedAt;
+    private String payUrl;
 
     public static Payment create(
             UUID orderId,
@@ -56,7 +58,8 @@ public class Payment extends AuditingDate {
             PaymentStatus status,
             Integer amount,
             Integer refundAmount,
-            String tid
+            String tid,
+            String payUrl
     ) {
         return Payment.builder()
                 .orderId(orderId)
@@ -65,6 +68,7 @@ public class Payment extends AuditingDate {
                 .amount(amount)
                 .refundAmount(refundAmount)
                 .tid(tid)
+                .payUrl(payUrl)
                 .build();
     }
 

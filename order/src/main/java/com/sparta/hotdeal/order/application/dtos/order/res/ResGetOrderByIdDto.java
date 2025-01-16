@@ -19,7 +19,9 @@ public class ResGetOrderByIdDto {
     private UUID orderId;
     private LocalDateTime createdAt;
     private List<Product> productList;
+    private UUID userId;
     private String username;
+    private String orderName;
     private Address address;
     private Integer totalAmount;
     private Integer discountAmount;
@@ -74,7 +76,9 @@ public class ResGetOrderByIdDto {
     ) {
         return ResGetOrderByIdDto.builder()
                 .orderId(order.getId())
+                .orderName(order.getName())
                 .createdAt(order.getCreatedAt())
+                .userId(order.getUserId())
                 .username(user.getNickname())
                 .orderStatus(order.getStatus())
                 .totalAmount(order.getTotalAmount())
