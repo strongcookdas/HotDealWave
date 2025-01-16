@@ -39,9 +39,12 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-	implementation 'org.springframework.retry:spring-retry'
-	implementation 'org.springframework:spring-aspects'
+	// 낙관락 retry를 위해 사용
+//	implementation 'org.springframework.retry:spring-retry'
+//	implementation 'org.springframework:spring-aspects'
 
+	// redisson (분산락)
+	implementation 'org.redisson:redisson-spring-boot-starter:3.21.0'
 
 	//Feign Client
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'

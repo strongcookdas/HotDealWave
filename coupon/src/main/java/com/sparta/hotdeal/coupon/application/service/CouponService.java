@@ -11,17 +11,18 @@ import com.sparta.hotdeal.coupon.domain.entity.Coupon;
 import com.sparta.hotdeal.coupon.domain.entity.CouponInfo;
 import com.sparta.hotdeal.coupon.domain.entity.CouponStatus;
 import com.sparta.hotdeal.coupon.domain.repository.CouponRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.OptimisticLockingFailureException;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -30,14 +31,21 @@ public class CouponService {
 
     private final CouponInfoService couponInfoService;
     private final CouponRepository couponRepository;
+    private final RedissonClient redissonClient;
 
-    @Transactional
-    @Retryable(value = OptimisticLockingFailureException.class, maxAttempts = 5, backoff = @Backoff(delay = 1000))
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void issueFirstComeFirstServeCoupon(UUID userId, ReqPostCouponsIssueDto reqDto) {
+        String lockKey = "LOCK_COUPON_" + reqDto.getCouponInfoId();
+        RLock lock = redissonClient.getLock(lockKey);
+
         try {
+            boolean available = lock.tryLock(10, 5, TimeUnit.SECONDS);
+            if (!available) {
+                throw new CustomException(ErrorCode.REQUEST_TIMEOUT);
+            }
+
             // 1. 쿠폰 정보 조회
             CouponInfo couponInfo = couponInfoService.findByIdOrThrow(reqDto.getCouponInfoId());
-            log.info("쿠폰 정보 조회 완료: ID = {}", couponInfo.getId());
             // 2. 유효성 검증: 쿠폰 상태 확인
             if (couponInfo.getStatus() != CouponStatus.ISSUED) {
                 throw new CustomException(ErrorCode.INVALID_COUPON_STATUS);
@@ -62,10 +70,14 @@ public class CouponService {
                     .usedDate(null)
                     .build();
             couponRepository.save(coupon);
-        } catch (OptimisticLockingFailureException ex) {
-            // 낙관적 락 충돌 발생 시 로그 출력
-            log.error("낙관적 락 충돌 발생! 요청 ID: {}, 쿠폰 정보 ID: {}", userId, reqDto.getCouponInfoId());
-            throw ex;
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Redis 락 처리 중 오류 발생", e);
+        } finally {
+            // 락 해제
+            if (lock.isHeldByCurrentThread()) {
+                lock.unlock();
+                log.info("unlock complete: {}", lock.getName());
+            }
         }
     }
 
