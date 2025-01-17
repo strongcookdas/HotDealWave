@@ -9,7 +9,6 @@ import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrderByIdDto;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrderListDto;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResPostOrderDto;
 import com.sparta.hotdeal.order.application.dtos.order_product.OrderProductDto;
-import com.sparta.hotdeal.order.application.dtos.payment.req.ReqReadyPaymentDto;
 import com.sparta.hotdeal.order.application.dtos.product.ProductDto;
 import com.sparta.hotdeal.order.application.dtos.product.req.ReqProductReduceQuantityDto;
 import com.sparta.hotdeal.order.application.dtos.user.UserDto;
@@ -23,6 +22,7 @@ import com.sparta.hotdeal.order.domain.entity.order.Order;
 import com.sparta.hotdeal.order.domain.entity.order.OrderProduct;
 import com.sparta.hotdeal.order.domain.entity.order.OrderStatus;
 import com.sparta.hotdeal.order.domain.repository.OrderRepository;
+import com.sparta.hotdeal.order.event.producer.OrderEventProducer;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,9 +32,9 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +44,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class OrderService {
 
+    @Value("${spring.kafka.topics.request-product}")
+    private String reduceProductQuantityTopic;
+
     private final OrderRepository orderRepository;
     private final ProductClientPort productClientPort;
     private final CouponClientPort couponClientPort;
@@ -52,7 +55,7 @@ public class OrderService {
     private final OrderProductService orderProductService;
     private final OrderBasketService orderBasketService;
 
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final OrderEventProducer orderEventProducer;
     private final ObjectMapper objectMapper;
 
 
@@ -106,30 +109,19 @@ public class OrderService {
         orderProductService.createOrderProductList(order, basketList, productDtoList);
         log.info("주문 정보 DB 저장");
 
-        //sendReduceProductQuantityMessage(order, basketList);
-        sendReadyPayment(order);
+        sendReduceProductQuantityMessage(order, basketList);
 
         return ResPostOrderDto.of(order.getId());
     }
 
-    private void sendReduceProductQuantityMessage(Order order, List<Basket> basketList) {
+    public void sendReduceProductQuantityMessage(Order order, List<Basket> basketList) {
         try {
             ReqProductReduceQuantityDto req = ReqProductReduceQuantityDto.create(order.getId(), basketList);
-            String reqJson = objectMapper.writeValueAsString(req);
-            kafkaTemplate.send("reduce-quantity-topic", reqJson);
+            String message = objectMapper.writeValueAsString(req);
+            orderEventProducer.sendMessage(reduceProductQuantityTopic, req.getOrderId().toString(), message);
         } catch (Exception e) {
-            log.error("exception : {}", e.getMessage());
-        }
-    }
-
-    private void sendReadyPayment(Order order) {
-        try {
-            ReqReadyPaymentDto req = ReqReadyPaymentDto.create(order.getId());
-            String reqJson = objectMapper.writeValueAsString(req);
-            kafkaTemplate.send("ready-payment-topic", reqJson);
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.error("exception : {}", e.getMessage());
+            log.error("상품 재고 차감 메세지 전송 실패 : {}", e.getMessage());
+            this.cancelOrderByIdForMessage(order.getId());
         }
     }
 
@@ -213,7 +205,7 @@ public class OrderService {
         order.updateStatus(OrderStatus.CANCEL);
     }
 
-    public void cancelOrderById(UUID orderId) {
+    public void cancelOrderByIdForMessage(UUID orderId) {
         Order order = orderRepository.findByIdAndDeletedAtIsNull(orderId)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.ORDER_NOT_FOUND_EXCEPTION));
 
