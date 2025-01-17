@@ -89,23 +89,4 @@ public class CouponController {
         couponService.deleteCoupon(couponId, userDetails.getEmail());
         return ResponseDto.of("사용자 쿠폰 삭제 성공", null);
     }
-
-    // 추후 구현
-    @GetMapping("/daily/statistics")
-    public ResponseDto<ResGetDailyCouponStatisticsDto> getDailyCouponStatistics(@RequestParam String date) {
-        ResGetDailyCouponStatisticsDto responseDto = ResGetDailyCouponStatisticsDto.builder()
-                .totalUsers(100)
-                .averageDiscount(500)
-                .totalDiscount(50000)
-                .build();
-
-        return ResponseDto.of("데일리 쿠폰 통계 조회 성공", responseDto);
-    }
-
-    // 추후 구현
-    @PostMapping("/daily/issue")
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseDto<Void> issueDailyCoupon() {
-        return ResponseDto.of("데일리 쿠폰 발급 성공", null);
-    }
 }
