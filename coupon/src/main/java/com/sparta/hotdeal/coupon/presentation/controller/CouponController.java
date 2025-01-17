@@ -28,11 +28,13 @@ public class CouponController {
 
     @PostMapping("/issue")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseDto<Void> issueFirstComeFirstServeCoupon(@AuthenticationPrincipal RequestUserDetails userDetails,
-                                                            @RequestBody ReqPostCouponsIssueDto reqDto) {
+    public ResponseDto<Void> issueFirstComeFirstServeCoupon(
+            @AuthenticationPrincipal RequestUserDetails userDetails,
+            @RequestBody ReqPostCouponsIssueDto reqDto) {
         couponService.issueFirstComeFirstServeCoupon(userDetails.getUserId(), reqDto);
         return ResponseDto.of("선착순 쿠폰 발급 성공", null);
     }
+
 
     @GetMapping
     public ResponseDto<List<ResGetUserCouponsDto>> getUserCoupons(

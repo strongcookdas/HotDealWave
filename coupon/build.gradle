@@ -44,6 +44,9 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+	// redisson (분산락)
+	implementation 'org.redisson:redisson-spring-boot-starter:3.21.0'
+
 	//Feign Client
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
