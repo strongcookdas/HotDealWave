@@ -4,7 +4,7 @@ import com.sparta.hotdeal.product.application.dtos.req.review.ReqPostReviewDto;
 import com.sparta.hotdeal.product.application.dtos.req.review.ReqPutReviewDto;
 import com.sparta.hotdeal.product.application.dtos.res.ResponseDto;
 import com.sparta.hotdeal.product.application.dtos.res.review.ResGetReviewByIdDto;
-import com.sparta.hotdeal.product.application.service.ReviewService;
+import com.sparta.hotdeal.product.application.service.review.ReviewService;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;

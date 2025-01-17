@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.product.application.service;
+package com.sparta.hotdeal.product.application.service.promotion;
 
 import com.sparta.hotdeal.product.domain.entity.promotion.Promotion;
 import com.sparta.hotdeal.product.domain.repository.product.PromotionRepository;

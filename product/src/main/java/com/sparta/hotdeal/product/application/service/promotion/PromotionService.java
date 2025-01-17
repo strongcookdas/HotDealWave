@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.product.application.service;
+package com.sparta.hotdeal.product.application.service.promotion;
 
 import com.sparta.hotdeal.product.application.dtos.req.promotion.ReqPostPromotionDto;
 import com.sparta.hotdeal.product.application.dtos.req.promotion.ReqPutPromotionDto;
@@ -8,10 +8,12 @@ import com.sparta.hotdeal.product.application.dtos.res.promotion.ResPostPromotio
 import com.sparta.hotdeal.product.application.dtos.res.promotion.ResPutPromotionDto;
 import com.sparta.hotdeal.product.application.exception.ApplicationException;
 import com.sparta.hotdeal.product.application.exception.ErrorCode;
+import com.sparta.hotdeal.product.application.service.product.ProductService;
 import com.sparta.hotdeal.product.domain.entity.promotion.Promotion;
 import com.sparta.hotdeal.product.domain.entity.promotion.PromotionStatusEnum;
 import com.sparta.hotdeal.product.domain.repository.product.PromotionRepository;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -37,6 +39,13 @@ public class PromotionService {
     public ResPostPromotionDto createPromotion(ReqPostPromotionDto reqPostPromotionDto) throws ApplicationException {
         // 상품 조회
         ResGetProductDto productDto = productService.getProduct(reqPostPromotionDto.getProductId());
+
+        // 현재 시간 가져오기
+        LocalDateTime now = LocalDateTime.now();
+        // start와 end가 현재 시간보다 이후인지 검증
+        if (reqPostPromotionDto.getStart().isBefore(now) || reqPostPromotionDto.getEnd().isBefore(now)) {
+            throw new ApplicationException(ErrorCode.PROMOTION_INVALID_TIME_EXCEPTION);
+        }
 
         // 입력 값 검증
         if (promotionRepository.existsByProductIdAndStartBeforeAndEndAfter(

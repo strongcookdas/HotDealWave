@@ -23,7 +23,12 @@ public enum ErrorCode {
     COMPANY_INVALID_VALUE_EXCEPTION(HttpStatus.BAD_REQUEST, "PC016", "올바르지 않은 업체 요청 값입니다."),
     COMPANY_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "PC017", "존재하지 않는 업체입니다."),
     ORDER_INVALID_VALUE_EXCEPTION(HttpStatus.NOT_FOUND, "O018", "올바르지 않은 주문 요청 값입니다."),
-    ORDER_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "O019", "존재하지 않는 주문입니다.");
+    ORDER_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "O019", "존재하지 않는 주문입니다."),
+    PRODUCT_INVENTORY_UPDATE_FAILED_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "P020",
+            "상품 재고 업데이트 중 예기치 못한 오류가 발생했습니다."),
+    INSUFFICIENT_PRODUCT_QUANTITY_EXCEPTION(HttpStatus.BAD_REQUEST, "P021", "상품의 재고가 부족합니다."),
+    INSUFFICIENT_PROMOTION_QUANTITY_EXCEPTION(HttpStatus.BAD_REQUEST, "P022", "프로모션 상품의 재고가 부족합니다."),
+    PROMOTION_INVALID_TIME_EXCEPTION(HttpStatus.BAD_REQUEST, "P023", "프로모션 시각에 대한 요청 값이 올바르지 않습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
