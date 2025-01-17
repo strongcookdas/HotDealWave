@@ -14,6 +14,8 @@ spring:
     topics:
       ready-payment: ${KAFKA_READY_PAYMENT_TOPIC}
       rollback-reduce-quantity: ${KAFKA_ROLLBACK_REDUCE_QUANTITY_TOPIC}
+      dlq: ${KAFKA_DLQ_TOPIC}
+      update-order-status: ${KAFKA_UPDATE_ORDER_STATUS_TOPIC}
 
 server:
   port: 19095

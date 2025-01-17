@@ -14,4 +14,10 @@ import lombok.ToString;
 @AllArgsConstructor
 public class ReqPutOrderDto {
     private OrderStatus orderStatus;
+
+    public static ReqPutOrderDto of(OrderStatus orderStatus) {
+        return ReqPutOrderDto.builder()
+                .orderStatus(orderStatus)
+                .build();
+    }
 }
