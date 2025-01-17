@@ -1,6 +1,8 @@
 package com.sparta.hotdeal.company.domain.repository;
 
 import com.sparta.hotdeal.company.domain.entity.company.Company;
+import com.sparta.hotdeal.company.domain.entity.company.CompanyStatusEnum;
+import java.nio.channels.FileChannel;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -16,4 +18,6 @@ public interface CompanyRepository {
     Optional<Company> findById(UUID id);
 
     Page<Company> findAll(Pageable pageable);
+
+    Page<Company> findByStatus(CompanyStatusEnum status, Pageable pageable);
 }

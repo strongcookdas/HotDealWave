@@ -78,8 +78,13 @@ public class CompanyService {
                 .build();
     }
 
-    public Page<ResGetCompanyByIdDto> getCompanyList(Pageable pageable) {
-        Page<Company> companyPage = companyRepository.findAll(pageable);
-        return companyPage.map(ResGetCompanyByIdDto::create);
+    public Page<ResGetCompanyByIdDto> getCompanyList(Pageable pageable, CompanyStatusEnum status) {
+        if (status != null) {
+            return companyRepository.findByStatus(status, pageable)
+                    .map(ResGetCompanyByIdDto::create);
+        } else {
+            return companyRepository.findAll(pageable)
+                    .map(ResGetCompanyByIdDto::create);
+        }
     }
 }
