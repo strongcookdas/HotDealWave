@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.order.infrastructure.config;
+package com.sparta.hotdeal.payment.infrastructure.config;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -58,7 +58,7 @@ public class ConsumerApplicationKafkaConfig {
         DeadLetterPublishingRecoverer recover = new DeadLetterPublishingRecoverer(kafkaTemplate,
                 (record, exception) -> {
                     // 실패한 메시지를 DLQ 로 전송
-                    return new TopicPartition("order-dlq", record.partition());
+                    return new TopicPartition("payment-dlq", record.partition());
                 });
 
         factory.setCommonErrorHandler(new DefaultErrorHandler(recover, new FixedBackOff(0L, 0)));

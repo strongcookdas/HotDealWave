@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.order.infrastructure.config;
+package com.sparta.hotdeal.payment.infrastructure.config;
 
 import java.util.HashMap;
 import java.util.Map;
