@@ -17,4 +17,8 @@ public class ProductKafkaProducer {
     public void sendPaymentMessage(String topic, String key, String message) {
         kafkaTemplate.send(topic, key, message);
     }
+
+    public void sendOrderMessage(String topic, String key, String message) {
+        kafkaTemplate.send(topic, key, message);
+    }
 }
