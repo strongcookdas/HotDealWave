@@ -71,7 +71,18 @@ public class CouponInfoService {
     // 쿠폰 수정
     @Transactional
     public void updateCoupon(UUID couponInfoId, ReqPutCouponInfosByIdDto reqDto) {
+        if (reqDto.getCompanyId() != null) {
+            ResGetCompanyByIdDto companyResponse = companyClientService.getCompanyDataById(reqDto.getCompanyId());
+
+            if (!"APPROVED".equalsIgnoreCase(companyResponse.getStatus())) {
+                throw new CustomException(ErrorCode.COMPANY_NOT_APPROVED);
+            }
+        }
         CouponInfo couponInfo = findByIdOrThrow(couponInfoId);
+
+        if (couponInfo.getStatus() != CouponStatus.PENDING) {
+            throw new CustomException(ErrorCode.INVALID_COUPON_STATUS);
+        }
 
         couponInfo.update(
                 reqDto.getName(),
