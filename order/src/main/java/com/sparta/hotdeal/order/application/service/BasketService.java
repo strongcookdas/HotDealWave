@@ -20,12 +20,14 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -45,7 +47,15 @@ public class BasketService { //판매중인 상품이 아닌 경우에 대해서
 
     @Async
     public CompletableFuture<ProductByIdtDto> getProductAsync(UUID productId) {
-        return CompletableFuture.supplyAsync(() -> productClientPort.getProduct(productId));
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return productClientPort.getProduct(productId);
+            } catch (Exception e) {
+                // 예외를 로깅
+                log.error("Error fetching product for productId {}: {}", productId, e.getMessage());
+                throw new ApplicationException(ErrorCode.PRODUCT_NOT_FOUND_EXCEPTION);
+            }
+        });
     }
 
     @Transactional(readOnly = true)
