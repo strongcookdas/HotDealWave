@@ -5,7 +5,7 @@
         </http>
         <format>
             <label>
-                <pattern>app=user-service,host=${HOSTNAME}</pattern>
+                <pattern>app=company-service,host=${HOSTNAME}</pattern>
             </label>
             <message class="com.github.loki4j.logback.JsonLayout" />
         </format>
