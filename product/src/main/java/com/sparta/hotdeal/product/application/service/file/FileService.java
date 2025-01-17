@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.product.application.service;
+package com.sparta.hotdeal.product.application.service.file;
 
 import com.sparta.hotdeal.product.domain.entity.product.File;
 import com.sparta.hotdeal.product.domain.repository.product.FileRepository;
@@ -17,7 +17,7 @@ public class FileService {
         File file = fileRepository.save(new File());
         return file;
     }
-    
+
     public void deleteFile(File file, String username) {
         file.delete(username);
     }

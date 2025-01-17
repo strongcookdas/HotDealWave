@@ -30,10 +30,18 @@ public class ProductPromotionHelperService {
                     .orElseThrow(() -> new ApplicationException(ErrorCode.PROMOTION_NOT_FOUND_EXCEPTION));
             log.info("Processing promotion: {}", promotion.getProductId());
 
-            int quantityChange = isRestore ? dto.getQuantity() : -dto.getQuantity();
-            int newRemaining = promotion.getRemaining() + quantityChange;
+            // 할인 상품의 남은 수량 확인
+            if (!isRestore && promotion.getRemaining() < dto.getQuantity()) {
+                log.warn("할인 상품 재고 부족 상품 ID: {}, 요청 수량: {}, 할인 상품 남은 수량: {}",
+                        dto.getProductId(), dto.getQuantity(), promotion.getRemaining());
+                throw new ApplicationException(ErrorCode.INSUFFICIENT_PROMOTION_QUANTITY_EXCEPTION);
+            }
 
-            promotion.updateRemaining(newRemaining);
+            if (isRestore) {
+                promotion.increaseRemaining(dto.getQuantity());
+            } else {
+                promotion.decreaseRemaining(dto.getQuantity());
+            }
         }
     }
 }

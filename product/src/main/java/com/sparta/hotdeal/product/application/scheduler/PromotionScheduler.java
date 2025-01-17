@@ -1,8 +1,8 @@
 package com.sparta.hotdeal.product.application.scheduler;
 
-import com.sparta.hotdeal.product.application.service.ProductService;
-import com.sparta.hotdeal.product.application.service.PromotionSchedulerService;
-import com.sparta.hotdeal.product.application.service.PromotionService;
+import com.sparta.hotdeal.product.application.service.product.ProductService;
+import com.sparta.hotdeal.product.application.service.promotion.PromotionSchedulerService;
+import com.sparta.hotdeal.product.application.service.promotion.PromotionService;
 import com.sparta.hotdeal.product.domain.entity.promotion.Promotion;
 import com.sparta.hotdeal.product.domain.entity.promotion.PromotionStatusEnum;
 import java.time.LocalDateTime;

@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 public class MailServiceImpl implements MailService {
     private final JavaMailSender emailSender;
 
+    @Async
     public void sendEmail(String toEmail, String title, String text) {
         SimpleMailMessage emailForm = createEmailForm(toEmail, title, text);
         try {

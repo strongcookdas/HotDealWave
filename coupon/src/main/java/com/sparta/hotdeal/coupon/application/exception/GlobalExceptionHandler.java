@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.Objects;
 
 @RestControllerAdvice
-@Slf4j
+@Slf4j(topic = "CouponExceptionHandler")
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(CustomException.class)
