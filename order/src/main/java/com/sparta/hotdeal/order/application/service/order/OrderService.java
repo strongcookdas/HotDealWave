@@ -9,6 +9,7 @@ import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrderByIdDto;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrderListDto;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResPostOrderDto;
 import com.sparta.hotdeal.order.application.dtos.order_product.OrderProductDto;
+import com.sparta.hotdeal.order.application.dtos.payment.req.ReqPaymentCancelMessage;
 import com.sparta.hotdeal.order.application.dtos.product.ProductDto;
 import com.sparta.hotdeal.order.application.dtos.product.req.ReqProductReduceQuantityDto;
 import com.sparta.hotdeal.order.application.dtos.user.UserDto;
@@ -46,6 +47,8 @@ public class OrderService {
 
     @Value("${spring.kafka.topics.request-product}")
     private String reduceProductQuantityTopic;
+    @Value("${spring.kafka.topics.cancel-payment}")
+    private String cancelPaymentTopic;
 
     private final OrderRepository orderRepository;
     private final ProductClientPort productClientPort;
@@ -199,10 +202,12 @@ public class OrderService {
             throw new ApplicationException(ErrorCode.ORDER_ALREADY_PROCESSED_EXCEPTION);
         }
 
-        //비동기 처리
-        //수량 복구
-        //pending 일 경우 주문 취소 로직까지 필요
         order.updateStatus(OrderStatus.CANCEL);
+
+        List<OrderProductDto> orderProductList = orderProductService.getOrderProductList(order.getId());
+        productClientPort.restoreProductList(order, orderProductList);
+
+        sendCancelPaymentMessage(order);
     }
 
     public void cancelOrderByIdForMessage(UUID orderId) {
@@ -265,5 +270,15 @@ public class OrderService {
     private Map<UUID, ProductDto> convertListToMap(List<ProductDto> productDtoList) {
         return productDtoList.stream()
                 .collect(Collectors.toMap(ProductDto::getProductId, productDto -> productDto));
+    }
+
+    private void sendCancelPaymentMessage(Order order) {
+        try {
+            ReqPaymentCancelMessage reqPaymentCancelMessage = ReqPaymentCancelMessage.of(order);
+            String message = objectMapper.writeValueAsString(reqPaymentCancelMessage);
+            orderEventProducer.sendMessage(cancelPaymentTopic, order.getId().toString(), message);
+        } catch (Exception e) {
+            throw new ApplicationException(ErrorCode.INTERNAL_SERVER_EXCEPTION);
+        }
     }
 }

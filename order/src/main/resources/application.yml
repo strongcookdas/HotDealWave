@@ -16,6 +16,7 @@ spring:
       cancel-order: ${KAFKA_CANCEL_ORDER_TOPIC}
       update-order-status: ${KAFKA_UPDATE_ORDER_STATUS_TOPIC}
       dlq: ${KAFKA_DLQ_TOPIC}
+      cancel-payment: ${KAFKA_CANCEL_PAYMENT_TOPIC}
 
 
 server:
