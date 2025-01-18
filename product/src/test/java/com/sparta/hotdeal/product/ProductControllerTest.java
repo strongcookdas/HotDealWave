@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.product.controller;
+package com.sparta.hotdeal.product;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.hotdeal.product.application.dtos.req.product.ReqPostProductDto;
