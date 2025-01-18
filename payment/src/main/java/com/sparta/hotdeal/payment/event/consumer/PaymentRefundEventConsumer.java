@@ -15,19 +15,19 @@ import org.springframework.stereotype.Component;
 @Slf4j(topic = "[payment-event-listener]")
 @Component
 @RequiredArgsConstructor
-public class PaymentCancelEventConsumer {
+public class PaymentRefundEventConsumer {
 
     private final OrderClientPort orderClientPort;
     private final PaymentService paymentService;
     private final ObjectMapper objectMapper;
     private final PaymentEventProducer paymentEventProducer;
 
-    @KafkaListener(topics = "${spring.kafka.topics.cancel-payment}", groupId = "payment-group")
-    public void consumeCancelPayment(String message) {
+    @KafkaListener(topics = "${spring.kafka.topics.refund-payment}", groupId = "payment-group")
+    public void consumeReadyPayment(String message) {
         try {
             ReqPaymentCancelMessage reqPaymentCancelMessage = parseMessage(message);
             OrderDto orderDto = orderClientPort.getOrderById(reqPaymentCancelMessage.getOrderId());
-            paymentService.cancelPayment(orderDto.getUserId(), orderDto.getOrderId());
+            paymentService.refundPayment(orderDto.getUserId(), orderDto.getOrderId());
         } catch (JsonProcessingException e) {
             handleJsonProcessingError(message, e);
         } catch (Exception e) {
@@ -52,7 +52,7 @@ public class PaymentCancelEventConsumer {
     }
 
     private void handlePaymentCancelError(String message, Exception e) {
-        log.error("결제 취소 오류 : {}. Error: {}", message, e.getMessage());
-        paymentEventProducer.sendToDeadLetterQueue(message, "결제 취소 실패: " + e.getMessage());
+        log.error("결제 환불 오류 : {}. Error: {}", message, e.getMessage());
+        paymentEventProducer.sendToDeadLetterQueue(message, "결제 환불 실패: " + e.getMessage());
     }
 }
