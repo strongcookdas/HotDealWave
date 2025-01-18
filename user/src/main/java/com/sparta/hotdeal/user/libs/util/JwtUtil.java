@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.user.application.util;
+package com.sparta.hotdeal.user.libs.util;
 
 import com.sparta.hotdeal.user.application.exception.CustomJwtExcpetion;
 import com.sparta.hotdeal.user.application.exception.JwtExceptionMessage;
