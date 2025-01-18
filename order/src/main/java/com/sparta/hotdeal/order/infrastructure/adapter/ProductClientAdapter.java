@@ -1,10 +1,10 @@
 package com.sparta.hotdeal.order.infrastructure.adapter;
 
-import com.sparta.hotdeal.order.application.dtos.order_product.OrderProductDto;
 import com.sparta.hotdeal.order.application.dtos.product.ProductByIdtDto;
 import com.sparta.hotdeal.order.application.dtos.product.ProductDto;
 import com.sparta.hotdeal.order.application.port.ProductClientPort;
 import com.sparta.hotdeal.order.domain.entity.order.Order;
+import com.sparta.hotdeal.order.domain.entity.order.OrderProduct;
 import com.sparta.hotdeal.order.infrastructure.client.ProductClient;
 import com.sparta.hotdeal.order.infrastructure.dtos.product.req.ReqPutProductQuantityDto;
 import com.sparta.hotdeal.order.infrastructure.dtos.product.res.ResGetProductListDto;
@@ -47,7 +47,7 @@ public class ProductClientAdapter implements ProductClientPort {
     }
 
     @Override
-    public void restoreProductList(Order order, List<OrderProductDto> orderProductDtoList) {
+    public void restoreProductList(Order order, List<OrderProduct> orderProductDtoList) {
         ReqPutProductQuantityDto reqPutProductQuantityDto = ReqPutProductQuantityDto.of(order, orderProductDtoList);
         productClient.reduceQuantity(reqPutProductQuantityDto);
     }

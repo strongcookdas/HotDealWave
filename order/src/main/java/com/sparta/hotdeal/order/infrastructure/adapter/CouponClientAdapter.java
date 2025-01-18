@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -39,15 +38,17 @@ public class CouponClientAdapter implements CouponClientPort {
         }
 
         List<ReqPostCouponValidateDto.Product> productList = basketList.stream().map(basket -> {
-
-                    ProductDto productDto = Optional.ofNullable(productDtoMap.get(basket.getProductId())).orElseThrow(
-                            () -> new ApplicationException(ErrorCode.PRODUCT_NOT_FOUND_EXCEPTION));
-
+                    ProductDto productDto = getProductDtoByBasket(productDtoMap, basket.getProductId());
                     return ReqPostCouponValidateDto.Product.create(productDto, basket.getQuantity());
                 }
         ).toList();
 
         ReqPostCouponValidateDto reqPostCouponValidateDto = ReqPostCouponValidateDto.create(productList);
         return couponClient.validateCoupon(couponId, reqPostCouponValidateDto).getData().toCouponValidationDto();
+    }
+
+    private ProductDto getProductDtoByBasket(Map<UUID, ProductDto> productDtoMap, UUID productId) {
+        return Optional.ofNullable(productDtoMap.get(productId))
+                .orElseThrow(() -> new ApplicationException(ErrorCode.PRODUCT_NOT_FOUND_EXCEPTION));
     }
 }
