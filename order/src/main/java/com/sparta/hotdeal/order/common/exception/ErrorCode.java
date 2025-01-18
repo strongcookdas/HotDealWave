@@ -37,9 +37,6 @@ public enum ErrorCode {
     BASKET_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "OB001", "존재하지 않는 장바구니 리소스입니다."),
     BASKET_INVALID_VALUE_EXCEPTION(HttpStatus.BAD_REQUEST, "OB002", "올바르지 않은 장바구니 요청 값입니다."),
     BASKET_UNAUTHORIZED_EXCEPTION(HttpStatus.UNAUTHORIZED, "OB003", "장바구니에 대한 권한이 없는 요청입니다."),
-    BASKET_ALREADY_DELETE_EXCEPTION(HttpStatus.BAD_REQUEST, "OB004", "이미 삭제된 장바구니 리소스입니다."),
-    BASKET_FORBIDDEN_EXCEPTION(HttpStatus.FORBIDDEN, "OB005", "인가되지 않는 장바구니 요청입니다."),
-    BASKET_ALREADY_EXIST_EXCEPTION(HttpStatus.BAD_REQUEST, "OB006", "이미 존재하는 장바구니 리소스입니다."),
 
     //Coupon
     COUPON_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "OCO001", "존재하지 않는 쿠폰 리소스입니다."),

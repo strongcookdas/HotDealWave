@@ -31,7 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class BasketService { //판매중인 상품이 아닌 경우에 대해서 고민이 필요
+public class BasketService {
 
     private final BasketRepository basketRepository;
     private final ProductClientPort productClientPort;
@@ -40,8 +40,7 @@ public class BasketService { //판매중인 상품이 아닌 경우에 대해서
         CompletableFuture<ProductByIdtDto> productFuture = getProductAsync(req.getProductId());
         Basket basket = Basket.create(req.getProductId(), userId, req.getQuantity());
         basket = basketRepository.save(basket);
-
-        productFuture.join(); // 결과를 기다림
+        productFuture.join(); // 비동기 결과 대기
         return ResPostBasketDto.of(basket);
     }
 
@@ -51,8 +50,7 @@ public class BasketService { //판매중인 상품이 아닌 경우에 대해서
             try {
                 return productClientPort.getProduct(productId);
             } catch (Exception e) {
-                // 예외를 로깅
-                log.error("Error fetching product for productId {}: {}", productId, e.getMessage());
+                log.error("상품 단건 조회 API 호출 실패 productId {}: {}", productId, e.getMessage());
                 throw new ApplicationException(ErrorCode.PRODUCT_NOT_FOUND_EXCEPTION);
             }
         });
@@ -61,48 +59,47 @@ public class BasketService { //판매중인 상품이 아닌 경우에 대해서
     @Transactional(readOnly = true)
     public Page<ResGetBasketListDto> getBasketList(UUID userId, Pageable pageable) {
         Page<Basket> basketPage = basketRepository.findAllByUserId(userId, pageable);
-        List<UUID> productIds = basketPage.stream()
-                .map(Basket::getProductId)
-                .toList();
-
-        //ProductListDto를 Map<UUID, ProductListDto>로 변환
-        Map<UUID, ProductDto> productMap = productClientPort.getProductAll(productIds);
+        Map<UUID, ProductDto> productMap = getProductMap(basketPage);
 
         return basketPage.map(basket -> toResGetBasketListDto(basket, productMap));
     }
 
+    private Map<UUID, ProductDto> getProductMap(Page<Basket> basketPage) {
+        List<UUID> productIds = basketPage.stream()
+                .map(Basket::getProductId)
+                .toList();
+
+        return productClientPort.getProductAll(productIds);
+    }
+
+    private ResGetBasketListDto toResGetBasketListDto(Basket basket, Map<UUID, ProductDto> productMap) {
+        ProductDto product = Optional.ofNullable(productMap.get(basket.getProductId()))
+                .orElseThrow(() -> new ApplicationException(ErrorCode.PRODUCT_NOT_FOUND_EXCEPTION));
+
+        return ResGetBasketListDto.of(basket, product);
+    }
+
     @Transactional(readOnly = true)
     public ResGetBasketByIdDto getBasketDetail(UUID userId, UUID basketId) {
-        Basket basket = basketRepository.findByIdAndUserId(basketId, userId)
-                .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
-
+        Basket basket = getBasket(userId, basketId);
         ProductByIdtDto productByIdtDto = productClientPort.getProduct(basket.getProductId());
-
         return ResGetBasketByIdDto.of(basket, productByIdtDto);
     }
 
     public ResPatchBasketDto updateBasket(UUID userId, UUID basketId, ReqPatchBasketDto req) {
-        Basket basket = basketRepository.findByIdAndUserId(basketId, userId)
-                .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
-
+        Basket basket = getBasket(userId, basketId);
         basket.updateQuantity(req.getQuantity());
-
         return ResPatchBasketDto.of(basket);
     }
 
     public ResDeleteBasketDto deleteBasket(UUID userId, String email, UUID basketId) {
-        Basket basket = basketRepository.findByIdAndUserId(basketId, userId)
-                .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
-
+        Basket basket = getBasket(userId, basketId);
         basket.delete(email);
         return ResDeleteBasketDto.of(basket);
     }
 
-    private ResGetBasketListDto toResGetBasketListDto(Basket basket,
-                                                      Map<UUID, ProductDto> productMap) {
-        ProductDto product = Optional.ofNullable(productMap.get(basket.getProductId()))
-                .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
-
-        return ResGetBasketListDto.of(basket, product);
+    private Basket getBasket(UUID basketId, UUID userId) {
+        return basketRepository.findByIdAndUserId(basketId, userId)
+                .orElseThrow(() -> new ApplicationException(ErrorCode.BASKET_NOT_FOUND_EXCEPTION));
     }
 }

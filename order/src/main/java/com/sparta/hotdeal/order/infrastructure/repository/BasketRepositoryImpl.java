@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class BasketRepositoryImpl implements BasketRepository {
+
     private final BasketRepositoryJpa basketRepositoryJpa;
 
     @Override
@@ -29,11 +30,6 @@ public class BasketRepositoryImpl implements BasketRepository {
     @Override
     public Optional<Basket> findByIdAndUserId(UUID basketId, UUID userId) {
         return basketRepositoryJpa.findByIdAndUserIdAndDeletedAtIsNull(basketId, userId);
-    }
-
-    @Override
-    public void delete(Basket basket) {
-
     }
 
     @Override
