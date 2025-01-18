@@ -13,6 +13,7 @@ import com.sparta.hotdeal.payment.application.dtos.payment.res.ResGetPaymentById
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResGetPaymentForListDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResPostPaymentCancelDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResPostPaymentConfirmDto;
+import com.sparta.hotdeal.payment.application.dtos.payment.res.ResPostPaymentRefundDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResPostPaymentsDto;
 import com.sparta.hotdeal.payment.application.exception.ApplicationException;
 import com.sparta.hotdeal.payment.application.exception.ErrorCode;
@@ -98,12 +99,34 @@ public class PaymentService {
         return paymentRepository.findAllByUserId(userId, pageable).map(ResGetPaymentForListDto::of);
     }
 
+    public ResPostPaymentRefundDto refundPayment(UUID userId, UUID orderId) {
+        Payment payment = paymentRepository.findByOrderIdAndUserId(orderId, userId)
+                .orElseThrow(() -> new ApplicationException(ErrorCode.PAYMENT_NOT_FOUND_EXCEPTION));
+
+        if (!payment.getStatus().equals(PaymentStatus.COMPLETE)) {
+            throw new ApplicationException(ErrorCode.PAYMENT_CAN_NOT_REFUND);
+        }
+
+        KakaoPayCancelDto kakaoPayCancelDto = kakaoPayClientPort.cancel(PaymentDto.from(payment));
+        payment.updateRefundInfo(kakaoPayCancelDto.getApprovedCancelAmount().getTotal());
+
+        sendUpdateOrderStatusMessage(payment, "REFUND");
+
+        return ResPostPaymentRefundDto.from(kakaoPayCancelDto);
+    }
+
     public ResPostPaymentCancelDto cancelPayment(UUID userId, UUID orderId) {
         Payment payment = paymentRepository.findByOrderIdAndUserId(orderId, userId)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.PAYMENT_NOT_FOUND_EXCEPTION));
-        KakaoPayCancelDto kakaoPayCancelDto = kakaoPayClientPort.cancel(PaymentDto.from(payment));
-        payment.updateRefundInfo(kakaoPayCancelDto.getApprovedCancelAmount().getTotal());
-        return ResPostPaymentCancelDto.from(kakaoPayCancelDto);
+
+        if (!payment.getStatus().equals(PaymentStatus.PENDING)) {
+            throw new ApplicationException(ErrorCode.PAYMENT_CAN_NOT_CANCEL);
+        }
+
+        payment.updateStatus(PaymentStatus.CANCEL);
+        sendUpdateOrderStatusMessage(payment, "CANCEL");
+
+        return ResPostPaymentCancelDto.from(payment);
     }
 
     private void sendUpdateOrderStatusMessage(Payment payment, String status) {
