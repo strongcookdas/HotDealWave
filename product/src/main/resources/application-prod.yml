@@ -13,6 +13,10 @@ spring:
     show-sql: true
   kafka:
     bootstrap-servers: ${PROD_KAFKA_ENDPOINT}
+  elasticsearch:
+    uris: ${PROD_ELASTICSEARCH_ENDPOINT}
+    username: ${PROD_ELASTICSEARCH_USERNAME}
+    password: ${PROD_ELASTICSEARCH_PASSWORD}
 
 eureka:
   client:
