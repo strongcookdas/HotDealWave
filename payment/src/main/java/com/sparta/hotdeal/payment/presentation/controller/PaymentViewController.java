@@ -7,10 +7,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/payment")
 public class PaymentViewController {
+
+    /* 삭제 예정
     @GetMapping
     public String getPaymentPage() {
         return "payment";
     }
+    */
 
     @GetMapping("/success")
     public String getPaymentSuccessPage() {

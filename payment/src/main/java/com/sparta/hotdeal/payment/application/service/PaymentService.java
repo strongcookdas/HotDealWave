@@ -8,16 +8,15 @@ import com.sparta.hotdeal.payment.application.dtos.order.OrderDto;
 import com.sparta.hotdeal.payment.application.dtos.order.ReqOrderUpdateStatusMessage;
 import com.sparta.hotdeal.payment.application.dtos.payment.PaymentDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.req.ReqPostPaymentConfirmDto;
-import com.sparta.hotdeal.payment.application.dtos.payment.req.ReqPostPaymentDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResGetPaymentByIdDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResGetPaymentForListDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResPostPaymentCancelDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResPostPaymentConfirmDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResPostPaymentRefundDto;
-import com.sparta.hotdeal.payment.application.dtos.payment.res.ResPostPaymentsDto;
 import com.sparta.hotdeal.payment.application.exception.ApplicationException;
 import com.sparta.hotdeal.payment.application.exception.ErrorCode;
 import com.sparta.hotdeal.payment.application.port.KakaoPayClientPort;
+import com.sparta.hotdeal.payment.domain.entity.order.OrderStatus;
 import com.sparta.hotdeal.payment.domain.entity.payment.Payment;
 import com.sparta.hotdeal.payment.domain.entity.payment.PaymentStatus;
 import com.sparta.hotdeal.payment.domain.repository.PaymentRepository;
@@ -46,6 +45,7 @@ public class PaymentService {
     private final PaymentEventProducer paymentEventProducer;
     private final ObjectMapper objectMapper;
 
+    /* 테스트 후 삭제
     public ResPostPaymentsDto readyPayment(UUID userId, ReqPostPaymentDto reqPostPaymentDto) {
         KakaoPayReadyDto kakaoPayReadyDto = kakaoPayClientPort.ready(userId, reqPostPaymentDto);
         Payment payment = Payment.create(
@@ -59,7 +59,7 @@ public class PaymentService {
         );
         paymentRepository.save(payment);
         return ResPostPaymentsDto.of(kakaoPayReadyDto);
-    }
+    }*/
 
     public void readyPayment(OrderDto orderDto) {
         KakaoPayReadyDto kakaoPayReadyDto = kakaoPayClientPort.readyPayment(orderDto);
@@ -78,12 +78,12 @@ public class PaymentService {
     public ResPostPaymentConfirmDto approvePayment(UUID userId, ReqPostPaymentConfirmDto reqPostPaymentConfirmDto) {
         Payment payment = paymentRepository.findByTid(reqPostPaymentConfirmDto.getTid())
                 .orElseThrow(() -> new ApplicationException(ErrorCode.PAYMENT_NOT_FOUND_EXCEPTION));
-
         KakaoPayApproveDto kakaoPayApproveDto = kakaoPayClientPort.approve(userId, reqPostPaymentConfirmDto,
                 PaymentDto.from(payment));
 
         payment.updateStatus(PaymentStatus.COMPLETE);
-        sendUpdateOrderStatusMessage(payment, "COMPLETE");
+        sendUpdateOrderStatusMessage(payment, OrderStatus.COMPLETE.toValue());
+
         return ResPostPaymentConfirmDto.of(kakaoPayApproveDto);
     }
 
@@ -100,33 +100,41 @@ public class PaymentService {
     }
 
     public ResPostPaymentRefundDto refundPayment(UUID userId, UUID orderId) {
-        Payment payment = paymentRepository.findByOrderIdAndUserId(orderId, userId)
-                .orElseThrow(() -> new ApplicationException(ErrorCode.PAYMENT_NOT_FOUND_EXCEPTION));
-
-        if (!payment.getStatus().equals(PaymentStatus.COMPLETE)) {
-            throw new ApplicationException(ErrorCode.PAYMENT_CAN_NOT_REFUND);
-        }
+        Payment payment = getPaymentByOrderIdAndUserId(userId, orderId);
+        checkPaymentStatusRefundable(payment);
 
         KakaoPayCancelDto kakaoPayCancelDto = kakaoPayClientPort.cancel(PaymentDto.from(payment));
         payment.updateRefundInfo(kakaoPayCancelDto.getApprovedCancelAmount().getTotal());
 
-        sendUpdateOrderStatusMessage(payment, "REFUND");
-
+        sendUpdateOrderStatusMessage(payment, OrderStatus.REFUND.toValue());
         return ResPostPaymentRefundDto.from(kakaoPayCancelDto);
     }
 
-    public ResPostPaymentCancelDto cancelPayment(UUID userId, UUID orderId) {
-        Payment payment = paymentRepository.findByOrderIdAndUserId(orderId, userId)
-                .orElseThrow(() -> new ApplicationException(ErrorCode.PAYMENT_NOT_FOUND_EXCEPTION));
+    private void checkPaymentStatusRefundable(Payment payment) {
+        if (!payment.getStatus().equals(PaymentStatus.COMPLETE)) {
+            throw new ApplicationException(ErrorCode.PAYMENT_CAN_NOT_REFUND);
+        }
+    }
 
+    public ResPostPaymentCancelDto cancelPayment(UUID userId, UUID orderId) {
+        Payment payment = getPaymentByOrderIdAndUserId(userId, orderId);
+        checkPaymentStatusCancelable(payment);
+
+        payment.updateStatus(PaymentStatus.CANCEL);
+
+        sendUpdateOrderStatusMessage(payment, OrderStatus.CANCEL.toValue());
+        return ResPostPaymentCancelDto.from(payment);
+    }
+
+    private Payment getPaymentByOrderIdAndUserId(UUID userId, UUID orderId) {
+        return paymentRepository.findByOrderIdAndUserId(orderId, userId)
+                .orElseThrow(() -> new ApplicationException(ErrorCode.PAYMENT_NOT_FOUND_EXCEPTION));
+    }
+
+    private void checkPaymentStatusCancelable(Payment payment) {
         if (!payment.getStatus().equals(PaymentStatus.PENDING)) {
             throw new ApplicationException(ErrorCode.PAYMENT_CAN_NOT_CANCEL);
         }
-
-        payment.updateStatus(PaymentStatus.CANCEL);
-        sendUpdateOrderStatusMessage(payment, "CANCEL");
-
-        return ResPostPaymentCancelDto.from(payment);
     }
 
     private void sendUpdateOrderStatusMessage(Payment payment, String status) {

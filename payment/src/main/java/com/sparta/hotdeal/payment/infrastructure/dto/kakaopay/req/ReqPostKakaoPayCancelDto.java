@@ -8,7 +8,7 @@ import lombok.Getter;
 @Getter
 @Builder
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class ReqDeleteKakaoPayCancelDto {
+public class ReqPostKakaoPayCancelDto {
     private String cid;
     private String tid;
     private int cancelAmount;
@@ -16,7 +16,7 @@ public class ReqDeleteKakaoPayCancelDto {
     private int cancelVatAmount;
     private int cancelAvailableAmount;
 
-    public static ReqDeleteKakaoPayCancelDto create(
+    public static ReqPostKakaoPayCancelDto create(
             String cid,
             String tid,
             int cancelAmount,
@@ -24,7 +24,7 @@ public class ReqDeleteKakaoPayCancelDto {
             int cancelVatAmount,
             int cancelAvailableAmount
     ) {
-        return ReqDeleteKakaoPayCancelDto.builder()
+        return ReqPostKakaoPayCancelDto.builder()
                 .cid(cid)
                 .tid(tid)
                 .cancelAmount(cancelAmount)
