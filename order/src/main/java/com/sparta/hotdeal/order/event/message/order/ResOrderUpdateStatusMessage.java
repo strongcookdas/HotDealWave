@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.order.event.message;
+package com.sparta.hotdeal.order.event.message.order;
 
 import java.util.UUID;
 import lombok.Builder;
@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ReqOrderUpdateStatusMessage {
+public class ResOrderUpdateStatusMessage {
     private UUID orderId;
     private String status;
 }

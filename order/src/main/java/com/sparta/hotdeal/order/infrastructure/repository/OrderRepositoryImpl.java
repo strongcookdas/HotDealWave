@@ -35,4 +35,9 @@ public class OrderRepositoryImpl implements OrderRepository {
     public Optional<Order> findByIdAndDeletedAtIsNull(UUID orderId) {
         return orderRepositoryJpa.findByIdAndDeletedAtIsNull(orderId);
     }
+
+    @Override
+    public Order saveAndFlush(Order order) {
+        return orderRepositoryJpa.saveAndFlush(order);
+    }
 }

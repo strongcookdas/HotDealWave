@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.order.application.dtos.payment.req;
+package com.sparta.hotdeal.order.event.message.payment;
 
 import com.sparta.hotdeal.order.domain.entity.order.Order;
 import java.util.UUID;
@@ -7,11 +7,11 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ReqPaymentRefundMessage {
+public class ReqPaymentCancelMessage {
     private UUID orderId;
 
-    public static ReqPaymentRefundMessage of(Order order) {
-        return ReqPaymentRefundMessage.builder()
+    public static ReqPaymentCancelMessage of(Order order) {
+        return ReqPaymentCancelMessage.builder()
                 .orderId(order.getId())
                 .build();
     }

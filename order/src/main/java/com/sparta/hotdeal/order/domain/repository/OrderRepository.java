@@ -14,4 +14,6 @@ public interface OrderRepository {
     Page<Order> findAllByUserId(UUID userId, Pageable pageable);
 
     Optional<Order> findByIdAndDeletedAtIsNull(UUID orderId);
+
+    Order saveAndFlush(Order order);
 }

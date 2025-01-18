@@ -1,6 +1,5 @@
 package com.sparta.hotdeal.order.application.service.order;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.hotdeal.order.application.dtos.address.AddressDto;
 import com.sparta.hotdeal.order.application.dtos.coupon.CouponValidationDto;
 import com.sparta.hotdeal.order.application.dtos.order.req.ReqPostOrderDto;
@@ -8,10 +7,7 @@ import com.sparta.hotdeal.order.application.dtos.order.req.ReqPutOrderDto;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrderByIdDto;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrderListDto;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResPostOrderDto;
-import com.sparta.hotdeal.order.application.dtos.payment.req.ReqPaymentCancelMessage;
-import com.sparta.hotdeal.order.application.dtos.payment.req.ReqPaymentRefundMessage;
 import com.sparta.hotdeal.order.application.dtos.product.ProductDto;
-import com.sparta.hotdeal.order.application.dtos.product.req.ReqProductReduceQuantityDto;
 import com.sparta.hotdeal.order.application.dtos.user.UserDto;
 import com.sparta.hotdeal.order.application.port.CouponClientPort;
 import com.sparta.hotdeal.order.application.port.ProductClientPort;
@@ -23,7 +19,7 @@ import com.sparta.hotdeal.order.domain.entity.order.Order;
 import com.sparta.hotdeal.order.domain.entity.order.OrderProduct;
 import com.sparta.hotdeal.order.domain.entity.order.OrderStatus;
 import com.sparta.hotdeal.order.domain.repository.OrderRepository;
-import com.sparta.hotdeal.order.event.producer.OrderEventProducer;
+import com.sparta.hotdeal.order.event.service.OrderProducerService;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,7 +27,6 @@ import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -43,13 +38,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class OrderService {
 
-    @Value("${spring.kafka.topics.request-product}")
-    private String reduceProductQuantityTopic;
-    @Value("${spring.kafka.topics.cancel-payment}")
-    private String cancelPaymentTopic;
-    @Value("${spring.kafka.topics.refund-payment}")
-    private String refundPaymentTopic;
-
     private final OrderRepository orderRepository;
     private final ProductClientPort productClientPort;
     private final CouponClientPort couponClientPort;
@@ -58,9 +46,7 @@ public class OrderService {
     private final OrderProductService orderProductService;
     private final OrderBasketService orderBasketService;
     private final OrderCalculationService orderCalculationService;
-
-    private final OrderEventProducer orderEventProducer;
-    private final ObjectMapper objectMapper;
+    private final OrderProducerService orderProducerService;
 
 
     public ResPostOrderDto createOrder(UUID userId, String email, String role, ReqPostOrderDto req) {
@@ -88,7 +74,7 @@ public class OrderService {
         orderProductService.saveOrderProductList(order, basketList, productDtoMap);
         orderBasketService.deleteBasketList(basketList);
 
-        sendReduceProductQuantityMessage(order, basketList);
+        orderProducerService.sendReduceProductQuantityMessage(order, basketList);
 
         return ResPostOrderDto.of(order.getId());
     }
@@ -141,17 +127,6 @@ public class OrderService {
             return productDtoList.get(0).getName();
         }
         return productDtoList.get(0).getName() + " 외 " + (productDtoList.size() - 1) + "개";
-    }
-
-    private void sendReduceProductQuantityMessage(Order order, List<Basket> basketList) {
-        try {
-            ReqProductReduceQuantityDto req = ReqProductReduceQuantityDto.create(order.getId(), basketList);
-            String message = objectMapper.writeValueAsString(req);
-            orderEventProducer.sendMessage(reduceProductQuantityTopic, req.getOrderId().toString(), message);
-        } catch (Exception e) {
-            log.error("상품 재고 차감 메세지 전송 실패 : {}", e.getMessage());
-            this.cancelOrderByIdForMessage(order.getId());
-        }
     }
 
     @Transactional(readOnly = true)
@@ -240,7 +215,7 @@ public class OrderService {
         order.updateStatus(OrderStatus.CANCEL);
         restoreProductQuantityByOrderCancel(order);
 
-        sendCancelPaymentMessage(order);
+        orderProducerService.sendCancelPaymentMessage(order);
     }
 
     private void checkOrderStatusCancellable(Order order) {
@@ -256,25 +231,15 @@ public class OrderService {
         log.info("상품 수량 복구 API 호출");
     }
 
-    public void cancelOrderByIdForMessage(UUID orderId) {
-        Order order = orderRepository.findByIdAndDeletedAtIsNull(orderId)
-                .orElseThrow(() -> new ApplicationException(ErrorCode.ORDER_NOT_FOUND_EXCEPTION));
-
-        order.updateStatus(OrderStatus.CANCEL);
-    }
-
-
     public void refundOrder(UUID userId, UUID orderId) {
         Order order = findByIdAndUserId(orderId, userId);
         checkOrderRefundableDate(order);
-
         order.updateStatus(OrderStatus.REFUND);
-
-        sendRefundPaymentMessage(order);
-
+        orderProducerService.sendRefundPaymentMessage(order);
     }
 
-    private void checkOrderRefundableDate(Order order){
+
+    private void checkOrderRefundableDate(Order order) {
         LocalDateTime orderCreatedAt = order.getCreatedAt();
         LocalDateTime now = LocalDateTime.now();
 
@@ -283,26 +248,6 @@ public class OrderService {
         OrderStatus orderStatus = order.getStatus();
         if (!orderStatus.equals(OrderStatus.COMPLETE) || duration.toHours() > 24) {
             throw new ApplicationException(ErrorCode.ORDER_NOT_CANCELLABLE_EXCEPTION);
-        }
-    }
-
-    private void sendCancelPaymentMessage(Order order) {
-        try {
-            ReqPaymentCancelMessage reqPaymentCancelMessage = ReqPaymentCancelMessage.of(order);
-            String message = objectMapper.writeValueAsString(reqPaymentCancelMessage);
-            orderEventProducer.sendMessage(cancelPaymentTopic, order.getId().toString(), message);
-        } catch (Exception e) {
-            throw new ApplicationException(ErrorCode.INTERNAL_SERVER_EXCEPTION);
-        }
-    }
-
-    private void sendRefundPaymentMessage(Order order) {
-        try {
-            ReqPaymentRefundMessage reqPaymentRefundMessage = ReqPaymentRefundMessage.of(order);
-            String message = objectMapper.writeValueAsString(reqPaymentRefundMessage);
-            orderEventProducer.sendMessage(refundPaymentTopic, order.getId().toString(), message);
-        } catch (Exception e) {
-            throw new ApplicationException(ErrorCode.INTERNAL_SERVER_EXCEPTION);
         }
     }
 
