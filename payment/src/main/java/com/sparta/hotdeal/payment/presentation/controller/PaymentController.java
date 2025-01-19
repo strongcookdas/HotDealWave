@@ -65,12 +65,14 @@ public class PaymentController {
     }
 
     @PostMapping("/refund")
+    @Operation(summary = "결제 환불 API", description = "결제를 환불합니다.")
     public ResponseDto<ResPostPaymentRefundDto> refundPayment(@AuthenticationPrincipal RequestUserDetails userDetails,
                                                               @RequestParam UUID orderId) {
         return ResponseDto.of("결제 환불 처리되었습니다.", paymentService.refundPayment(userDetails.getUserId(), orderId));
     }
 
     @PostMapping("/cancel")
+    @Operation(summary = "결제 취소 API", description = "결제를 취소합니다.")
     public ResponseDto<ResPostPaymentCancelDto> cancelPayment(@AuthenticationPrincipal RequestUserDetails userDetails,
                                                               @RequestParam UUID orderId) {
         return ResponseDto.of("결제 취소 처리되었습니다.", paymentService.cancelPayment(userDetails.getUserId(), orderId));
