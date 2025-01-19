@@ -31,7 +31,8 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         if ((requestURI.startsWith("/api/v1/products") && "GET".equalsIgnoreCase(request.getMethod())) ||
                 (requestURI.startsWith("/api/v1/promotions") && "GET".equalsIgnoreCase(request.getMethod())) ||
                 requestURI.startsWith("/swagger-ui/") ||
-                requestURI.startsWith("/v3/api-docs")) {
+                requestURI.startsWith("/v3/api-docs") ||
+                requestURI.startsWith("/actuator/prometheus")) {
             filterChain.doFilter(request, response);
             return;
         }
