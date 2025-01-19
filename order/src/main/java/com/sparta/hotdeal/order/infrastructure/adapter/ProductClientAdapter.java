@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -22,6 +23,7 @@ public class ProductClientAdapter implements ProductClientPort {
     private final ProductClient productClient;
 
     @Override
+    @Cacheable(cacheNames = "productListCache", key = "T(java.util.Objects).hash(#productIds.stream().sorted().toList())")
     public Map<UUID, ProductDto> getProductAll(List<UUID> productIds) {
         List<ResGetProductListDto> resGetProductListDtoList = productClient.getProductList(productIds).getData()
                 .toList();
@@ -34,6 +36,7 @@ public class ProductClientAdapter implements ProductClientPort {
     }
 
     @Override
+    @Cacheable(cacheNames = "productCache", key = "args[0]")
     public ProductByIdtDto getProduct(UUID productId) {
         return productClient.getProduct(productId).getData().toDto();
     }
@@ -51,6 +54,4 @@ public class ProductClientAdapter implements ProductClientPort {
         ReqPutProductQuantityDto reqPutProductQuantityDto = ReqPutProductQuantityDto.of(order, orderProductDtoList);
         productClient.reduceQuantity(reqPutProductQuantityDto);
     }
-
-
 }

@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -49,19 +50,61 @@ public class OrderService {
     private final OrderProducerService orderProducerService;
 
 
+//    public ResPostOrderDto createOrder(UUID userId, String email, String role, ReqPostOrderDto req) {
+//        List<Basket> basketList = orderBasketService.getBasketList(userId, req.getBasketList());
+//
+//        Map<UUID, ProductDto> productDtoMap = getProductDetailsForBasketItems(basketList);
+//
+//        AddressDto addressDto = userClientPort.getAddress(userId, email, role, req.getAddressId());
+//        log.info("주소 단건 조회 API 호출");
+//
+//        CouponValidationDto couponValidationDto = validateAndUseCoupon(req.getCouponId(), basketList,
+//                productDtoMap);
+//
+//        int totalAmount = orderCalculationService.calculateTotalAmount(basketList, productDtoMap);
+//
+//        Order order = saveOrder(
+//                addressDto.getAddressId(),
+//                userId,
+//                totalAmount,
+//                getOrderName(productDtoMap),
+//                req.getCouponId(),
+//                couponValidationDto.getTotalDiscountAmount()
+//        );
+//
+//        orderProductService.saveOrderProductList(order, basketList, productDtoMap);
+//        orderBasketService.deleteBasketList(basketList);
+//
+//        orderProducerService.sendReduceProductQuantityMessage(order, basketList);
+//
+//        return ResPostOrderDto.of(order.getId());
+//    }
+
     public ResPostOrderDto createOrder(UUID userId, String email, String role, ReqPostOrderDto req) {
+        // 장바구니 목록 조회 (동기 처리)
         List<Basket> basketList = orderBasketService.getBasketList(userId, req.getBasketList());
 
-        Map<UUID, ProductDto> productDtoMap = getProductDetailsForBasketItems(basketList);
+        // 상품 정보 조회 비동기 처리
+        CompletableFuture<Map<UUID, ProductDto>> productFuture = CompletableFuture.supplyAsync(
+                () -> getProductDetailsForBasketItems(basketList)
+        );
 
-        CouponValidationDto couponValidationDto = validateAndUseCoupon(req.getCouponId(), basketList,
-                productDtoMap);
+        // 주소 정보 조회 비동기 처리
+        CompletableFuture<AddressDto> addressFuture = CompletableFuture.supplyAsync(
+                () -> userClientPort.getAddress(userId, email, role, req.getAddressId())
+        );
 
-        AddressDto addressDto = userClientPort.getAddress(userId, email, role, req.getAddressId());
-        log.info("주소 단건 조회 API 호출");
+        // 비동기 작업 완료 대기
+        Map<UUID, ProductDto> productDtoMap = productFuture.join();
+        AddressDto addressDto = addressFuture.join();
 
+        // 쿠폰 검증 및 사용 (동기 처리)
+        CouponValidationDto couponValidationDto = validateAndUseCoupon(req.getCouponId(), basketList, productDtoMap);
+
+        // 총 금액 계산
         int totalAmount = orderCalculationService.calculateTotalAmount(basketList, productDtoMap);
 
+        // 주문 생성 및 저장
         Order order = saveOrder(
                 addressDto.getAddressId(),
                 userId,
@@ -71,13 +114,16 @@ public class OrderService {
                 couponValidationDto.getTotalDiscountAmount()
         );
 
+        // 주문 상품 저장 및 장바구니 삭제
         orderProductService.saveOrderProductList(order, basketList, productDtoMap);
         orderBasketService.deleteBasketList(basketList);
 
+        // 메시지 전송
         orderProducerService.sendReduceProductQuantityMessage(order, basketList);
 
         return ResPostOrderDto.of(order.getId());
     }
+
 
     private Map<UUID, ProductDto> getProductDetailsForBasketItems(List<Basket> basketList) {
         List<UUID> productIds = basketList.stream().map(Basket::getProductId).toList();

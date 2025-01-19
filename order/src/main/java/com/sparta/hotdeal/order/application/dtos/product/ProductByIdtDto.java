@@ -1,5 +1,6 @@
 package com.sparta.hotdeal.order.application.dtos.product;
 
+import java.io.Serializable;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -7,7 +8,7 @@ import lombok.Getter;
 
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
-public class ProductByIdtDto {
+public class ProductByIdtDto implements Serializable {
     private UUID productId;
     private String name;
     private Integer price;
