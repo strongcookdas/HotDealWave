@@ -24,3 +24,14 @@ admin:
   user-id: ${ADMIN_USER_ID}
   email: ${ADMIN_EMAIL}
   role: ${ADMIN_ROLE}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: "always"
+    prometheus:
+      access: unrestricted

@@ -21,3 +21,14 @@ springdoc:
      enabled: true
    swagger-ui:
      path: /swagger-ui.html
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: "always"
+    prometheus:
+      access: unrestricted
