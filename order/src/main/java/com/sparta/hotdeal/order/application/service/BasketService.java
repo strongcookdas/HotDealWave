@@ -81,19 +81,19 @@ public class BasketService {
 
     @Transactional(readOnly = true)
     public ResGetBasketByIdDto getBasketDetail(UUID userId, UUID basketId) {
-        Basket basket = getBasket(userId, basketId);
+        Basket basket = getBasket(basketId, userId);
         ProductByIdtDto productByIdtDto = productClientPort.getProduct(basket.getProductId());
         return ResGetBasketByIdDto.of(basket, productByIdtDto);
     }
 
     public ResPatchBasketDto updateBasket(UUID userId, UUID basketId, ReqPatchBasketDto req) {
-        Basket basket = getBasket(userId, basketId);
+        Basket basket = getBasket(basketId, userId);
         basket.updateQuantity(req.getQuantity());
         return ResPatchBasketDto.of(basket);
     }
 
     public ResDeleteBasketDto deleteBasket(UUID userId, String email, UUID basketId) {
-        Basket basket = getBasket(userId, basketId);
+        Basket basket = getBasket(basketId, userId);
         basket.delete(email);
         return ResDeleteBasketDto.of(basket);
     }
