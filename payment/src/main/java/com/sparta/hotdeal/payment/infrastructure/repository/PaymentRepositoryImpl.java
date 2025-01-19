@@ -40,4 +40,9 @@ public class PaymentRepositoryImpl implements PaymentRepository {
     public Optional<Payment> findByOrderIdAndUserId(UUID orderId, UUID userId) {
         return paymentRepositoryJpa.findByOrderIdAndUserIdAndDeletedAtIsNull(orderId, userId);
     }
+
+    @Override
+    public Payment saveAndFlush(Payment payment) {
+        return paymentRepositoryJpa.saveAndFlush(payment);
+    }
 }

@@ -2,9 +2,16 @@ package com.sparta.hotdeal.payment.event.producer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.Map;
+import com.sparta.hotdeal.payment.application.dtos.order.OrderDto;
+import com.sparta.hotdeal.payment.event.message.order.ReqOrderUpdateStatusMessage;
+import com.sparta.hotdeal.payment.common.exception.ApplicationException;
+import com.sparta.hotdeal.payment.common.exception.ErrorCode;
+import com.sparta.hotdeal.payment.domain.entity.order.OrderStatus;
+import com.sparta.hotdeal.payment.domain.entity.payment.Payment;
+import com.sparta.hotdeal.payment.event.message.product.ReqProductRecoverQuantityDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
@@ -13,26 +20,35 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class PaymentEventProducer {
 
+    @Value("${spring.kafka.topics.update-order-status}")
+    private String updateOrderStatusTopic;
+
+    @Value("${spring.kafka.topics.rollback-reduce-quantity}")
+    private String rollbackProductReduceQuantity;
+
     private final ObjectMapper objectMapper;
     private final KafkaTemplate<String, String> kafkaTemplate;
 
-    public void sendMessage(String topic, String key, String message) {
-        kafkaTemplate.send(topic, key, message);
+    public void sendUpdateOrderStatusMessage(Payment payment, OrderStatus status) {
+        try {
+            ReqOrderUpdateStatusMessage reqOrderUpdateStatusMessage = ReqOrderUpdateStatusMessage.of(
+                    payment.getOrderId(),
+                    status);
+            String message = objectMapper.writeValueAsString(reqOrderUpdateStatusMessage);
+            sendMessage(updateOrderStatusTopic, payment.getOrderId().toString(), message);
+        } catch (Exception e) {
+            throw new ApplicationException(ErrorCode.INTERNAL_SERVER_EXCEPTION);
+        }
     }
 
-    public void sendToDeadLetterQueue(String originalMessage, String errorMessage) {
-        try {
-            // DLQ로 전송할 메시지 구성
-            String dlqMessage = objectMapper.writeValueAsString(Map.of(
-                    "originalMessage", originalMessage,
-                    "errorMessage", errorMessage
-            ));
+    public void sendRollbackMessage(OrderDto orderDto) throws JsonProcessingException {
+        ReqProductRecoverQuantityDto reqProductRecoverQuantityDto = ReqProductRecoverQuantityDto.of(orderDto);
+        String message = objectMapper.writeValueAsString(reqProductRecoverQuantityDto);
+        sendMessage(rollbackProductReduceQuantity, orderDto.getOrderId().toString(), message);
+        log.info("상품 수량 감소 롤백 처리 Order ID: {}", orderDto.getOrderId());
+    }
 
-            // DLQ 토픽으로 전송
-            kafkaTemplate.send("payment-dlq", dlqMessage);
-            log.info("DLQ에 메시지 전송 완료: {}", dlqMessage);
-        } catch (JsonProcessingException e) {
-            log.error("DLQ 메시지 생성 실패: {}", e.getMessage());
-        }
+    public void sendMessage(String topic, String key, String message) {
+        kafkaTemplate.send(topic, key, message);
     }
 }

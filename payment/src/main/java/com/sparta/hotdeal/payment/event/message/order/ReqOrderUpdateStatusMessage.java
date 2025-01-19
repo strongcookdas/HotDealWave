@@ -1,5 +1,6 @@
-package com.sparta.hotdeal.payment.application.dtos.order;
+package com.sparta.hotdeal.payment.event.message.order;
 
+import com.sparta.hotdeal.payment.domain.entity.order.OrderStatus;
 import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,9 +9,9 @@ import lombok.Getter;
 @Builder
 public class ReqOrderUpdateStatusMessage {
     private UUID orderId;
-    private String status;
+    private OrderStatus status;
 
-    public static ReqOrderUpdateStatusMessage of(UUID orderId, String status) {
+    public static ReqOrderUpdateStatusMessage of(UUID orderId, OrderStatus status) {
         return ReqOrderUpdateStatusMessage.builder()
                 .orderId(orderId)
                 .status(status)

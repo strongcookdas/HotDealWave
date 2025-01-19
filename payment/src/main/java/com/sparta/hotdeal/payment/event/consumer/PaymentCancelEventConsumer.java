@@ -4,9 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.hotdeal.payment.application.dtos.order.OrderDto;
 import com.sparta.hotdeal.payment.application.port.OrderClientPort;
-import com.sparta.hotdeal.payment.application.service.PaymentService;
-import com.sparta.hotdeal.payment.event.message.ReqPaymentCancelMessage;
-import com.sparta.hotdeal.payment.event.producer.PaymentEventProducer;
+import com.sparta.hotdeal.payment.event.message.payment.ReqPaymentCancelMessage;
+import com.sparta.hotdeal.payment.event.producer.PaymentDlqProducer;
+import com.sparta.hotdeal.payment.event.service.PaymentConsumerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -18,16 +18,16 @@ import org.springframework.stereotype.Component;
 public class PaymentCancelEventConsumer {
 
     private final OrderClientPort orderClientPort;
-    private final PaymentService paymentService;
+    private final PaymentConsumerService paymentConsumerService;
     private final ObjectMapper objectMapper;
-    private final PaymentEventProducer paymentEventProducer;
+    private final PaymentDlqProducer paymentDlqProducer;
 
     @KafkaListener(topics = "${spring.kafka.topics.cancel-payment}", groupId = "payment-group")
     public void consumeCancelPayment(String message) {
         try {
             ReqPaymentCancelMessage reqPaymentCancelMessage = parseMessage(message);
             OrderDto orderDto = orderClientPort.getOrderById(reqPaymentCancelMessage.getOrderId());
-            paymentService.cancelPayment(orderDto.getUserId(), orderDto.getOrderId());
+            paymentConsumerService.cancelPayment(orderDto.getUserId(), orderDto.getOrderId());
         } catch (JsonProcessingException e) {
             handleJsonProcessingError(message, e);
         } catch (Exception e) {
@@ -48,11 +48,11 @@ public class PaymentCancelEventConsumer {
 
     private void handleJsonProcessingError(String message, JsonProcessingException e) {
         log.error("역직렬화 실패 오류 : {}. Error: {}", message, e.getMessage());
-        paymentEventProducer.sendToDeadLetterQueue(message, "JSON 파싱 실패: " + e.getMessage());
+        paymentDlqProducer.sendToDeadLetterQueue(message, "JSON 파싱 실패: " + e.getMessage());
     }
 
     private void handlePaymentCancelError(String message, Exception e) {
         log.error("결제 취소 오류 : {}. Error: {}", message, e.getMessage());
-        paymentEventProducer.sendToDeadLetterQueue(message, "결제 취소 실패: " + e.getMessage());
+        paymentDlqProducer.sendToDeadLetterQueue(message, "결제 취소 실패: " + e.getMessage());
     }
 }

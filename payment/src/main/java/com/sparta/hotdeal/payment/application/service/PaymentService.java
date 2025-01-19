@@ -1,30 +1,28 @@
 package com.sparta.hotdeal.payment.application.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.hotdeal.payment.application.dtos.kakaopay.KakaoPayApproveDto;
 import com.sparta.hotdeal.payment.application.dtos.kakaopay.KakaoPayCancelDto;
 import com.sparta.hotdeal.payment.application.dtos.kakaopay.KakaoPayReadyDto;
-import com.sparta.hotdeal.payment.application.dtos.order.OrderDto;
-import com.sparta.hotdeal.payment.application.dtos.order.ReqOrderUpdateStatusMessage;
 import com.sparta.hotdeal.payment.application.dtos.payment.PaymentDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.req.ReqPostPaymentConfirmDto;
+import com.sparta.hotdeal.payment.application.dtos.payment.req.ReqPostPaymentDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResGetPaymentByIdDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResGetPaymentForListDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResPostPaymentCancelDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResPostPaymentConfirmDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResPostPaymentRefundDto;
-import com.sparta.hotdeal.payment.application.exception.ApplicationException;
-import com.sparta.hotdeal.payment.application.exception.ErrorCode;
+import com.sparta.hotdeal.payment.application.dtos.payment.res.ResPostPaymentsDto;
+import com.sparta.hotdeal.payment.common.exception.ApplicationException;
+import com.sparta.hotdeal.payment.common.exception.ErrorCode;
 import com.sparta.hotdeal.payment.application.port.KakaoPayClientPort;
 import com.sparta.hotdeal.payment.domain.entity.order.OrderStatus;
 import com.sparta.hotdeal.payment.domain.entity.payment.Payment;
 import com.sparta.hotdeal.payment.domain.entity.payment.PaymentStatus;
 import com.sparta.hotdeal.payment.domain.repository.PaymentRepository;
-import com.sparta.hotdeal.payment.event.producer.PaymentEventProducer;
+import com.sparta.hotdeal.payment.event.service.PaymentProducerService;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -36,16 +34,12 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class PaymentService {
 
-    @Value("${spring.kafka.topics.update-order-status}")
-    private String updateOrderStatusTopic;
-
     private final PaymentRepository paymentRepository;
 
     private final KakaoPayClientPort kakaoPayClientPort;
-    private final PaymentEventProducer paymentEventProducer;
-    private final ObjectMapper objectMapper;
 
-    /* 테스트 후 삭제
+    private final PaymentProducerService paymentProducerService;
+
     public ResPostPaymentsDto readyPayment(UUID userId, ReqPostPaymentDto reqPostPaymentDto) {
         KakaoPayReadyDto kakaoPayReadyDto = kakaoPayClientPort.ready(userId, reqPostPaymentDto);
         Payment payment = Payment.create(
@@ -59,20 +53,6 @@ public class PaymentService {
         );
         paymentRepository.save(payment);
         return ResPostPaymentsDto.of(kakaoPayReadyDto);
-    }*/
-
-    public void readyPayment(OrderDto orderDto) {
-        KakaoPayReadyDto kakaoPayReadyDto = kakaoPayClientPort.readyPayment(orderDto);
-        Payment payment = Payment.create(
-                orderDto.getOrderId(),
-                orderDto.getUserId(),
-                PaymentStatus.PENDING,
-                orderDto.getTotalAmount(),
-                0,
-                kakaoPayReadyDto.getTid(),
-                kakaoPayReadyDto.getNext_redirect_pc_url()
-        );
-        paymentRepository.save(payment);
     }
 
     public ResPostPaymentConfirmDto approvePayment(UUID userId, ReqPostPaymentConfirmDto reqPostPaymentConfirmDto) {
@@ -82,7 +62,7 @@ public class PaymentService {
                 PaymentDto.from(payment));
 
         payment.updateStatus(PaymentStatus.COMPLETE);
-        sendUpdateOrderStatusMessage(payment, OrderStatus.COMPLETE.toValue());
+        paymentProducerService.sendUpdateOrderStatusMessage(payment, OrderStatus.COMPLETE);
 
         return ResPostPaymentConfirmDto.of(kakaoPayApproveDto);
     }
@@ -106,7 +86,6 @@ public class PaymentService {
         KakaoPayCancelDto kakaoPayCancelDto = kakaoPayClientPort.cancel(PaymentDto.from(payment));
         payment.updateRefundInfo(kakaoPayCancelDto.getApprovedCancelAmount().getTotal());
 
-        sendUpdateOrderStatusMessage(payment, OrderStatus.REFUND.toValue());
         return ResPostPaymentRefundDto.from(kakaoPayCancelDto);
     }
 
@@ -121,8 +100,6 @@ public class PaymentService {
         checkPaymentStatusCancelable(payment);
 
         payment.updateStatus(PaymentStatus.CANCEL);
-
-        sendUpdateOrderStatusMessage(payment, OrderStatus.CANCEL.toValue());
         return ResPostPaymentCancelDto.from(payment);
     }
 
@@ -134,18 +111,6 @@ public class PaymentService {
     private void checkPaymentStatusCancelable(Payment payment) {
         if (!payment.getStatus().equals(PaymentStatus.PENDING)) {
             throw new ApplicationException(ErrorCode.PAYMENT_CAN_NOT_CANCEL);
-        }
-    }
-
-    private void sendUpdateOrderStatusMessage(Payment payment, String status) {
-        try {
-            ReqOrderUpdateStatusMessage reqOrderUpdateStatusMessage = ReqOrderUpdateStatusMessage.of(
-                    payment.getOrderId(),
-                    status);
-            String message = objectMapper.writeValueAsString(reqOrderUpdateStatusMessage);
-            paymentEventProducer.sendMessage(updateOrderStatusTopic, payment.getOrderId().toString(), message);
-        } catch (Exception e) {
-            throw new ApplicationException(ErrorCode.INTERNAL_SERVER_EXCEPTION);
         }
     }
 }

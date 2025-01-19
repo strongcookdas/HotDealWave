@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.payment.application.exception;
+package com.sparta.hotdeal.payment.common.exception;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -19,12 +19,9 @@ public enum ErrorCode {
     //Payment
     PAYMENT_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "PA001", "존재하지 않는 결제 리소스입니다."),
     PAYMENT_INVALID_VALUE_EXCEPTION(HttpStatus.BAD_REQUEST, "PA002", "올바르지 않은 결제 요청 값입니다."),
-    PAYMENT_UNAUTHORIZED_EXCEPTION(HttpStatus.UNAUTHORIZED, "PA003", "결제에 대한 권한이 없는 요청입니다."),
-    PAYMENT_ALREADY_DELETE_EXCEPTION(HttpStatus.BAD_REQUEST, "PA004", "이미 삭제된 결제 리소스입니다."),
-    PAYMENT_FORBIDDEN_EXCEPTION(HttpStatus.FORBIDDEN, "PA005", "인가되지 않는 결제 요청입니다."),
-    PAYMENT_ALREADY_EXIST_EXCEPTION(HttpStatus.BAD_REQUEST, "PA006", "이미 존재하는 결제 리소스입니다."),
-    PAYMENT_CAN_NOT_CANCEL(HttpStatus.BAD_REQUEST, "PA007", "취소할 수 없는 결제 건입니다."),
-    PAYMENT_CAN_NOT_REFUND(HttpStatus.BAD_REQUEST,"PA008", "환불할 수 없는 결제 건입니다.");
+    PAYMENT_CAN_NOT_CANCEL(HttpStatus.BAD_REQUEST, "PA003", "취소할 수 없는 결제 건입니다."),
+    PAYMENT_CAN_NOT_REFUND(HttpStatus.BAD_REQUEST,"PA004", "환불할 수 없는 결제 건입니다."),
+    PAYMENT_CAN_NOT_APPROVE(HttpStatus.BAD_REQUEST,"PA005","승인할 수 없는 결제 건입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

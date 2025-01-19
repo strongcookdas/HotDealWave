@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.payment.event.message;
+package com.sparta.hotdeal.payment.event.message.product;
 
 import com.sparta.hotdeal.payment.application.dtos.order.OrderDto;
 import java.util.List;

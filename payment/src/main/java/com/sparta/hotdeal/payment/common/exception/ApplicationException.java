@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.payment.application.exception;
+package com.sparta.hotdeal.payment.common.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
