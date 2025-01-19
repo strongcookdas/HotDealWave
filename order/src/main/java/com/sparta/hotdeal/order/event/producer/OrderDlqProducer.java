@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.payment.event.producer;
+package com.sparta.hotdeal.order.event.producer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,10 +12,10 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class PaymentDlqProducer {
+public class OrderDlqProducer {
 
     @Value("${spring.kafka.topics.dlq}")
-    private String paymentDlqTopic;
+    private String orderDlqTopic;
 
     private final ObjectMapper objectMapper;
     private final KafkaTemplate<String, String> kafkaTemplate;
@@ -28,7 +28,7 @@ public class PaymentDlqProducer {
                     "errorMessage", errorMessage
             ));
             // DLQ 토픽으로 전송
-            kafkaTemplate.send(paymentDlqTopic, dlqMessage);
+            kafkaTemplate.send(orderDlqTopic, dlqMessage);
             log.info("DLQ에 메시지 전송 완료: {}", dlqMessage);
         } catch (JsonProcessingException e) {
             log.error("DLQ 메시지 생성 실패: {}", e.getMessage());
