@@ -18,12 +18,6 @@ spring:
       dlq: ${KAFKA_DLQ_TOPIC}
       cancel-payment: ${KAFKA_CANCEL_PAYMENT_TOPIC}
       refund-payment: ${KAFKA_REFUND_PAYMENT_TOPIC}
-    origins:
-      create-order: ${KAFKA_CREATE_ORDER_ORIGIN}
-      cancel-order: ${KAFKA_CANCEL_ORDER_ORIGIN}
-      refund-order: ${KAFKA_REFUND_ORDER_ORIGIN}
-
-
 
 server:
   port: 19094
