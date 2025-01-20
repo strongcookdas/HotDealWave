@@ -7,7 +7,7 @@ import com.sparta.hotdeal.user.application.dtos.auth.response.ResPostLoginDto;
 import com.sparta.hotdeal.user.application.dtos.auth.response.ResPostRefreshDto;
 import com.sparta.hotdeal.user.application.dtos.auth.response.ResPostSignUpDto;
 import com.sparta.hotdeal.user.application.exception.ErrorMessage;
-import com.sparta.hotdeal.user.application.util.JwtUtil;
+import com.sparta.hotdeal.user.libs.util.JwtUtil;
 import com.sparta.hotdeal.user.application.util.RedisUtil;
 import com.sparta.hotdeal.user.domain.entity.Email;
 import com.sparta.hotdeal.user.domain.entity.User;
