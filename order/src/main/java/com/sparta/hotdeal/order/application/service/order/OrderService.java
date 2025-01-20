@@ -9,6 +9,8 @@ import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrderByIdDto;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrderListDto;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResPostOrderDto;
 import com.sparta.hotdeal.order.application.dtos.order_product.OrderProductDto;
+import com.sparta.hotdeal.order.application.dtos.payment.req.ReqPaymentCancelMessage;
+import com.sparta.hotdeal.order.application.dtos.payment.req.ReqPaymentRefundMessage;
 import com.sparta.hotdeal.order.application.dtos.product.ProductDto;
 import com.sparta.hotdeal.order.application.dtos.product.req.ReqProductReduceQuantityDto;
 import com.sparta.hotdeal.order.application.dtos.user.UserDto;
@@ -46,6 +48,10 @@ public class OrderService {
 
     @Value("${spring.kafka.topics.request-product}")
     private String reduceProductQuantityTopic;
+    @Value("${spring.kafka.topics.cancel-payment}")
+    private String cancelPaymentTopic;
+    @Value("${spring.kafka.topics.refund-payment}")
+    private String refundPaymentTopic;
 
     private final OrderRepository orderRepository;
     private final ProductClientPort productClientPort;
@@ -199,10 +205,12 @@ public class OrderService {
             throw new ApplicationException(ErrorCode.ORDER_ALREADY_PROCESSED_EXCEPTION);
         }
 
-        //비동기 처리
-        //수량 복구
-        //pending 일 경우 주문 취소 로직까지 필요
         order.updateStatus(OrderStatus.CANCEL);
+
+        List<OrderProductDto> orderProductList = orderProductService.getOrderProductList(order.getId());
+        productClientPort.restoreProductList(order, orderProductList);
+
+        sendCancelPaymentMessage(order);
     }
 
     public void cancelOrderByIdForMessage(UUID orderId) {
@@ -227,10 +235,10 @@ public class OrderService {
             throw new ApplicationException(ErrorCode.ORDER_NOT_CANCELLABLE_EXCEPTION);
         }
 
-        //비동기 처리
-        //수량 복구
-        //주문 취소
         order.updateStatus(OrderStatus.REFUND);
+
+        sendRefundPaymentMessage(order);
+
     }
 
     private int calculateTotalAmount(List<Basket> basketList, Map<UUID, ProductDto> productDtoMap) {
@@ -266,4 +274,25 @@ public class OrderService {
         return productDtoList.stream()
                 .collect(Collectors.toMap(ProductDto::getProductId, productDto -> productDto));
     }
+
+    private void sendCancelPaymentMessage(Order order) {
+        try {
+            ReqPaymentCancelMessage reqPaymentCancelMessage = ReqPaymentCancelMessage.of(order);
+            String message = objectMapper.writeValueAsString(reqPaymentCancelMessage);
+            orderEventProducer.sendMessage(cancelPaymentTopic, order.getId().toString(), message);
+        } catch (Exception e) {
+            throw new ApplicationException(ErrorCode.INTERNAL_SERVER_EXCEPTION);
+        }
+    }
+
+    private void sendRefundPaymentMessage(Order order) {
+        try {
+            ReqPaymentRefundMessage reqPaymentRefundMessage = ReqPaymentRefundMessage.of(order);
+            String message = objectMapper.writeValueAsString(reqPaymentRefundMessage);
+            orderEventProducer.sendMessage(refundPaymentTopic, order.getId().toString(), message);
+        } catch (Exception e) {
+            throw new ApplicationException(ErrorCode.INTERNAL_SERVER_EXCEPTION);
+        }
+    }
+
 }

@@ -1,4 +1,4 @@
-package com.sparta.hotdeal.payment.event.consumer;
+package com.sparta.hotdeal.order.event.consumer;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,13 +9,13 @@ import org.springframework.kafka.annotation.KafkaListener;
 
 @Slf4j
 @RequiredArgsConstructor
-public class PaymentDlqConsumer {
+public class OrderDlqConsumer {
 
     private final ObjectMapper objectMapper;
 
-    @KafkaListener(topics = "${spring.kafka.topics.dlq}", groupId = "payment-group")
+    @KafkaListener(topics = "${spring.kafka.topics.dlq}", groupId = "order-group")
     public void listenDlqMessages(String message) {
-        log.error("DLQ 메시지 수신: {}", message);
+        log.error("ORDER DLQ 메시지 수신: {}", message);
         try {
             Map<String, String> dlqMessage = objectMapper.readValue(message, new TypeReference<>() {
             });

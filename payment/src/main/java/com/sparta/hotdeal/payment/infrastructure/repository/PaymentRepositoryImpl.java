@@ -28,7 +28,7 @@ public class PaymentRepositoryImpl implements PaymentRepository {
 
     @Override
     public Optional<Payment> findByIdAndUserId(UUID paymentId, UUID userId) {
-        return paymentRepositoryJpa.findByIdAndUserId(paymentId, userId);
+        return paymentRepositoryJpa.findByIdAndUserIdAndDeletedAtIsNull(paymentId, userId);
     }
 
     @Override
@@ -38,6 +38,6 @@ public class PaymentRepositoryImpl implements PaymentRepository {
 
     @Override
     public Optional<Payment> findByOrderIdAndUserId(UUID orderId, UUID userId) {
-        return paymentRepositoryJpa.findByOrderIdAndUserId(orderId, userId);
+        return paymentRepositoryJpa.findByOrderIdAndUserIdAndDeletedAtIsNull(orderId, userId);
     }
 }

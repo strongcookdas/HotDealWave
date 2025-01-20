@@ -27,6 +27,9 @@ public class ConsumerApplicationKafkaConfig {
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
+    @Value("${spring.kafka.topics.dlq}")
+    private String paymentDlq;
+
     private final KafkaTemplate<String, String> kafkaTemplate;
 
     public ConsumerApplicationKafkaConfig(KafkaTemplate<String, String> kafkaTemplate) {
@@ -58,7 +61,7 @@ public class ConsumerApplicationKafkaConfig {
         DeadLetterPublishingRecoverer recover = new DeadLetterPublishingRecoverer(kafkaTemplate,
                 (record, exception) -> {
                     // 실패한 메시지를 DLQ 로 전송
-                    return new TopicPartition("order-dlq", record.partition());
+                    return new TopicPartition(paymentDlq, record.partition());
                 });
 
         factory.setCommonErrorHandler(new DefaultErrorHandler(recover, new FixedBackOff(0L, 0)));

@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 @Slf4j(topic = "[payment-event-listener]")
 @Component
 @RequiredArgsConstructor
-public class PaymentEventConsumer {
+public class PaymentReadyEventConsumer {
 
     @Value("${spring.kafka.topics.rollback-reduce-quantity}")
     private String rollbackProductReduceQuantity;

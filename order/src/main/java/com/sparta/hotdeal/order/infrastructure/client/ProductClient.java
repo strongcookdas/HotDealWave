@@ -2,10 +2,9 @@ package com.sparta.hotdeal.order.infrastructure.client;
 
 import com.sparta.hotdeal.order.application.dtos.ResponseDto;
 import com.sparta.hotdeal.order.infrastructure.config.ProductClientConfig;
-import com.sparta.hotdeal.order.infrastructure.dtos.product.req.ReqPatchProductQuantityDto;
+import com.sparta.hotdeal.order.infrastructure.dtos.product.req.ReqPutProductQuantityDto;
 import com.sparta.hotdeal.order.infrastructure.dtos.product.res.ResGetProductByIdDto;
 import com.sparta.hotdeal.order.infrastructure.dtos.product.res.ResGetProductListDto;
-import com.sparta.hotdeal.order.infrastructure.dtos.product.res.ResPatchReduceProductQuantityDto;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -24,7 +23,7 @@ public interface ProductClient {
     @GetMapping(value = "/api/v1/products")
     ResponseDto<Page<ResGetProductListDto>> getProductList(@RequestParam("productIds") List<UUID> productIds);
 
-    @PutMapping("/api/v1/products/reduce-quantity")
-    ResponseDto<List<ResPatchReduceProductQuantityDto>> reduceQuantity(
-            @RequestBody List<ReqPatchProductQuantityDto> reqPatchProductQuantityDto);
+    @PutMapping("/api/v1/products/restore-quantity")
+    ResponseDto<Void> reduceQuantity(
+            @RequestBody ReqPutProductQuantityDto reqPutProductQuantityDto);
 }

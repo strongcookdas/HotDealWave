@@ -6,6 +6,7 @@ import com.sparta.hotdeal.payment.application.dtos.payment.req.ReqPostPaymentDto
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResGetPaymentByIdDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResGetPaymentForListDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResPostPaymentCancelDto;
+import com.sparta.hotdeal.payment.application.dtos.payment.res.ResPostPaymentRefundDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResPostPaymentConfirmDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.res.ResPostPaymentsDto;
 import com.sparta.hotdeal.payment.application.service.PaymentService;
@@ -17,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -61,9 +61,15 @@ public class PaymentController {
         return ResponseDto.of("결제 단건 조회 성공", paymentService.getPaymentById(userDetails.getUserId(), paymentId));
     }
 
+    @PostMapping("/refund")
+    public ResponseDto<ResPostPaymentRefundDto> refundPayment(@AuthenticationPrincipal RequestUserDetails userDetails,
+                                                              @RequestParam UUID orderId) {
+        return ResponseDto.of("결제 환불 처리되었습니다.", paymentService.refundPayment(userDetails.getUserId(), orderId));
+    }
+
     @PostMapping("/cancel")
     public ResponseDto<ResPostPaymentCancelDto> cancelPayment(@AuthenticationPrincipal RequestUserDetails userDetails,
                                                               @RequestParam UUID orderId) {
-        return ResponseDto.of("결제 환불 처리되었습니다.", paymentService.cancelPayment(userDetails.getUserId(), orderId));
+        return ResponseDto.of("결제 취소 처리되었습니다.", paymentService.cancelPayment(userDetails.getUserId(), orderId));
     }
 }

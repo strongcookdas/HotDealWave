@@ -14,6 +14,11 @@ spring:
     topics:
       request-product: ${KAFKA_REQUEST_PRODUCT_TOPIC}
       cancel-order: ${KAFKA_CANCEL_ORDER_TOPIC}
+      update-order-status: ${KAFKA_UPDATE_ORDER_STATUS_TOPIC}
+      dlq: ${KAFKA_DLQ_TOPIC}
+      cancel-payment: ${KAFKA_CANCEL_PAYMENT_TOPIC}
+      refund-payment: ${KAFKA_REFUND_PAYMENT_TOPIC}
+
 
 server:
   port: 19094
