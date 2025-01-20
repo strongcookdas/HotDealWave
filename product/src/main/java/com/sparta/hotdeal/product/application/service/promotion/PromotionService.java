@@ -80,6 +80,13 @@ public class PromotionService {
             throw new ApplicationException(ErrorCode.PROMOTION_IS_ACTIVE_EXCEPTION);
         }
 
+        // 현재 시간 가져오기
+        LocalDateTime now = LocalDateTime.now();
+        // start와 end가 현재 시간보다 이후인지 검증
+        if (reqPutUpdatePromotionDto.getStart().isBefore(now) || reqPutUpdatePromotionDto.getEnd().isBefore(now)) {
+            throw new ApplicationException(ErrorCode.PROMOTION_INVALID_TIME_EXCEPTION);
+        }
+
         // 상품 조회
         UUID productId = reqPutUpdatePromotionDto.getProductId() == null ? promotion.getProductId()
                 : reqPutUpdatePromotionDto.getProductId();
