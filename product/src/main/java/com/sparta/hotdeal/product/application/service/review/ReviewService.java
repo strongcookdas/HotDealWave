@@ -10,6 +10,7 @@ import com.sparta.hotdeal.product.application.service.client.UserClientService;
 import com.sparta.hotdeal.product.application.service.file.FileService;
 import com.sparta.hotdeal.product.application.service.file.SubFileService;
 import com.sparta.hotdeal.product.domain.entity.product.File;
+import com.sparta.hotdeal.product.domain.entity.product.ImageTypeEnum;
 import com.sparta.hotdeal.product.domain.entity.product.Product;
 import com.sparta.hotdeal.product.domain.entity.review.Review;
 import com.sparta.hotdeal.product.domain.repository.product.ProductRepository;
@@ -52,7 +53,7 @@ public class ReviewService {
 
         File reviewImgs = fileService.saveFile();
         for (MultipartFile file : reqPostReviewDto.getReviewImgs()) {
-            subFileService.saveImg(file, reviewImgs);
+            subFileService.saveImg(file, reviewImgs, ImageTypeEnum.REVIEW);
         }
 
         fetchedProduct.incrementReview(reqPostReviewDto.getRating());
@@ -81,7 +82,7 @@ public class ReviewService {
 
         File reviewImgs = fetchedReview.getReviewImgs();
         if (reqPutReviewDto.getReviewImgs() != null) {
-            subFileService.updateSubFiles(reqPutReviewDto.getReviewImgs(), reviewImgs, username);
+            subFileService.updateSubFiles(reqPutReviewDto.getReviewImgs(), reviewImgs, username, ImageTypeEnum.REVIEW);
         }
 
         fetchedReview.update(reqPutReviewDto.getRating(), reqPutReviewDto.getReview());

@@ -25,7 +25,8 @@ public enum ErrorCode {
     COMPANY_INVALID_VALUE_EXCEPTION(HttpStatus.BAD_REQUEST, "CO017", "올바르지 않은 업체 요청 값입니다."),
     COMPANY_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "CO018", "존재하지 않는 업체입니다."),
     COUPON_ISSUED_LIMIT_REACHED(HttpStatus.BAD_REQUEST, "CO019", "더 이상 발급 가능한 쿠폰이 없습니다."),
-    REQUEST_TIMEOUT(HttpStatus.REQUEST_TIMEOUT, "CO020", "선착순 쿠폰 발급 요청 시간이 초과되었습니다.");
+    REQUEST_TIMEOUT(HttpStatus.REQUEST_TIMEOUT, "CO020", "선착순 쿠폰 발급 요청 시간이 초과되었습니다."),
+    INVALID_SORT_EXCEPTION(HttpStatus.BAD_REQUEST, "CO021", "올바르지 않은 정렬 값입니다.");
 
 
     private final HttpStatus status;

@@ -57,7 +57,7 @@ public class BasketController {
     @GetMapping
     @Operation(summary = "장바구니 목록 조회 API", description = "장바구니 목록을 조회합니다.")
     public ResponseDto<Page<ResGetBasketListDto>> getBasketList(@AuthenticationPrincipal RequestUserDetails userDetails,
-                                                                @PageableDefault(size = 10) Pageable pageable) { //pageable 에 대한 설정 논의 필요
+                                                                @PageableDefault(size = 10) Pageable pageable) {
         return ResponseDto.of("장바구니 조회 성공", basketService.getBasketList(userDetails.getUserId(), pageable));
     }
 

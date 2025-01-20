@@ -23,8 +23,8 @@ public class ProductKafkaConsumer {
     private final ProductInventoryService productInventoryService;
     private final ObjectMapper objectMapper;
 
-    @Value("${spring.kafka.topics.rollback-reduce-quantity}")
-    private String rollbackReduceQuantityTopic;
+    @Value("${spring.kafka.topics.request-order}")
+    private String requestOrderTopic;
 
     @KafkaListener(topics = "${spring.kafka.topics.reduce-quantity}", groupId = "product-group")
     @Transactional
@@ -37,13 +37,16 @@ public class ProductKafkaConsumer {
             // 재고 차감 요청 처리
             productInventoryService.reduceQuantity(requestDto);
             acknowledgment.acknowledge(); // 메시지 처리 성공 후 명시적으로 커밋
-            productInventoryService.sendPaymentRequest(key.toString(), key.toString());
-            log.info("결제 요청 메시지 전송 완료");
-            log.info("재고 차감 처리 완료: {}", message);
 
+            String readyPaymentMessage = objectMapper.writeValueAsString(key);
+            productInventoryService.sendPaymentRequest(key.getOrderId().toString(), readyPaymentMessage);
+
+            log.info("결제 요청 메시지 전송 완료 key : {}, message: {}", key.getOrderId().toString(), readyPaymentMessage);
         } catch (ApplicationException e) {
             log.error("재고 차감 처리 실패: {}", e.getMessage());
-            sendRollbackMessage(rollbackReduceQuantityTopic, key, key.toString()); // 실패 시 전체 요청 롤백
+            String rollbackMessage = objectMapper.writeValueAsString(key);
+            sendRollbackMessage(requestOrderTopic, key.getOrderId().toString(),
+                    rollbackMessage); // 실패 시 전체 요청 롤백
             acknowledgment.acknowledge();
         } catch (Exception e) {
             log.error("예기치 않은 오류 발생: {}", e.getMessage());
@@ -62,8 +65,10 @@ public class ProductKafkaConsumer {
             // 재고 복구 요청 처리
             productInventoryService.restoreQuantity(requestDto);
             acknowledgment.acknowledge(); // 메시지 처리 성공 후 명시적으로 커밋
-            productInventoryService.sendOrderRequest(key.toString(), key.toString());
-            log.info("주문 취소 요청 완료");
+
+            String orderCancelMessage = objectMapper.writeValueAsString(key);
+            productInventoryService.sendOrderRequest(key.getOrderId().toString(), orderCancelMessage);
+            log.info("주문 취소 요청 완료 key: {}, message: {}", key.getOrderId().toString(), orderCancelMessage);
             log.info("재고 복구 처리 완료: {}", message);
 
         } catch (ApplicationException e) {
@@ -75,11 +80,10 @@ public class ProductKafkaConsumer {
         }
     }
 
-    private void sendRollbackMessage(String topic, ResPutProductQuantityDto key, String failedMessage) {
+    private void sendRollbackMessage(String topic, String key, String failedMessage) {
         try {
-            String messageKey = key.toString();
-            productInventoryService.sendRollbackRequest(topic, messageKey, failedMessage);
-            log.info("롤백 요청 메시지 전송 완료: {}", messageKey);
+            productInventoryService.sendRollbackRequest(topic, key, failedMessage);
+            log.info("롤백 요청 메시지 전송 완료 key: {}, message: {}", key, failedMessage);
         } catch (Exception e) {
             log.error("롤백 요청 메시지 전송 중 오류 발생: {}", e.getMessage());
             throw new ApplicationException(ErrorCode.INTERNAL_SERVER_EXCEPTION);

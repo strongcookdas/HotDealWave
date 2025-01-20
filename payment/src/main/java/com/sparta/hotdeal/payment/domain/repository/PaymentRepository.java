@@ -15,4 +15,6 @@ public interface PaymentRepository {
     Page<Payment> findAllByUserId(UUID userId, Pageable pageable);
 
     Optional<Payment> findByOrderIdAndUserId(UUID orderId, UUID userId);
+
+    Payment saveAndFlush(Payment payment);
 }

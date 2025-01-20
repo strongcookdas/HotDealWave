@@ -3,6 +3,21 @@ spring:
     name: order-service
   profiles:
     active: ${ACTIVE_PROFILE}
+  kafka:
+    consumer:
+      auto-offset-reset: earliest # 카프카에서 존재하는 offset중 가장 앞에 있는 것을 가져온다.
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer #객체를 어떤 방식으로 변환할지?
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    topics:
+      request-product: ${KAFKA_REQUEST_PRODUCT_TOPIC}
+      cancel-order: ${KAFKA_CANCEL_ORDER_TOPIC}
+      update-order-status: ${KAFKA_UPDATE_ORDER_STATUS_TOPIC}
+      dlq: ${KAFKA_DLQ_TOPIC}
+      cancel-payment: ${KAFKA_CANCEL_PAYMENT_TOPIC}
+      refund-payment: ${KAFKA_REFUND_PAYMENT_TOPIC}
 
 server:
   port: 19094
@@ -15,12 +30,6 @@ admin:
   user-id: ${ADMIN_USER_ID}
   email: ${ADMIN_EMAIL}
   role: ${ADMIN_ROLE}
-
-springdoc:
-   api-docs:
-     enabled: true
-   swagger-ui:
-     path: /swagger-ui.html
 
 management:
   endpoints:
