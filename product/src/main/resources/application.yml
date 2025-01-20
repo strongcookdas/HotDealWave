@@ -30,3 +30,10 @@ admin:
   user-id: ${ADMIN_USER_ID}
   email: ${ADMIN_EMAIL}
   role: ${ADMIN_ROLE}
+
+s3:
+  access-key: ${AWS_ACCESS_KEY_ID}
+  secret-key: ${AWS_SECRET_ACCESS_KEY}
+  bucket-name: ${AWS_S3_BUCKET_NAME}
+  region: ${AWS_REGION}
+  domain: ${AWS_DOMAIN}

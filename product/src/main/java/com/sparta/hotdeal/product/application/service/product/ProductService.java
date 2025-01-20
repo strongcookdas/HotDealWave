@@ -14,6 +14,7 @@ import com.sparta.hotdeal.product.application.service.client.CompanyClientServic
 import com.sparta.hotdeal.product.application.service.file.FileService;
 import com.sparta.hotdeal.product.application.service.file.SubFileService;
 import com.sparta.hotdeal.product.domain.entity.product.File;
+import com.sparta.hotdeal.product.domain.entity.product.ImageTypeEnum;
 import com.sparta.hotdeal.product.domain.entity.product.Product;
 import com.sparta.hotdeal.product.domain.entity.product.ProductDocument;
 import com.sparta.hotdeal.product.domain.entity.product.ProductStatusEnum;
@@ -60,13 +61,13 @@ public class ProductService {
         // 상세 이미지
         File detailImgs = fileService.saveFile();
         for (MultipartFile file : productDto.getDetailImgs()) {
-            subFileService.saveImg(file, detailImgs);
+            subFileService.saveImg(file, detailImgs, ImageTypeEnum.PRODUCT);
         }
         log.info("detailImgs : {}", detailImgs);
 
         // 썸네일 이미지
         File thumbImg = fileService.saveFile();
-        subFileService.saveImg(productDto.getThumbImg(), thumbImg);
+        subFileService.saveImg(productDto.getThumbImg(), thumbImg, ImageTypeEnum.PRODUCT);
         log.info("thumbImg : {}", thumbImg);
 
         // 상품 저장
@@ -96,13 +97,15 @@ public class ProductService {
         // 상세 이미지 업데이트
         if (reqPutUpdateProductDto.getDetailImgs() != null) {
             log.info("detailImgsFile : {}", reqPutUpdateProductDto.getDetailImgs());
-            subFileService.updateSubFiles(reqPutUpdateProductDto.getDetailImgs(), detailImgsFile, username);
+            subFileService.updateSubFiles(reqPutUpdateProductDto.getDetailImgs(), detailImgsFile, username,
+                    ImageTypeEnum.PRODUCT);
         }
 
         // 썸네일 이미지 업데이트
         if (reqPutUpdateProductDto.getThumbImg() != null) {
             log.info("thumbImgFile : {}", reqPutUpdateProductDto.getThumbImg());
-            subFileService.updateImg(reqPutUpdateProductDto.getThumbImg(), thumbImgFile, username);
+            subFileService.updateImg(reqPutUpdateProductDto.getThumbImg(), thumbImgFile, username,
+                    ImageTypeEnum.PRODUCT);
         }
 
         // 상품 정보 업데이트
