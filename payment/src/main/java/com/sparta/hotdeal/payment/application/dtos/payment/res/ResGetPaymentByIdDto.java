@@ -2,6 +2,7 @@ package com.sparta.hotdeal.payment.application.dtos.payment.res;
 
 import com.sparta.hotdeal.payment.domain.entity.payment.Payment;
 import com.sparta.hotdeal.payment.domain.entity.payment.PaymentStatus;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,8 +20,11 @@ public class ResGetPaymentByIdDto {
     private PaymentStatus paymentStatus;
     private Integer payedAmount;
     private Integer refundAmount;
+    private LocalDateTime refundedAt;
+    private String tid;
+    private String payUrl;
 
-    public static ResGetPaymentByIdDto of(Payment payment){
+    public static ResGetPaymentByIdDto of(Payment payment) {
         return ResGetPaymentByIdDto.builder()
                 .paymentId(payment.getId())
                 .orderId(payment.getOrderId())
@@ -28,6 +32,9 @@ public class ResGetPaymentByIdDto {
                 .paymentStatus(payment.getStatus())
                 .payedAmount(payment.getAmount())
                 .refundAmount(payment.getRefundAmount())
+                .refundedAt(payment.getRefundedAt())
+                .tid(payment.getTid())
+                .payUrl(payment.getPayUrl())
                 .build();
     }
 }

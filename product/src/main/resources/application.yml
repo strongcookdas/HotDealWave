@@ -3,6 +3,18 @@ spring:
     name: product-service
   profiles:
     active: ${ACTIVE_PROFILE}
+  kafka:
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    topics:
+      reduce-quantity: ${KAFKA_REDUCE_QUANTITY_TOPIC}
+      request-payment: ${KAFKA_REQUEST_PAYMENT_TOPIC}
+      restore-quantity: ${KAFKA_RESTORE_QUANTITY_TOPIC}
+      request-order: ${KAFKA_REQUEST_ORDER_TOPIC}
 logging:
   level:
     org.springframework.security: DEBUG
@@ -14,13 +26,14 @@ server:
 #  service:
 #    url: http://localhost:19091/product-service
 
-springdoc:
-  api-docs:
-    enabled: true
-  swagger-ui:
-    path: /swagger-ui.html
-
 admin:
   user-id: ${ADMIN_USER_ID}
   email: ${ADMIN_EMAIL}
   role: ${ADMIN_ROLE}
+
+s3:
+  access-key: ${AWS_ACCESS_KEY_ID}
+  secret-key: ${AWS_SECRET_ACCESS_KEY}
+  bucket-name: ${AWS_S3_BUCKET_NAME}
+  region: ${AWS_REGION}
+  domain: ${AWS_DOMAIN}

@@ -10,6 +10,7 @@ import com.sparta.hotdeal.order.application.dtos.order.res.ResPostOrderDto;
 import com.sparta.hotdeal.order.application.service.order.OrderService;
 import com.sparta.hotdeal.order.infrastructure.custom.RequestUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,8 +41,7 @@ public class OrderController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "주문 생성 API", description = "주문을 생성합니다.")
     public ResponseDto<ResPostOrderDto> createOrder(@AuthenticationPrincipal RequestUserDetails userDetails,
-                                                    @RequestBody ReqPostOrderDto req) {
-        log.info("ReqPostOrderDto : {}", req);
+                                                    @RequestBody @Valid ReqPostOrderDto req) {
         return ResponseDto.of(OrderResponseMessage.CREATE_ORDER.getMessage(),
                 orderService.createOrder(userDetails.getUserId(), userDetails.getEmail(), userDetails.getRole(), req));
     }
@@ -65,7 +65,7 @@ public class OrderController {
     @PutMapping("/{orderId}/status")
     @Secured({"ROLE_MASTER"})
     @Operation(summary = "주문 상태 수정 API", description = "주문 상태를 수정합니다.")
-    public ResponseDto<Void> updateOrderStatus(@PathVariable UUID orderId, @RequestBody ReqPutOrderDto req) {
+    public ResponseDto<Void> updateOrderStatus(@PathVariable UUID orderId, @RequestBody @Valid ReqPutOrderDto req) {
         orderService.updateOrderStatus(orderId, req);
         return ResponseDto.of("주문 상태가 수정되었습니다.", null);
     }

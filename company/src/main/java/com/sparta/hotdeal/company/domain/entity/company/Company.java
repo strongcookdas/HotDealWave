@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Index;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -23,7 +24,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(access = AccessLevel.PRIVATE)
-@Table(name = "p_companies")
+@Table(name = "p_companies", indexes = @Index(name = "idx_business_registration_number", columnList = "businessRegistrationNumber"))
 public class Company extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

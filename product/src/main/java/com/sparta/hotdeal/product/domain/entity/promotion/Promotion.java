@@ -97,7 +97,11 @@ public class Promotion extends AuditingDate {
         this.status = status;
     }
 
-    public void updateRemaining(int remaining) {
-        this.remaining = remaining;
+    public void decreaseRemaining(int quantity) {
+        this.remaining -= quantity;
+    }
+
+    public void increaseRemaining(int quantity) {
+        this.remaining += quantity;
     }
 }

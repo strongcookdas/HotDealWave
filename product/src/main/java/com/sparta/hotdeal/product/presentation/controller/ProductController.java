@@ -1,17 +1,17 @@
 package com.sparta.hotdeal.product.presentation.controller;
 
-import com.sparta.hotdeal.product.application.dtos.req.product.ReqPatchProductQuantityDto;
 import com.sparta.hotdeal.product.application.dtos.req.product.ReqPatchProductStatusDto;
 import com.sparta.hotdeal.product.application.dtos.req.product.ReqPostProductDto;
 import com.sparta.hotdeal.product.application.dtos.req.product.ReqPutProductDto;
+import com.sparta.hotdeal.product.application.dtos.req.product.ReqPutProductQuantityDto;
 import com.sparta.hotdeal.product.application.dtos.res.ResponseDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResGetProductDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPatchProductStatusDto;
-import com.sparta.hotdeal.product.application.dtos.res.product.ResPatchReduceProductQuantityDto;
-import com.sparta.hotdeal.product.application.dtos.res.product.ResPatchRestoreProductQuantityDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPostProductDto;
 import com.sparta.hotdeal.product.application.dtos.res.product.ResPutProductDto;
-import com.sparta.hotdeal.product.application.service.ProductService;
+import com.sparta.hotdeal.product.application.dtos.res.product.ResPutProductQuantityDto;
+import com.sparta.hotdeal.product.application.service.product.ProductInventoryService;
+import com.sparta.hotdeal.product.application.service.product.ProductService;
 import com.sparta.hotdeal.product.infrastructure.custom.RequestUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -42,6 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProductController {
 
     private final ProductService productService;
+    private final ProductInventoryService productInventoryService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -98,27 +99,27 @@ public class ProductController {
     @PutMapping("/reduce-quantity")
     @Secured({"ROLE_MASTER"})
     @Operation(summary = "상품 수량 감소 API", description = "상품의 수량을 감소합니다.")
-    public ResponseDto<List<ResPatchReduceProductQuantityDto>> reduceQuantity(
+    public ResponseDto<ResPutProductQuantityDto> reduceQuantity(
             @AuthenticationPrincipal RequestUserDetails userDetails,
-            @RequestBody List<ReqPatchProductQuantityDto> reqPatchProductQuantityDto
+            @RequestBody ReqPutProductQuantityDto reqPutProductQuantityDto
     ) {
-        List<ResPatchReduceProductQuantityDto> resPatchReduceProductQuantityDto = productService.reduceQuantity(
-                reqPatchProductQuantityDto);
+        ResPutProductQuantityDto resPutProductQuantityDto = productInventoryService.reduceQuantity(
+                reqPutProductQuantityDto);
 
-        return ResponseDto.of("상품이 수정되었습니다.", resPatchReduceProductQuantityDto);
+        return ResponseDto.of("상품이 수정되었습니다.", resPutProductQuantityDto);
     }
 
     @PutMapping("/restore-quantity")
     @Secured({"ROLE_MASTER"})
     @Operation(summary = "상품 수량 복구 API", description = "상품의 수량을 복구합니다.")
-    public ResponseDto<List<ResPatchRestoreProductQuantityDto>> restoreQuantity(
+    public ResponseDto<ResPutProductQuantityDto> restoreQuantity(
             @AuthenticationPrincipal RequestUserDetails userDetails,
-            @RequestBody List<ReqPatchProductQuantityDto> reqPatchProductQuantityDto
+            @RequestBody ReqPutProductQuantityDto reqPutProductQuantityDto
     ) {
-        List<ResPatchRestoreProductQuantityDto> resPatchRestoreProductQuantityDto = productService.restoreQuantity(
-                reqPatchProductQuantityDto);
+        ResPutProductQuantityDto resPutProductQuantityDto = productInventoryService.restoreQuantity(
+                reqPutProductQuantityDto);
 
-        return ResponseDto.of("상품이 수정되었습니다.", resPatchRestoreProductQuantityDto);
+        return ResponseDto.of("상품이 수정되었습니다.", resPutProductQuantityDto);
     }
 
     @GetMapping("/{productId}")

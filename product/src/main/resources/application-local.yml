@@ -11,6 +11,12 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
     show-sql: true
+  kafka:
+    bootstrap-servers: ${LOCAL_KAFKA_ENDPOINT}
+  elasticsearch:
+    uris: ${LOCAL_ELASTICSEARCH_ENDPOINT}
+    username: ${LOCAL_ELASTICSEARCH_USERNAME}
+    password: ${LOCAL_ELASTICSEARCH_PASSWORD}
 
 eureka:
   client:

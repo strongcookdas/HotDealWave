@@ -2,18 +2,14 @@ package com.sparta.hotdeal.order.application.service.order;
 
 import com.sparta.hotdeal.order.application.dtos.address.AddressDto;
 import com.sparta.hotdeal.order.application.dtos.coupon.CouponValidationDto;
-import com.sparta.hotdeal.order.application.dtos.order.OrderDto;
 import com.sparta.hotdeal.order.application.dtos.order.req.ReqPostOrderDto;
 import com.sparta.hotdeal.order.application.dtos.order.req.ReqPutOrderDto;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrderByIdDto;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrderListDto;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResPostOrderDto;
-import com.sparta.hotdeal.order.application.dtos.order_product.OrderProductDto;
-import com.sparta.hotdeal.order.application.dtos.payment.PaymentRequestDto;
 import com.sparta.hotdeal.order.application.dtos.product.ProductDto;
 import com.sparta.hotdeal.order.application.dtos.user.UserDto;
 import com.sparta.hotdeal.order.application.port.CouponClientPort;
-import com.sparta.hotdeal.order.application.port.PaymentClientPort;
 import com.sparta.hotdeal.order.application.port.ProductClientPort;
 import com.sparta.hotdeal.order.application.port.UserClientPort;
 import com.sparta.hotdeal.order.common.exception.ApplicationException;
@@ -23,13 +19,13 @@ import com.sparta.hotdeal.order.domain.entity.order.Order;
 import com.sparta.hotdeal.order.domain.entity.order.OrderProduct;
 import com.sparta.hotdeal.order.domain.entity.order.OrderStatus;
 import com.sparta.hotdeal.order.domain.repository.OrderRepository;
+import com.sparta.hotdeal.order.event.service.OrderProducerService;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -47,128 +43,207 @@ public class OrderService {
     private final ProductClientPort productClientPort;
     private final CouponClientPort couponClientPort;
     private final UserClientPort userClientPort;
-    private final PaymentClientPort paymentClientPort;
 
     private final OrderProductService orderProductService;
     private final OrderBasketService orderBasketService;
+    private final OrderCalculationService orderCalculationService;
+    private final OrderProducerService orderProducerService;
+
+
+//    public ResPostOrderDto createOrder(UUID userId, String email, String role, ReqPostOrderDto req) {
+//        List<Basket> basketList = orderBasketService.getBasketList(userId, req.getBasketList());
+//
+//        Map<UUID, ProductDto> productDtoMap = getProductDetailsForBasketItems(basketList);
+//
+//        AddressDto addressDto = userClientPort.getAddress(userId, email, role, req.getAddressId());
+//        log.info("주소 단건 조회 API 호출");
+//
+//        CouponValidationDto couponValidationDto = validateAndUseCoupon(req.getCouponId(), basketList,
+//                productDtoMap);
+//
+//        int totalAmount = orderCalculationService.calculateTotalAmount(basketList, productDtoMap);
+//
+//        Order order = saveOrder(
+//                addressDto.getAddressId(),
+//                userId,
+//                totalAmount,
+//                getOrderName(productDtoMap),
+//                req.getCouponId(),
+//                couponValidationDto.getTotalDiscountAmount()
+//        );
+//
+//        orderProductService.saveOrderProductList(order, basketList, productDtoMap);
+//        orderBasketService.deleteBasketList(basketList);
+//
+//        orderProducerService.sendReduceProductQuantityMessage(order, basketList);
+//
+//        return ResPostOrderDto.of(order.getId());
+//    }
 
     public ResPostOrderDto createOrder(UUID userId, String email, String role, ReqPostOrderDto req) {
-        //1. 장바구니 조회
+        // 장바구니 목록 조회 (동기 처리)
         List<Basket> basketList = orderBasketService.getBasketList(userId, req.getBasketList());
-        log.info("장바구니 조회");
 
-        //2. 상품 정보 조회
-        List<UUID> productIds = basketList.stream().map(Basket::getProductId).toList();
-        List<ProductDto> productDtoList = productClientPort.getProductALL(productIds);
-        log.info("상품 조회 정보");
+        // 상품 정보 조회 비동기 처리
+        CompletableFuture<Map<UUID, ProductDto>> productFuture = CompletableFuture.supplyAsync(
+                () -> getProductDetailsForBasketItems(basketList)
+        );
 
-        Map<UUID, ProductDto> productDtoMap = convertListToMap(productDtoList);
-        log.info("productDto -> productMap");
+        // 주소 정보 조회 비동기 처리
+        CompletableFuture<AddressDto> addressFuture = CompletableFuture.supplyAsync(
+                () -> userClientPort.getAddress(userId, email, role, req.getAddressId())
+        );
 
-        if (basketList.size() != productDtoList.size()) {
-            log.error("상품과 장바구니 수량 불일치 예외 발생");
-            throw new ApplicationException(ErrorCode.ORDER_INVALID_VALUE_EXCEPTION);
-        }
+        // 비동기 작업 완료 대기
+        Map<UUID, ProductDto> productDtoMap = productFuture.join();
+        AddressDto addressDto = addressFuture.join();
 
-        //4. 총 금액 계산
-        int totalAmount = calculateTotalAmount(basketList, productDtoMap);
-        log.info("총 금액 계산");
+        // 쿠폰 검증 및 사용 (동기 처리)
+        CouponValidationDto couponValidationDto = validateAndUseCoupon(req.getCouponId(), basketList, productDtoMap);
 
-        //5. 쿠폰 유효성 및 쿠폰 적용
-        int discountAmount = 0;
-        UUID couponId = null;
-        CouponValidationDto couponValidationDto = couponClientPort.validateCoupon(req.getCouponId(), basketList,
-                productDtoMap);
-        log.info("쿠폰 유효성 체크 호출");
+        // 총 금액 계산
+        int totalAmount = orderCalculationService.calculateTotalAmount(basketList, productDtoMap);
 
-        if (couponValidationDto.isValid()) {
-            discountAmount = couponValidationDto.getTotalDiscountAmount();
-            couponId = req.getCouponId();
-            couponClientPort.useCoupon(couponId);
-            log.info("쿠폰 사용 api 호출");
-        }
-
-        //6. 상품 감소 처리
-        productClientPort.reduceProductQuantity(basketList);
-        log.info("product 감소 처리");
-
-        //7. 장바구니 삭제
-        orderBasketService.deleteBasketList(basketList);
-        log.info("장바구니 삭제 처리");
-
-        //8. 주문 저장 및 주문-상품 저장
-        AddressDto address = userClientPort.getAddress(userId, email, role, req.getAddressId());
-        log.info("주소 조회 api 호출");
-        Order order = Order.create(
-                address.getAddressId(),
+        // 주문 생성 및 저장
+        Order order = saveOrder(
+                addressDto.getAddressId(),
                 userId,
                 totalAmount,
-                getOrderName(productDtoList),
+                getOrderName(productDtoMap),
+                req.getCouponId(),
+                couponValidationDto.getTotalDiscountAmount()
+        );
+
+        // 주문 상품 저장 및 장바구니 삭제
+        orderProductService.saveOrderProductList(order, basketList, productDtoMap);
+        orderBasketService.deleteBasketList(basketList);
+
+        // 메시지 전송
+        orderProducerService.sendReduceProductQuantityMessage(order, basketList);
+
+        return ResPostOrderDto.of(order.getId());
+    }
+
+
+    private Map<UUID, ProductDto> getProductDetailsForBasketItems(List<Basket> basketList) {
+        List<UUID> productIds = basketList.stream().map(Basket::getProductId).toList();
+        Map<UUID, ProductDto> productDtoMap = productClientPort.getProductAll(productIds);
+        log.info("상품 목록 조회 API 호출");
+        return productDtoMap;
+    }
+
+    private CouponValidationDto validateAndUseCoupon(UUID couponId, List<Basket> basketList,
+                                                     Map<UUID, ProductDto> productDtoMap) {
+
+        CouponValidationDto couponValidationDto = couponClientPort.validateCoupon(couponId, basketList, productDtoMap);
+        log.info("쿠폰 유효성 체크 API 호출");
+
+        if (couponValidationDto.isValid()) {
+            couponClientPort.useCoupon(couponId);
+            log.info("쿠폰 사용 API 호출");
+        }
+
+        return couponValidationDto;
+    }
+
+    private Order saveOrder(
+            UUID addressId,
+            UUID userId,
+            int totalAmount,
+            String orderName,
+            UUID couponId,
+            int discountAmount
+    ) {
+        Order order = Order.create(
+                addressId,
+                userId,
+                totalAmount,
+                orderName,
                 couponId,
                 discountAmount
         );
 
-        order = orderRepository.save(order);
-        orderProductService.createOrderProductList(order, basketList, productDtoList);
-        log.info("주문 정보 DB 저장");
+        return orderRepository.save(order);
+    }
 
-        //주문 생성 이후 비동기 처리 (결제 요청)
-        PaymentRequestDto paymentRequestDto = paymentClientPort.readyPayment(userId, email, role, OrderDto.of(order),
-                basketList);
-        log.info("결제 요청");
+    private String getOrderName(Map<UUID, ProductDto> productDtoMap) {
+        List<ProductDto> productDtoList = productDtoMap.values().stream().toList();
 
-        return ResPostOrderDto.of(order, paymentRequestDto);
+        if (productDtoList.size() == 1) {
+            return productDtoList.get(0).getName();
+        }
+        return productDtoList.get(0).getName() + " 외 " + (productDtoList.size() - 1) + "개";
     }
 
     @Transactional(readOnly = true)
     public ResGetOrderByIdDto getOrderDetail(UUID userId, String email, String role, UUID orderId) {
-        //주문 조회
-        Order order = orderRepository.findByIdAndUserId(orderId, userId)
-                .orElseThrow(() -> new ApplicationException(ErrorCode.ORDER_NOT_FOUND_EXCEPTION));
-        log.info("주문 조회");
 
-        //주소 조회
-        AddressDto address = userClientPort.getAddress(userId, email, role, order.getAddressId());
-        log.info("주소 조회");
+        Order order = getOrderByUserRole(role, userId, orderId);
 
-        //user 조회
+        //주소 조회 - (현재 자신 저장한 주소만 볼 수 있도록 권한 설정이 되어 있어 주석)
+        //AddressDto address = userClientPort.getAddress(userId, email, role, order.getAddressId());
+        //log.info("주소 조회");
+
         UserDto user = userClientPort.getUserById(userId, email, role);
-        log.info("유저 조회");
+        log.info("유저 조회 API 호출");
 
-        //order-product 조회
-        List<OrderProductDto> orderProductDtoList = orderProductService.getOrderProductList(orderId);
-        log.info("order-product 조회");
+        List<OrderProduct> orderProductList = orderProductService.getOrderProductList(orderId);
 
-        //product 조회
-        List<UUID> productIds = orderProductDtoList.stream().map(OrderProductDto::getProductId).toList();
-        Map<UUID, ProductDto> productMap = productClientPort.getProductAll(productIds);
-        log.info("product 조회");
+        Map<UUID, ProductDto> productMap = getProductDetailsForOrderProduct(orderProductList);
 
-        //조합 후 반환
-        return ResGetOrderByIdDto.of(order, address, orderProductDtoList, productMap, user);
+        return ResGetOrderByIdDto.of(order, orderProductList, productMap, user);
+    }
+
+    private Order getOrderByUserRole(String role, UUID userId, UUID orderId) {
+        if (role.equals("ROLE_MASTER")) {
+            return orderRepository.findByIdAndDeletedAtIsNull(orderId)
+                    .orElseThrow(() -> new ApplicationException(ErrorCode.ORDER_NOT_FOUND_EXCEPTION));
+        }
+
+        return orderRepository.findByIdAndUserId(orderId, userId)
+                .orElseThrow(() -> new ApplicationException(ErrorCode.ORDER_NOT_FOUND_EXCEPTION));
+    }
+
+    private Map<UUID, ProductDto> getProductDetailsForOrderProduct(List<OrderProduct> orderProductList) {
+        List<UUID> productIds = orderProductList.stream().map(OrderProduct::getProductId).toList();
+        Map<UUID, ProductDto> productDtoMap = productClientPort.getProductAll(productIds);
+        log.info("상품 목록 조회 API 호출");
+        return productDtoMap;
     }
 
     @Transactional(readOnly = true)
     public Page<ResGetOrderListDto> getOrderList(UUID userId, Pageable pageable) {
-        //주문 내역 조회
         Page<Order> orderPage = orderRepository.findAllByUserId(userId, pageable);
 
-        //각 주문의 OrderProduct 데이터 가져오기;
-        Map<UUID, List<OrderProduct>> orderProductMap = orderProductService.getOrderProductsByOrderIds(
-                orderPage.stream().toList());
+        Map<UUID, List<OrderProduct>> orderProductMap = getOrderProductsGroupedByOrderId(orderPage);
 
-        //각 주문의 Product 가져오기
+        Map<UUID, ProductDto> productDtoMap = getProductMapByOrderProducts(orderProductMap);
+        log.info("상품 목록 조회 API 호출");
+
+        return convertOrderPageDto(orderPage, orderProductMap, productDtoMap);
+    }
+
+    private Map<UUID, List<OrderProduct>> getOrderProductsGroupedByOrderId(Page<Order> orderPage) {
+        List<Order> orderList = orderPage.stream().toList();
+        return orderProductService.getOrderProductsByOrderIds(orderList);
+    }
+
+    private Map<UUID, ProductDto> getProductMapByOrderProducts(Map<UUID, List<OrderProduct>> orderProductMap) {
         List<UUID> productIds = orderProductMap.values().stream()
                 .flatMap(List::stream)
                 .map(OrderProduct::getProductId)
                 .toList();
 
-        Map<UUID, ProductDto> productMap = productClientPort.getProductAll(productIds);
-        // 4. ResGetOrderListDto 생성
+        return productClientPort.getProductAll(productIds);
+    }
+
+    private Page<ResGetOrderListDto> convertOrderPageDto(Page<Order> orderPage,
+                                                         Map<UUID, List<OrderProduct>> orderProductMap,
+                                                         Map<UUID, ProductDto> productDtoMap) {
         return orderPage.map(order -> ResGetOrderListDto.of(
                 order,
                 orderProductMap.get(order.getId()),
-                productMap
+                productDtoMap
         ));
     }
 
@@ -180,24 +255,37 @@ public class OrderService {
     }
 
     public void cancelOrder(UUID userId, UUID orderId) {
-        Order order = orderRepository.findByIdAndUserId(orderId, userId)
-                .orElseThrow(() -> new ApplicationException(ErrorCode.ORDER_NOT_FOUND_EXCEPTION));
+        Order order = findByIdAndUserId(orderId, userId);
+        checkOrderStatusCancellable(order);
 
+        order.updateStatus(OrderStatus.CANCEL);
+        restoreProductQuantityByOrderCancel(order);
+
+        orderProducerService.sendCancelPaymentMessage(order);
+    }
+
+    private void checkOrderStatusCancellable(Order order) {
         OrderStatus orderStatus = order.getStatus();
         if (!(orderStatus.equals(OrderStatus.CREATE) || orderStatus.equals(OrderStatus.PENDING))) {
             throw new ApplicationException(ErrorCode.ORDER_ALREADY_PROCESSED_EXCEPTION);
         }
+    }
 
-        //비동기 처리
-        //수량 복구
-        //pending 일 경우 주문 취소 로직까지 필요
-        order.updateStatus(OrderStatus.CANCEL);
+    private void restoreProductQuantityByOrderCancel(Order order) {
+        List<OrderProduct> orderProductList = orderProductService.getOrderProductList(order.getId());
+        productClientPort.restoreProductList(order, orderProductList);
+        log.info("상품 수량 복구 API 호출");
     }
 
     public void refundOrder(UUID userId, UUID orderId) {
-        Order order = orderRepository.findByIdAndUserId(orderId, userId)
-                .orElseThrow(() -> new ApplicationException(ErrorCode.ORDER_NOT_FOUND_EXCEPTION));
+        Order order = findByIdAndUserId(orderId, userId);
+        checkOrderRefundableDate(order);
+        order.updateStatus(OrderStatus.REFUND);
+        orderProducerService.sendRefundPaymentMessage(order);
+    }
 
+
+    private void checkOrderRefundableDate(Order order) {
         LocalDateTime orderCreatedAt = order.getCreatedAt();
         LocalDateTime now = LocalDateTime.now();
 
@@ -207,44 +295,11 @@ public class OrderService {
         if (!orderStatus.equals(OrderStatus.COMPLETE) || duration.toHours() > 24) {
             throw new ApplicationException(ErrorCode.ORDER_NOT_CANCELLABLE_EXCEPTION);
         }
-
-        //비동기 처리
-        //수량 복구
-        //주문 취소
-        order.updateStatus(OrderStatus.REFUND);
     }
 
-    private int calculateTotalAmount(List<Basket> basketList, Map<UUID, ProductDto> productDtoMap) {
-        int totalAmount = 0;
-        for (Basket basket : basketList) {
-
-            ProductDto productDto = Optional.ofNullable(productDtoMap.get(basket.getProductId()))
-                    .orElseThrow(() -> new ApplicationException(ErrorCode.PRODUCT_NOT_FOUND_EXCEPTION));
-
-            if (productDto.getQuantity() < basket.getQuantity()) {
-                throw new ApplicationException(ErrorCode.PRODUCT_INVALID_QUANTITY_EXCEPTION);
-            }
-
-            if (!productDto.getStatus().equals("ON_SALE")) {
-                throw new ApplicationException(ErrorCode.PRODUCT_NOT_ON_SALE_EXCEPTION);
-            }
-
-            int productPrice =
-                    (productDto.getDiscountPrice() == null) ? productDto.getPrice() : productDto.getDiscountPrice();
-            totalAmount += (productPrice * basket.getQuantity());
-        }
-        return totalAmount;
+    private Order findByIdAndUserId(UUID orderId, UUID userId) {
+        return orderRepository.findByIdAndUserId(orderId, userId)
+                .orElseThrow(() -> new ApplicationException(ErrorCode.ORDER_NOT_FOUND_EXCEPTION));
     }
 
-    private String getOrderName(List<ProductDto> productDtoList) {
-        if (productDtoList.size() == 1) {
-            return productDtoList.get(0).getName();
-        }
-        return productDtoList.get(0).getName() + "외 " + ((productDtoList.size() - 1) + "개");
-    }
-
-    private Map<UUID, ProductDto> convertListToMap(List<ProductDto> productDtoList) {
-        return productDtoList.stream()
-                .collect(Collectors.toMap(ProductDto::getProductId, productDto -> productDto));
-    }
 }
