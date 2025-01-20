@@ -23,8 +23,8 @@ public class ProductKafkaConsumer {
     private final ProductInventoryService productInventoryService;
     private final ObjectMapper objectMapper;
 
-    @Value("${spring.kafka.topics.rollback-reduce-quantity}")
-    private String rollbackReduceQuantityTopic;
+    @Value("${spring.kafka.topics.request-order}")
+    private String requestOrderTopic;
 
     @KafkaListener(topics = "${spring.kafka.topics.reduce-quantity}", groupId = "product-group")
     @Transactional
@@ -45,7 +45,7 @@ public class ProductKafkaConsumer {
         } catch (ApplicationException e) {
             log.error("재고 차감 처리 실패: {}", e.getMessage());
             String rollbackMessage = objectMapper.writeValueAsString(key);
-            sendRollbackMessage(rollbackReduceQuantityTopic, key.getOrderId().toString(),
+            sendRollbackMessage(requestOrderTopic, key.getOrderId().toString(),
                     rollbackMessage); // 실패 시 전체 요청 롤백
             acknowledgment.acknowledge();
         } catch (Exception e) {
