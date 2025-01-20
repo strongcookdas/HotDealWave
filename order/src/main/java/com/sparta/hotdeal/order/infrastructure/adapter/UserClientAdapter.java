@@ -17,12 +17,10 @@ public class UserClientAdapter implements UserClientPort {
     @Override
     public AddressDto getAddress(UUID userId, String email, String role, UUID addressId) {
         return userClient.getAddress(userId, email, role, addressId).getData().toAddressForOrderDto();
-//        return AddressDto.createDummy();
     }
 
     @Override
     public UserDto getUserById(UUID userId, String email, String role) {
         return userClient.getUser(userId, email, role, userId).getData().toUserByIdForOrderDto();
-//        return UserDto.createDummy();
     }
 }

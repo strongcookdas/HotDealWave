@@ -1,9 +1,9 @@
 package com.sparta.hotdeal.order.application.dtos.order.res;
 
-import com.sparta.hotdeal.order.application.dtos.order_product.OrderProductDto;
 import com.sparta.hotdeal.order.application.dtos.product.ProductDto;
 import com.sparta.hotdeal.order.application.dtos.user.UserDto;
 import com.sparta.hotdeal.order.domain.entity.order.Order;
+import com.sparta.hotdeal.order.domain.entity.order.OrderProduct;
 import com.sparta.hotdeal.order.domain.entity.order.OrderStatus;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,7 +35,7 @@ public class ResGetOrderByIdDto {
         private Integer productQuantity;
         private Integer productPrice;
 
-        public static Product of(ProductDto product, OrderProductDto orderProduct) {
+        public static Product of(ProductDto product, OrderProduct orderProduct) {
             return Product.builder()
                     .productId(product.getProductId())
                     .productName(product.getName())
@@ -70,7 +70,7 @@ public class ResGetOrderByIdDto {
 //    }
 
     public static ResGetOrderByIdDto of(Order order,
-                                        List<OrderProductDto> orderProductDtoList,
+                                        List<OrderProduct> orderProductDtoList,
                                         Map<UUID, ProductDto> productMap,
                                         UserDto userDto
     ) {

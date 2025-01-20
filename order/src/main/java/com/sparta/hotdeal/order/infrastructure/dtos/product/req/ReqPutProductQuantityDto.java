@@ -1,7 +1,7 @@
 package com.sparta.hotdeal.order.infrastructure.dtos.product.req;
 
-import com.sparta.hotdeal.order.application.dtos.order_product.OrderProductDto;
 import com.sparta.hotdeal.order.domain.entity.order.Order;
+import com.sparta.hotdeal.order.domain.entity.order.OrderProduct;
 import java.util.List;
 import java.util.UUID;
 import lombok.Builder;
@@ -19,15 +19,15 @@ public class ReqPutProductQuantityDto {
         private UUID productId;
         private int quantity;
 
-        public static ProductQuantityDetail of(OrderProductDto orderProductDto) {
+        public static ProductQuantityDetail of(OrderProduct orderProduct) {
             return ProductQuantityDetail.builder()
-                    .productId(orderProductDto.getProductId())
-                    .quantity(orderProductDto.getQuantity())
+                    .productId(orderProduct.getProductId())
+                    .quantity(orderProduct.getQuantity())
                     .build();
         }
     }
 
-    public static ReqPutProductQuantityDto of(Order order, List<OrderProductDto> orderProductList) {
+    public static ReqPutProductQuantityDto of(Order order, List<OrderProduct> orderProductList) {
         return ReqPutProductQuantityDto.builder()
                 .orderId(order.getId())
                 .productList(orderProductList.stream().map(ProductQuantityDetail::of).toList())

@@ -5,7 +5,7 @@ spring:
     password: ${LOCAL_DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 #    hikari:
-#      maximum-pool-size: 50
+#      maximum-pool-size: 20
   jpa:
     hibernate:
       ddl-auto: update
@@ -15,6 +15,12 @@ spring:
     show-sql: true
   kafka:
     bootstrap-servers: ${LOCAL_KAFKA_ENDPOINT}
+  data:
+    redis:
+      host: ${REDIS_LOCAL_HOST}
+      port: ${REDIS_LOCAL_PORT}
+      username: ${REDIS_LOCAL_USERNAME}
+      password: ${REDIS_LOCAL_PASSWORD}
 
 eureka:
   client:

@@ -19,7 +19,6 @@ spring:
       cancel-payment: ${KAFKA_CANCEL_PAYMENT_TOPIC}
       refund-payment: ${KAFKA_REFUND_PAYMENT_TOPIC}
 
-
 server:
   port: 19094
 
@@ -31,9 +30,3 @@ admin:
   user-id: ${ADMIN_USER_ID}
   email: ${ADMIN_EMAIL}
   role: ${ADMIN_ROLE}
-
-springdoc:
-   api-docs:
-     enabled: true
-   swagger-ui:
-     path: /swagger-ui.html
