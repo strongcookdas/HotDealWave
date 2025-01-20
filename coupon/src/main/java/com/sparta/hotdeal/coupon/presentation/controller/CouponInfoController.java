@@ -1,15 +1,22 @@
 package com.sparta.hotdeal.coupon.presentation.controller;
 
-import com.sparta.hotdeal.coupon.application.dto.req.*;
-import com.sparta.hotdeal.coupon.application.dto.res.*;
 import com.sparta.hotdeal.coupon.application.dto.ResponseDto;
+import com.sparta.hotdeal.coupon.application.dto.req.ReqPatchCouponInfosByIdStatusDto;
+import com.sparta.hotdeal.coupon.application.dto.req.ReqPostCouponInfosDto;
+import com.sparta.hotdeal.coupon.application.dto.req.ReqPutCouponInfosByIdDto;
+import com.sparta.hotdeal.coupon.application.dto.res.ResGetCouponInfosByIdDto;
+import com.sparta.hotdeal.coupon.application.dto.res.ResGetCouponInfosDto;
+import com.sparta.hotdeal.coupon.application.dto.res.ResPostCouponInfosDto;
 import com.sparta.hotdeal.coupon.application.service.CouponInfoService;
+import com.sparta.hotdeal.coupon.domain.entity.CouponStatus;
+import com.sparta.hotdeal.coupon.infrastructure.custom.RequestUserDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -48,31 +55,22 @@ public class CouponInfoController {
     }
 
     @GetMapping
-    public ResponseDto<ResGetCouponInfosDto> getCoupons() {
-        ResGetCouponInfosDto responseDto = ResGetCouponInfosDto.builder()
-                .coupons(List.of(
-                        ResGetCouponInfosDto.CouponDetailDto.builder()
-                                .couponId(UUID.randomUUID())
-                                .name("쿠폰 1")
-                                .quantity(100)
-                                .issuedCount(50)
-                                .discountAmount(5000)
-                                .minOrderAmount(50000)
-                                .expirationDate(null)
-                                .status("ISSUED")
-                                .couponType("FIRST_COME_FIRST_SERVE")
-                                .companyId(UUID.randomUUID())
-                                .build()
-                ))
-                .page(PageInfoDto.builder()
-                        .size(10)
-                        .number(1)
-                        .totalElements(100)
-                        .totalPages(10)
-                        .build())
-                .build();
+    public ResponseDto<Page<ResGetCouponInfosDto>> getCoupons(
+            @AuthenticationPrincipal RequestUserDetails userDetails,
+            @RequestParam(defaultValue = "1") int pageNumber,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) CouponStatus couponStatus
+    ) {
+        if (userDetails.getRole().equals("CUSTOMER") || userDetails.getRole().equals("SELLER")) {
+            couponStatus = CouponStatus.ISSUED;
+        }
 
-        return ResponseDto.of("쿠폰 정보 목록 조회 성공", responseDto);
+        Page<ResGetCouponInfosDto> couponInfoPage = couponInfoService.getCoupons(pageNumber, pageSize, sortBy, direction, search, couponStatus);
+
+        return ResponseDto.of("쿠폰 정보 목록 조회 성공", couponInfoPage);
     }
 
 }
