@@ -13,12 +13,16 @@ spring:
     show-sql: true
   kafka:
     bootstrap-servers: ${PROD_KAFKA_ENDPOINT}
+    consumer:
+      bootstrap-servers: ${PROD_KAFKA_ENDPOINT}  # 컨슈머에도 명시적으로 설정
+    producer:
+      bootstrap-servers: ${PROD_KAFKA_ENDPOINT}  # 프로듀서에도 명시적으로 설정
   data:
-      redis:
-        host: ${REDIS_PROD_HOST}
-        port: ${REDIS_PROD_PORT}
-        username: ${REDIS_PROD_USERNAME}
-        password: ${REDIS_PROD_PASSWORD}
+    redis:
+      host: ${REDIS_PROD_HOST}
+      port: ${REDIS_PROD_PORT}
+      username: ${REDIS_PROD_USERNAME}
+      password: ${REDIS_PROD_PASSWORD}
 
 eureka:
   client:

@@ -15,6 +15,10 @@ spring:
     show-sql: true
   kafka:
     bootstrap-servers: ${LOCAL_KAFKA_ENDPOINT}
+    consumer:
+      bootstrap-servers: ${LOCAL_KAFKA_ENDPOINT}  # 컨슈머에도 명시적으로 설정
+    producer:
+      bootstrap-servers: ${LOCAL_KAFKA_ENDPOINT}  # 프로듀서에도 명시적으로 설정
   data:
     redis:
       host: ${REDIS_LOCAL_HOST}
