@@ -51,6 +51,7 @@ public class CompanyService {
                 reqPatchCompanyByIdDto.getCompanyEmail(), reqPatchCompanyByIdDto.getBrandName());
     }
 
+    @Transactional
     public void updateCompanyStatus(UUID companyId, ReqPatchCompanyByIdStatusDto reqPatchCompanyByIdStatusDto) {
         // (1) 업체 유무 확인
         Company fetchedCompany = companyRepository.findById(companyId)
