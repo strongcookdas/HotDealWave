@@ -70,13 +70,12 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseDto<ResPostRefreshDto> refresh(@RequestBody ReqPostRefreshDto requestDto) {
+    public ResponseDto<ResPostRefreshDto> refresh(
+            @RequestBody ReqPostRefreshDto requestDto
+    ) {
 
-        ResPostRefreshDto resPostRefreshDto = ResPostRefreshDto.builder()
-                .accessToken("exampleAccessToken")
-                .refreshToken("exampleRefreshToken")
-                .build();
+        ResPostRefreshDto resPostRefreshDto = authService.refresh(requestDto.getRefreshToken());
 
-        return ResponseDto.of("토큰 재발급 성공", resPostRefreshDto);
+        return ResponseDto.of(ResponseMessage.TOKEN_REISSUE_SUCCESS.getMessage(), resPostRefreshDto);
     }
 }

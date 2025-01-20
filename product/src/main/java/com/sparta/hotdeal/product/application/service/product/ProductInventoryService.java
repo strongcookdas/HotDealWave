@@ -31,6 +31,9 @@ public class ProductInventoryService {
     @Value("${spring.kafka.topics.request-payment}")
     private String requestPaymentTopic;
 
+    @Value("${spring.kafka.topics.request-order}")
+    private String requestOrderTopic;
+
     public ResPutProductQuantityDto reduceQuantity(ReqPutProductQuantityDto reqPutProductQuantityDto) {
         try {
             // 재고 차감 처리 로직
@@ -132,6 +135,16 @@ public class ProductInventoryService {
             log.info("결제 요청 메시지 전송 완료");
         } catch (Exception e) {
             log.error("결제 요청 메시지 생성 실패: {}", e.getMessage());
+            throw new ApplicationException(ErrorCode.INTERNAL_SERVER_EXCEPTION);
+        }
+    }
+
+    public void sendOrderRequest(String messageKey, String message) {
+        try {
+            productKafkaProducer.sendOrderMessage(requestOrderTopic, messageKey, message);
+            log.info("주문 취소 요청 메시지 전송 완료");
+        } catch (Exception e) {
+            log.error("주문 취소 요청 메시지 생성 실패: {}", e.getMessage());
             throw new ApplicationException(ErrorCode.INTERNAL_SERVER_EXCEPTION);
         }
     }

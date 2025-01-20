@@ -13,16 +13,10 @@ spring:
     show-sql: true
   kafka:
     bootstrap-servers: ${LOCAL_KAFKA_ENDPOINT}
-    consumer:
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
-    topics:
-      reduce-quantity: ${KAFKA_REDUCE_QUANTITY_TOPIC}
-      rollback-reduce-quantity: ${KAFKA_ROLLBACK_REDUCE_QUANTITY_TOPIC}
-      request-payment: ${KAFKA_REQUEST_PAYMENT_TOPIC}
+  elasticsearch:
+    uris: ${LOCAL_ELASTICSEARCH_ENDPOINT}
+    username: ${LOCAL_ELASTICSEARCH_USERNAME}
+    password: ${LOCAL_ELASTICSEARCH_PASSWORD}
 
 eureka:
   client:

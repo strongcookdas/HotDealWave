@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -79,7 +80,8 @@ public class CompanyController {
     @Secured({"ROLE_SELLER", "ROLE_MASTER", "ROLE_MANAGER"})
     @Operation(summary = "업체 목록 조회 API", description = "업체 목록을 조회합니다.")
     public ResponseDto<Page<ResGetCompanyByIdDto>> getCompanyList(
-            @AuthenticationPrincipal RequestUserDetails userDetails, Pageable pageable) {
-        return ResponseDto.of("업체목록이 조회되었습니다.", companyService.getCompanyList(pageable));
+            @AuthenticationPrincipal RequestUserDetails userDetails, Pageable pageable,
+            @RequestParam(required = false) CompanyStatusEnum status) {
+        return ResponseDto.of("업체목록이 조회되었습니다.", companyService.getCompanyList(pageable, status));
     }
 }

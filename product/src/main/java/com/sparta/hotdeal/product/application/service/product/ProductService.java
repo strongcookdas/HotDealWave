@@ -16,10 +16,12 @@ import com.sparta.hotdeal.product.application.service.file.SubFileService;
 import com.sparta.hotdeal.product.domain.entity.product.File;
 import com.sparta.hotdeal.product.domain.entity.product.ImageTypeEnum;
 import com.sparta.hotdeal.product.domain.entity.product.Product;
+import com.sparta.hotdeal.product.domain.entity.product.ProductDocument;
 import com.sparta.hotdeal.product.domain.entity.product.ProductStatusEnum;
 import com.sparta.hotdeal.product.domain.entity.product.SubFile;
 import com.sparta.hotdeal.product.domain.repository.product.ProductRepository;
 import com.sparta.hotdeal.product.infrastructure.dtos.ResGetCompanyByIdDto;
+import com.sparta.hotdeal.product.infrastructure.repository.product.ProductSearchRepository;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
@@ -47,6 +49,8 @@ public class ProductService {
     private final FileService fileService;
     private final SubFileService subFileService;
     private final ProductPromotionHelperService productPromotionHelperService;
+    private final ProductSearchRepository productSearchRepository;
+    private final ProductIndexService productIndexService;
 
     public ResPostProductDto createProduct(ReqPostProductDto productDto) {
         // company 검증
@@ -59,10 +63,12 @@ public class ProductService {
         for (MultipartFile file : productDto.getDetailImgs()) {
             subFileService.saveImg(file, detailImgs, ImageTypeEnum.PRODUCT);
         }
+        log.info("detailImgs : {}", detailImgs);
 
         // 썸네일 이미지
         File thumbImg = fileService.saveFile();
         subFileService.saveImg(productDto.getThumbImg(), thumbImg, ImageTypeEnum.PRODUCT);
+        log.info("thumbImg : {}", thumbImg);
 
         // 상품 저장
         Product product = Product.create(productDto.getName(), (Integer) productDto.getPrice(),
@@ -71,6 +77,10 @@ public class ProductService {
                 ProductStatusEnum.ON_SALE, 0D, 0);
 
         product = productRepository.save(product);
+        log.info("product : {}", product);
+
+        // ElasticSearch 색인
+        productIndexService.indexProduct(product);
 
         return ResPostProductDto.of(product.getId());
     }
@@ -108,6 +118,9 @@ public class ProductService {
                 reqPutUpdateProductDto.getStatus()
         );
 
+        // ElasticSearch 색인 갱신
+        productIndexService.indexProduct(product);
+
         return ResPutProductDto.of(product.getId());
     }
 
@@ -118,6 +131,9 @@ public class ProductService {
                 .orElseThrow(() -> new ApplicationException(ErrorCode.PRODUCT_NOT_FOUND_EXCEPTION));
 
         product.updateStatus(reqPatchUpdateProductStatusDto.getStatus());
+
+        // ElasticSearch 색인 갱신
+        productIndexService.indexProduct(product);
 
         return ResPatchProductStatusDto.of(product.getId());
     }
@@ -137,6 +153,9 @@ public class ProductService {
         subFileService.deleteImg(detailImgsFile, username);
         subFileService.deleteImg(thumbImgFile, username);
 
+        // ElasticSearch 색인 삭제
+        productSearchRepository.deleteById(product.getId().toString());
+
         // 상품 삭제 처리
         product.delete(username);
     }
@@ -147,7 +166,7 @@ public class ProductService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.PRODUCT_NOT_FOUND_EXCEPTION));
 
-        return convertToResGetProductDto(product);
+        return convertToResGetProductDtoForDetail(product);
     }
 
     @Transactional(readOnly = true)
@@ -156,16 +175,20 @@ public class ProductService {
         Sort sort = direction.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, sort);
 
-        Page<Product> products = productRepository.findAllWithSearchAndPaging(search, productIds, pageable);
+        // ElasticSearch 검색
+        List<ProductDocument> searchResults = productSearchRepository.findBySearchAndIds(search, productIds,
+                pageable);
 
-        List<ResGetProductDto> productDtos = products.stream()
-                .map(this::convertToResGetProductDto)
+        // ElasticSearch 결과를 기반으로 JPA에서 상세 정보를 조회하거나 보완
+        List<ResGetProductDto> productDtos = searchResults.stream()
+                .map(this::convertToResGetProductDtoForList)
                 .collect(Collectors.toList());
 
-        return new PageImpl<>(productDtos, pageable, products.getTotalElements());
+        // 반환
+        return new PageImpl<>(productDtos, pageable, searchResults.size());
     }
 
-    private ResGetProductDto convertToResGetProductDto(Product product) {
+    private ResGetProductDto convertToResGetProductDtoForDetail(Product product) {
         // 평점 계산
         BigDecimal rating =
                 product.getRatingSum() == 0 ? BigDecimal.valueOf(0.0) : BigDecimal.valueOf(product.getRatingSum())
@@ -195,11 +218,36 @@ public class ProductService {
                 .build();
     }
 
+    private ResGetProductDto convertToResGetProductDtoForList(ProductDocument productDoc) {
+        // 평점 계산
+        BigDecimal rating = productDoc.getRatingSum() == 0 || productDoc.getReviewCnt() == 0
+                ? BigDecimal.valueOf(0.0)
+                : BigDecimal.valueOf(productDoc.getRatingSum())
+                        .divide(BigDecimal.valueOf(productDoc.getReviewCnt()), 1, RoundingMode.HALF_UP);
+
+        // ResGetProductDto 생성
+        return ResGetProductDto.builder()
+                .productId(UUID.fromString(productDoc.getId()))
+                .name(productDoc.getName())
+                .price(productDoc.getPrice())
+                .quantity(productDoc.getQuantity())
+                .category(productDoc.getCategory())
+                .companyId(UUID.fromString(productDoc.getCompanyId()))
+                .description(productDoc.getDescription())
+                .detailImgs(productDoc.getDetailImgs())
+                .thumbImg(productDoc.getThumbImg())
+                .status(productDoc.getStatus())
+                .rating(rating.doubleValue())
+                .reviewCnt(productDoc.getReviewCnt())
+                .discountPrice(productDoc.getDiscountPrice())
+                .build();
+    }
+
     public void updateProductDiscountPrice(UUID productId, Integer discountPrice) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.PRODUCT_NOT_FOUND_EXCEPTION));
 
         product.updateDiscountPrice(discountPrice);
     }
-
+    
 }
