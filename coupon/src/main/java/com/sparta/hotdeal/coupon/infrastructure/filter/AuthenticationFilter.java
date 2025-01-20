@@ -30,7 +30,8 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         if (requestURI.startsWith("/swagger-ui") ||
                 requestURI.startsWith("/v3/api-docs") ||
                 requestURI.startsWith("/swagger-resources") ||
-                requestURI.startsWith("/webjars")) {
+                requestURI.startsWith("/webjars") ||
+                requestURI.startsWith("/actuator/prometheus")) {
             filterChain.doFilter(request, response);
             return;
         }

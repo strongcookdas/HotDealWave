@@ -28,7 +28,8 @@ public class SecurityConfig {
                                 "/swagger-ui.html",     // Swagger HTML 경로
                                 "/swagger-resources/**", // Swagger 설정 리소스
                                 "/webjars/**",           // Swagger 정적 리소스
-                                "/payment/**"
+                                "/payment/**",
+                                "/actuator/prometheus"
                         ).permitAll()
                         .anyRequest().authenticated() // 모든 요청 인증 필요 헤더가 없으면 401 리턴하기 위해
                 )
