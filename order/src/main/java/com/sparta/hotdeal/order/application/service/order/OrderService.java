@@ -1,19 +1,18 @@
 package com.sparta.hotdeal.order.application.service.order;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.hotdeal.order.application.dtos.address.AddressDto;
 import com.sparta.hotdeal.order.application.dtos.coupon.CouponValidationDto;
-import com.sparta.hotdeal.order.application.dtos.order.OrderDto;
 import com.sparta.hotdeal.order.application.dtos.order.req.ReqPostOrderDto;
 import com.sparta.hotdeal.order.application.dtos.order.req.ReqPutOrderDto;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrderByIdDto;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResGetOrderListDto;
 import com.sparta.hotdeal.order.application.dtos.order.res.ResPostOrderDto;
 import com.sparta.hotdeal.order.application.dtos.order_product.OrderProductDto;
-import com.sparta.hotdeal.order.application.dtos.payment.PaymentRequestDto;
 import com.sparta.hotdeal.order.application.dtos.product.ProductDto;
+import com.sparta.hotdeal.order.application.dtos.product.req.ReqProductReduceQuantityDto;
 import com.sparta.hotdeal.order.application.dtos.user.UserDto;
 import com.sparta.hotdeal.order.application.port.CouponClientPort;
-import com.sparta.hotdeal.order.application.port.PaymentClientPort;
 import com.sparta.hotdeal.order.application.port.ProductClientPort;
 import com.sparta.hotdeal.order.application.port.UserClientPort;
 import com.sparta.hotdeal.order.common.exception.ApplicationException;
@@ -23,6 +22,7 @@ import com.sparta.hotdeal.order.domain.entity.order.Order;
 import com.sparta.hotdeal.order.domain.entity.order.OrderProduct;
 import com.sparta.hotdeal.order.domain.entity.order.OrderStatus;
 import com.sparta.hotdeal.order.domain.repository.OrderRepository;
+import com.sparta.hotdeal.order.event.producer.OrderEventProducer;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,6 +32,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -43,21 +44,25 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class OrderService {
 
+    @Value("${spring.kafka.topics.request-product}")
+    private String reduceProductQuantityTopic;
+
     private final OrderRepository orderRepository;
     private final ProductClientPort productClientPort;
     private final CouponClientPort couponClientPort;
     private final UserClientPort userClientPort;
-    private final PaymentClientPort paymentClientPort;
 
     private final OrderProductService orderProductService;
     private final OrderBasketService orderBasketService;
 
+    private final OrderEventProducer orderEventProducer;
+    private final ObjectMapper objectMapper;
+
+
     public ResPostOrderDto createOrder(UUID userId, String email, String role, ReqPostOrderDto req) {
-        //1. 장바구니 조회
         List<Basket> basketList = orderBasketService.getBasketList(userId, req.getBasketList());
         log.info("장바구니 조회");
 
-        //2. 상품 정보 조회
         List<UUID> productIds = basketList.stream().map(Basket::getProductId).toList();
         List<ProductDto> productDtoList = productClientPort.getProductALL(productIds);
         log.info("상품 조회 정보");
@@ -70,11 +75,9 @@ public class OrderService {
             throw new ApplicationException(ErrorCode.ORDER_INVALID_VALUE_EXCEPTION);
         }
 
-        //4. 총 금액 계산
         int totalAmount = calculateTotalAmount(basketList, productDtoMap);
         log.info("총 금액 계산");
 
-        //5. 쿠폰 유효성 및 쿠폰 적용
         int discountAmount = 0;
         UUID couponId = null;
         CouponValidationDto couponValidationDto = couponClientPort.validateCoupon(req.getCouponId(), basketList,
@@ -88,15 +91,9 @@ public class OrderService {
             log.info("쿠폰 사용 api 호출");
         }
 
-        //6. 상품 감소 처리
-        productClientPort.reduceProductQuantity(basketList);
-        log.info("product 감소 처리");
-
-        //7. 장바구니 삭제
         orderBasketService.deleteBasketList(basketList);
         log.info("장바구니 삭제 처리");
 
-        //8. 주문 저장 및 주문-상품 저장
         AddressDto address = userClientPort.getAddress(userId, email, role, req.getAddressId());
         log.info("주소 조회 api 호출");
         Order order = Order.create(
@@ -112,24 +109,38 @@ public class OrderService {
         orderProductService.createOrderProductList(order, basketList, productDtoList);
         log.info("주문 정보 DB 저장");
 
-        //주문 생성 이후 비동기 처리 (결제 요청)
-        PaymentRequestDto paymentRequestDto = paymentClientPort.readyPayment(userId, email, role, OrderDto.of(order),
-                basketList);
-        log.info("결제 요청");
+        sendReduceProductQuantityMessage(order, basketList);
 
-        return ResPostOrderDto.of(order, paymentRequestDto);
+        return ResPostOrderDto.of(order.getId());
+    }
+
+    public void sendReduceProductQuantityMessage(Order order, List<Basket> basketList) {
+        try {
+            ReqProductReduceQuantityDto req = ReqProductReduceQuantityDto.create(order.getId(), basketList);
+            String message = objectMapper.writeValueAsString(req);
+            orderEventProducer.sendMessage(reduceProductQuantityTopic, req.getOrderId().toString(), message);
+        } catch (Exception e) {
+            log.error("상품 재고 차감 메세지 전송 실패 : {}", e.getMessage());
+            this.cancelOrderByIdForMessage(order.getId());
+        }
     }
 
     @Transactional(readOnly = true)
     public ResGetOrderByIdDto getOrderDetail(UUID userId, String email, String role, UUID orderId) {
         //주문 조회
-        Order order = orderRepository.findByIdAndUserId(orderId, userId)
-                .orElseThrow(() -> new ApplicationException(ErrorCode.ORDER_NOT_FOUND_EXCEPTION));
+        Order order;
+        if (role.equals("ROLE_MASTER")) {
+            order = orderRepository.findByIdAndDeletedAtIsNull(orderId)
+                    .orElseThrow(() -> new ApplicationException(ErrorCode.ORDER_NOT_FOUND_EXCEPTION));
+        } else {
+            order = orderRepository.findByIdAndUserId(orderId, userId)
+                    .orElseThrow(() -> new ApplicationException(ErrorCode.ORDER_NOT_FOUND_EXCEPTION));
+        }
         log.info("주문 조회");
 
-        //주소 조회
-        AddressDto address = userClientPort.getAddress(userId, email, role, order.getAddressId());
-        log.info("주소 조회");
+        //주소 조회 - (현재 자신 저장한 주소만 볼 수 있도록 권한 설정이 되어 있어 주석)
+        //AddressDto address = userClientPort.getAddress(userId, email, role, order.getAddressId());
+        //log.info("주소 조회");
 
         //user 조회
         UserDto user = userClientPort.getUserById(userId, email, role);
@@ -145,7 +156,7 @@ public class OrderService {
         log.info("product 조회");
 
         //조합 후 반환
-        return ResGetOrderByIdDto.of(order, address, orderProductDtoList, productMap, user);
+        return ResGetOrderByIdDto.of(order, orderProductDtoList, productMap, user);
     }
 
     @Transactional(readOnly = true)
@@ -193,6 +204,14 @@ public class OrderService {
         //pending 일 경우 주문 취소 로직까지 필요
         order.updateStatus(OrderStatus.CANCEL);
     }
+
+    public void cancelOrderByIdForMessage(UUID orderId) {
+        Order order = orderRepository.findByIdAndDeletedAtIsNull(orderId)
+                .orElseThrow(() -> new ApplicationException(ErrorCode.ORDER_NOT_FOUND_EXCEPTION));
+
+        order.updateStatus(OrderStatus.CANCEL);
+    }
+
 
     public void refundOrder(UUID userId, UUID orderId) {
         Order order = orderRepository.findByIdAndUserId(orderId, userId)

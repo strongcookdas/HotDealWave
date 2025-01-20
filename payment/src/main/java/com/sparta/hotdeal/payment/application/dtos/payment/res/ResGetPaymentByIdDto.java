@@ -19,8 +19,9 @@ public class ResGetPaymentByIdDto {
     private PaymentStatus paymentStatus;
     private Integer payedAmount;
     private Integer refundAmount;
+    private String payUrl;
 
-    public static ResGetPaymentByIdDto of(Payment payment){
+    public static ResGetPaymentByIdDto of(Payment payment) {
         return ResGetPaymentByIdDto.builder()
                 .paymentId(payment.getId())
                 .orderId(payment.getOrderId())
@@ -28,6 +29,7 @@ public class ResGetPaymentByIdDto {
                 .paymentStatus(payment.getStatus())
                 .payedAmount(payment.getAmount())
                 .refundAmount(payment.getRefundAmount())
+                .payUrl(payment.getPayUrl())
                 .build();
     }
 }

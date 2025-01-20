@@ -2,6 +2,7 @@ package com.sparta.hotdeal.order.common.exception;
 
 import com.sparta.hotdeal.order.application.dtos.ErrorResponseDto;
 import java.util.Objects;
+import java.util.concurrent.CompletionException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,5 +43,16 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponseDto(
                         ErrorCode.INVALID_VALUE_EXCEPTION,
                         Objects.requireNonNull(e.getBindingResult().getFieldError()).getDefaultMessage()));
+    }
+
+    @ExceptionHandler(CompletionException.class)
+    protected ResponseEntity<ErrorResponseDto> handleCompletionException(CompletionException e) {
+        Throwable cause = e.getCause();
+        if (cause instanceof ApplicationException) {
+            return handleApplicationException((ApplicationException) cause);
+        }
+        log.error("Unexpected error occurred: {}", e.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponseDto("Unexpected error occurred"));
     }
 }

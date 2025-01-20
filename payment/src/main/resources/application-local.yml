@@ -11,6 +11,8 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
     show-sql: true
+  kafka:
+    bootstrap-servers: ${LOCAL_KAFKA_ENDPOINT}
 
 eureka:
   client:

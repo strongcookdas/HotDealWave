@@ -3,6 +3,8 @@ package com.sparta.hotdeal.payment.infrastructure.adapter;
 import com.sparta.hotdeal.payment.application.dtos.kakaopay.KakaoPayApproveDto;
 import com.sparta.hotdeal.payment.application.dtos.kakaopay.KakaoPayCancelDto;
 import com.sparta.hotdeal.payment.application.dtos.kakaopay.KakaoPayReadyDto;
+import com.sparta.hotdeal.payment.application.dtos.order.OrderDto;
+import com.sparta.hotdeal.payment.application.dtos.order.OrderDto.Product;
 import com.sparta.hotdeal.payment.application.dtos.payment.PaymentDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.req.ReqPostPaymentConfirmDto;
 import com.sparta.hotdeal.payment.application.dtos.payment.req.ReqPostPaymentDto;
@@ -54,6 +56,28 @@ public class KakaoPayClientAdapter implements KakaoPayClientPort {
     }
 
     @Override
+    public KakaoPayReadyDto readyPayment(OrderDto orderDto) {
+        ReqPostKakaoPayReadyDto reqPostKakaoPayReadyDto = ReqPostKakaoPayReadyDto.create(
+                cid,
+                orderDto.getOrderId(),
+                orderDto.getUserId(),
+                orderDto.getOrderName(),
+                orderDto.getProductList().stream().mapToInt(Product::getProductQuantity).sum(),
+                orderDto.getTotalAmount(),
+                domain
+        );
+
+        ResPostKakaoPayReadyDto resPostKakaoPayReadyDto = kakaoPayClient.ready(authorization, reqPostKakaoPayReadyDto);
+        KakaoPayReadyDto kakaoPayReadyDto = KakaoPayReadyDto.create(
+                resPostKakaoPayReadyDto.getTid(),
+                resPostKakaoPayReadyDto.getNext_redirect_pc_url(),
+                resPostKakaoPayReadyDto.getCreated_at()
+        );
+        return kakaoPayReadyDto;
+    }
+
+
+    @Override
     public KakaoPayApproveDto approve(UUID userId, ReqPostPaymentConfirmDto reqPostPaymentConfirmDto,
                                       PaymentDto paymentDto) {
         ReqPostKakaoPayApproveDto reqPostKakaoPayApproveDto = ReqPostKakaoPayApproveDto.create(
@@ -81,7 +105,8 @@ public class KakaoPayClientAdapter implements KakaoPayClientPort {
                 0,
                 paymentDto.getAmount()
         );
-        ResDeleteKakaoPayCancelDto resDeleteKakaoPayCancelDto = kakaoPayClient.cancel(authorization,reqDeleteKakaoPayCancelDto);
+        ResDeleteKakaoPayCancelDto resDeleteKakaoPayCancelDto = kakaoPayClient.cancel(authorization,
+                reqDeleteKakaoPayCancelDto);
         return resDeleteKakaoPayCancelDto.toKakaoPayCancelDto();
     }
 }
