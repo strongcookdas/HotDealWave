@@ -2,9 +2,7 @@ version: '3.8'
 
 services:
   eureka-server:
-    build:
-      context: ./server
-      dockerfile: Dockerfile
+    image: ${ECR_REGISTRY}/${ECR_REPOSITORY_PREFIX}-server:latest
     container_name: eureka-server
     ports:
       - "19090:19090"
@@ -12,9 +10,7 @@ services:
       - hotdealnetwork
 
   gateway-service:
-    build:
-      context: ./gateway
-      dockerfile: Dockerfile
+    image: ${ECR_REGISTRY}/${ECR_REPOSITORY_PREFIX}-gateway:latest
     container_name: gateway-service
     ports:
       - "19091:19091"
@@ -28,9 +24,7 @@ services:
       - hotdealnetwork
 
   user-service:
-    build:
-      context: ./user
-      dockerfile: Dockerfile
+    image: ${ECR_REGISTRY}/${ECR_REPOSITORY_PREFIX}-user:latest
     container_name: user-service
     ports:
       - "19092:19092"
@@ -57,9 +51,7 @@ services:
       - hotdealnetwork
 
   company-service:
-    build:
-      context: ./company
-      dockerfile: Dockerfile
+    image: ${ECR_REGISTRY}/${ECR_REPOSITORY_PREFIX}-company:latest
     container_name: company-service
     ports:
       - "19097:19097"
@@ -76,9 +68,7 @@ services:
       - hotdealnetwork
 
   product-service:
-    build:
-      context: ./product
-      dockerfile: Dockerfile
+    image: ${ECR_REGISTRY}/${ECR_REPOSITORY_PREFIX}-product:latest
     container_name: product-service
     ports:
       - "19093:19093"
@@ -116,9 +106,7 @@ services:
       - hotdealnetwork
 
   coupon-service:
-    build:
-      context: ./coupon
-      dockerfile: Dockerfile
+    image: ${ECR_REGISTRY}/${ECR_REPOSITORY_PREFIX}-coupon:latest
     container_name: coupon-service
     ports:
       - "19096:19096"
@@ -144,9 +132,7 @@ services:
       - hotdealnetwork
 
   order-service:
-    build:
-      context: ./order
-      dockerfile: Dockerfile
+    image: ${ECR_REGISTRY}/${ECR_REPOSITORY_PREFIX}-order:latest
     container_name: order-service
     ports:
       - "19094:19094"
@@ -181,9 +167,7 @@ services:
       - hotdealnetwork
 
   payment-service:
-    build:
-      context: ./payment
-      dockerfile: Dockerfile
+    image: ${ECR_REGISTRY}/${ECR_REPOSITORY_PREFIX}-payment:latest
     container_name: payment-service
     ports:
       - "19095:19095"

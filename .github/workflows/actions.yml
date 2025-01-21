@@ -1,30 +1,91 @@
-name: Build & Deploy with Docker Compose
+name: Build & Deploy to ECR
 
 on:
   push:
     branches:
-      - main  # main 브랜치에 푸시될 때 트리거
+      - main
+
+env:
+  AWS_REGION: ap-northeast-2
+  ECR_REPOSITORY_PREFIX: hotdealwave
 
 jobs:
-  deploy:
+  build-and-push:
     runs-on: ubuntu-latest
-
     steps:
-      - name: SSH to EC2 and run Docker Compose
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # Docker 이미지 빌드 및 푸시
+      - name: Build and Push Docker images
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          # 서비스 디렉토리 목록
+          declare -A services
+          services=(
+            ["server"]="server"
+            ["gateway"]="gateway"
+            ["user"]="user"
+            ["company"]="company"
+            ["product"]="product"
+            ["coupon"]="coupon"
+            ["order"]="order"
+            ["payment"]="payment"
+          )
+          
+          for service_name in "${!services[@]}"; do
+          
+            # 이미지 태그 설정
+            TAG="${ECR_REGISTRY}/${ECR_REPOSITORY_PREFIX}-${service_name}:latest"
+          
+            # Docker 이미지 빌드
+            docker build -t ${TAG} \
+              -f ./Dockerfile .
+          
+            # ECR로 이미지 푸시
+            docker push ${TAG}
+          
+            echo "Built and pushed ${TAG}"
+          done
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.3
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script: |
-            # 프로젝트 디렉토리로 이동
-            cd /home/ubuntu/HotDealWave
+            # AWS 자격 증명 설정
+            aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws configure set region ${{ env.AWS_REGION }}
             
-            # Git 저장소에서 최신 코드 가져오기
-            git pull origin main
+            # ECR 로그인
+            aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ env.ECR_REGISTRY }}
+            
+            cd /home/ubuntu/HotDealWave
             
             # 기존 컨테이너 중지 및 제거
             docker-compose down
             
-            # Docker Compose 빌드 및 실행
-            docker-compose up --build -d
+            # 새 이미지 가져오기 및 실행
+            docker-compose pull
+            docker-compose up -d
