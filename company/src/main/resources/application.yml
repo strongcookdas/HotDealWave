@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: company-service
+  profiles:
+    active: ${ACTIVE_PROFILE}
+
+server:
+  port: 19097
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: "always"
+    prometheus:
+      access: unrestricted

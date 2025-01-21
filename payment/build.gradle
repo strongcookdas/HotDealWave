@@ -28,6 +28,11 @@ ext {
 }
 
 dependencies {
+	// monitoring
+	implementation 'com.github.loki4j:loki-logback-appender:1.5.1'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -38,6 +43,24 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	//Feign Client
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+	//Validation
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	//Swagger
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
+
+	//Thymeleaf
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+	//Kafka
+	implementation 'org.springframework.kafka:spring-kafka'
+
+	//직렬, 역직렬화 (json 말고 더 개선된 방법 찾을 필요있음)
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
 }
 
 dependencyManagement {

@@ -1,0 +1,45 @@
+spring:
+  application:
+    name: payment-service
+  profiles:
+    active: ${ACTIVE_PROFILE}
+  kafka:
+    consumer:
+      auto-offset-reset: earliest # 카프카에서 존재하는 offset중 가장 앞에 있는 것을 가져온다.
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer #객체를 어떤 방식으로 변환할지?
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    topics:
+      ready-payment: ${KAFKA_READY_PAYMENT_TOPIC}
+      rollback-reduce-quantity: ${KAFKA_ROLLBACK_REDUCE_QUANTITY_TOPIC}
+      dlq: ${KAFKA_DLQ_TOPIC}
+      update-order-status: ${KAFKA_UPDATE_ORDER_STATUS_TOPIC}
+      cancel-payment: ${KAFKA_CANCEL_PAYMENT_TOPIC}
+      refund-payment: ${KAFKA_REFUND_PAYMENT_TOPIC}
+
+server:
+  port: 19095
+
+pay:
+  key: ${PAY_KEY}
+  cid: ${PAY_CID}
+  host:
+    domain: ${PAY_HOST_DOMAIN}
+
+admin:
+  user-id: ${ADMIN_USER_ID}
+  email: ${ADMIN_EMAIL}
+  role: ${ADMIN_ROLE}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: "always"
+    prometheus:
+      access: unrestricted

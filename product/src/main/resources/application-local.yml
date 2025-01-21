@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    url: jdbc:mysql://${LOCAL_DB_ENDPOINT}/hotdeal_ecommerce_product_review
+    username: ${LOCAL_DB_USERNAME}
+    password: ${LOCAL_DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    show-sql: true
+  kafka:
+    bootstrap-servers: ${LOCAL_KAFKA_ENDPOINT}
+  elasticsearch:
+    uris: ${LOCAL_ELASTICSEARCH_ENDPOINT}
+    username: ${LOCAL_ELASTICSEARCH_USERNAME}
+    password: ${LOCAL_ELASTICSEARCH_PASSWORD}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:19090/eureka/
