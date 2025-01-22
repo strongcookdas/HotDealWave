@@ -51,7 +51,7 @@ jobs:
           for service_name in "${!services[@]}"; do
           
             # 이미지 태그 설정
-            TAG="${ECR_REGISTRY}/${ECR_REPOSITORY_PREFIX}-${service_name}:latest"
+            TAG="${ECR_REGISTRY}/${ECR_REPOSITORY_PREFIX}:${service_name}-latest"
           
             # Docker 이미지 빌드
             docker build -t ${TAG} -f "./${services[$service_name]}/Dockerfile" "./${services[$service_name]}"
