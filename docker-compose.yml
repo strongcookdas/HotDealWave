@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   eureka-server:
-    image: ${ECR_REGISTRY}/${ECR_REPOSITORY_PREFIX}-server:latest
+    image: ${ECR_REGISTRY}/${ECR_REPOSITORY_PREFIX}:server-latest
     container_name: eureka-server
     ports:
       - "19090:19090"
@@ -10,7 +10,7 @@ services:
       - hotdealnetwork
 
   gateway-service:
-    image: ${ECR_REGISTRY}/${ECR_REPOSITORY_PREFIX}-gateway:latest
+    image: ${ECR_REGISTRY}/${ECR_REPOSITORY_PREFIX}:gateway-latest
     container_name: gateway-service
     ports:
       - "19091:19091"
@@ -24,7 +24,7 @@ services:
       - hotdealnetwork
 
   user-service:
-    image: ${ECR_REGISTRY}/${ECR_REPOSITORY_PREFIX}-user:latest
+    image: ${ECR_REGISTRY}/${ECR_REPOSITORY_PREFIX}:user-latest
     container_name: user-service
     ports:
       - "19092:19092"
@@ -51,7 +51,7 @@ services:
       - hotdealnetwork
 
   company-service:
-    image: ${ECR_REGISTRY}/${ECR_REPOSITORY_PREFIX}-company:latest
+    image: ${ECR_REGISTRY}/${ECR_REPOSITORY_PREFIX}:company-latest
     container_name: company-service
     ports:
       - "19097:19097"
@@ -68,7 +68,7 @@ services:
       - hotdealnetwork
 
   product-service:
-    image: ${ECR_REGISTRY}/${ECR_REPOSITORY_PREFIX}-product:latest
+    image: ${ECR_REGISTRY}/${ECR_REPOSITORY_PREFIX}:product-latest
     container_name: product-service
     ports:
       - "19093:19093"
@@ -106,7 +106,7 @@ services:
       - hotdealnetwork
 
   coupon-service:
-    image: ${ECR_REGISTRY}/${ECR_REPOSITORY_PREFIX}-coupon:latest
+    image: ${ECR_REGISTRY}/${ECR_REPOSITORY_PREFIX}:coupon-latest
     container_name: coupon-service
     ports:
       - "19096:19096"
@@ -132,7 +132,7 @@ services:
       - hotdealnetwork
 
   order-service:
-    image: ${ECR_REGISTRY}/${ECR_REPOSITORY_PREFIX}-order:latest
+    image: ${ECR_REGISTRY}/${ECR_REPOSITORY_PREFIX}:order-latest
     container_name: order-service
     ports:
       - "19094:19094"
@@ -167,7 +167,7 @@ services:
       - hotdealnetwork
 
   payment-service:
-    image: ${ECR_REGISTRY}/${ECR_REPOSITORY_PREFIX}-payment:latest
+    image: ${ECR_REGISTRY}/${ECR_REPOSITORY_PREFIX}:payment-latest
     container_name: payment-service
     ports:
       - "19095:19095"
