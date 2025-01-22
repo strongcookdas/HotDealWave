@@ -83,7 +83,9 @@ jobs:
             # ECR 로그인
             aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ env.ECR_REGISTRY }}
             
+            # git 저장소 최신화(pull)
             cd /home/ubuntu/HotDealWave
+            git pull origin main
             
             # 기존 컨테이너 중지 및 제거
             docker-compose down
