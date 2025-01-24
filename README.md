@@ -130,25 +130,25 @@
 
 #### [🚀 선착순 쿠폰 발급 Optimistic Lock vs Redisson](https://teamsparta.notion.site/Optimistic-Lock-vs-Redisson-3eea45de21e5447fa210503a55e6f1db) <br />
 
-#### [🚀 주문 생성 성능 개선 비동기 처리 or DB Pool or 캐싱](https://teamsparta.notion.site/12-9700-5c53365016c1416993c6876044a08d6c?p=27647d3f807d447ab5f5a1f386f628ba&pm=s) <br />
+#### [🚀 주문 생성 성능 개선 비동기 처리 or DB Pool or 캐싱](https://teamsparta.notion.site/or-DB-Pool-or-27647d3f807d447ab5f5a1f386f628ba) <br />
 
-#### [🚀 재고 차감 및 복구 동시성 처리 Optimistic Lock vs Kafka](https://teamsparta.notion.site/12-9700-5c53365016c1416993c6876044a08d6c?p=f5e09965e23e4948a8b127fb485539ad&pm=s) <br />
+#### [🚀 재고 차감 및 복구 동시성 처리 Optimistic Lock vs Kafka](https://teamsparta.notion.site/Optimistic-Lock-vs-Kafka-f5e09965e23e4948a8b127fb485539ad) <br />
 
 <br/>
 
 ## 🚨 [트러블 슈팅](https://www.notion.so/teamsparta/1792dc3ef51481d08c52c339164bf06e?v=1792dc3ef5148163bcd2000c13520b27)
 
-#### [🕊️ 선착순 쿠폰 발급 성능 개선 ](https://teamsparta.notion.site/12-9700-5c53365016c1416993c6876044a08d6c?p=54c49b4f4ed14fadaecd39dd9779b04e&pm=s) <br />
+#### [🕊️ 선착순 쿠폰 발급 성능 개선 ](https://teamsparta.notion.site/54c49b4f4ed14fadaecd39dd9779b04e) <br />
 
-#### [🕊️ 주문 생성 성능 개선 ](https://teamsparta.notion.site/12-9700-5c53365016c1416993c6876044a08d6c?p=14e5f67a1b494743b73855046b57d44c&pm=s) <br />
+#### [🕊️ 주문 생성 성능 개선 ](https://teamsparta.notion.site/Order-14e5f67a1b494743b73855046b57d44c) <br />
 
-#### [🕊️ 업체 조회 성능 개선 ](https://teamsparta.notion.site/12-9700-5c53365016c1416993c6876044a08d6c?p=ac72882aac304d83a79311d0954e25e6&pm=s) <br />
+#### [🕊️ 업체 조회 성능 개선 ](https://teamsparta.notion.site/c7279d6a7d044bfd9f2d2ce3f88cd6ea) <br />
 
-#### [🕊️ 로그 모니터링 시스템 구축 ](https://teamsparta.notion.site/12-9700-5c53365016c1416993c6876044a08d6c?p=c66f731a92bd4ba18cf9974562ad0df2&pm=s) <br />
+#### [🕊️ 로그 모니터링 시스템 구축 ](https://teamsparta.notion.site/a1c08cd6a7a64ac2bbb4ed5b59352454) <br />
 
-#### [🕊️ 상품 재고 차감 동시성 제어 ](https://teamsparta.notion.site/12-9700-5c53365016c1416993c6876044a08d6c?p=aa93a88316e545d3a191aa0b5a608700&pm=s) <br />
+#### [🕊️ 상품 재고 차감 동시성 제어 ](https://teamsparta.notion.site/aa93a88316e545d3a191aa0b5a608700) <br />
 
-#### [🕊️ 상품 목록 조회에 대한 성능 개선 ](https://teamsparta.notion.site/12-9700-5c53365016c1416993c6876044a08d6c?p=1d52a8ad400e47b29520f1c703317493&pm=s) <br />
+#### [🕊️ 상품 목록 조회에 대한 성능 개선 ](https://teamsparta.notion.site/1d52a8ad400e47b29520f1c703317493) <br />
 
 <br/><br/>
 
