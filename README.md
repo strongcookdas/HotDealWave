@@ -138,7 +138,7 @@
 
 ## 🚨 [트러블 슈팅](https://www.notion.so/teamsparta/1792dc3ef51481d08c52c339164bf06e?v=1792dc3ef5148163bcd2000c13520b27)
 
-#### [🕊️ Kafka bootstrap server를 찾지 못하는 문제 ](https://teamsparta.notion.site/12-9700-5c53365016c1416993c6876044a08d6c?p=55657231573f49789d435a8ff3a194a5&pm=s) <br />
+#### [🕊️ 선착순 쿠폰 발급 성능 개선 ](https://teamsparta.notion.site/12-9700-5c53365016c1416993c6876044a08d6c?p=54c49b4f4ed14fadaecd39dd9779b04e&pm=s) <br />
 
 #### [🕊️ 주문 생성 성능 개선 ](https://teamsparta.notion.site/12-9700-5c53365016c1416993c6876044a08d6c?p=14e5f67a1b494743b73855046b57d44c&pm=s) <br />
 
