@@ -136,27 +136,7 @@
 
 <br/>
 
-## 🚨 트러블 슈팅
-
-#### [🕊️ 주문 생성 시 동시성 문제](https://teamsparta.notion.site/12-9700-5c53365016c1416993c6876044a08d6c?p=1792dc3ef51481cc8937fa923ed8b150&pm=s) <br />
-
-#### [🕊️ 상품 검색 성능 문제](https://teamsparta.notion.site/12-9700-5c53365016c1416993c6876044a08d6c?p=1792dc3ef5148108ac3ccd66a681557f&pm=s) <br />
-
-#### [🕊️ 상품 이미지 저장](https://teamsparta.notion.site/12-9700-5c53365016c1416993c6876044a08d6c?p=1792dc3ef51481b7adafe11fc452b5ea&pm=s) <br />
-
-#### [🕊️ 주문 클래스에 많은 역할 부여](https://teamsparta.notion.site/12-9700-5c53365016c1416993c6876044a08d6c?p=1792dc3ef514817a9a72fa56e6e47736&pm=s) <br />
-
-#### [🕊️ 결제 연동 카카오페이 vs 토스 간편 결제 ](https://teamsparta.notion.site/12-9700-5c53365016c1416993c6876044a08d6c?p=1792dc3ef51481489b1ffd0349277031&pm=s) <br />
-
-#### [🕊️ Repository 상속 문제 ](https://teamsparta.notion.site/12-9700-5c53365016c1416993c6876044a08d6c?p=1792dc3ef514814cb391c5051e50c3e3&pm=s) <br />
-
-#### [🕊️ Order 카프카 도입 ](https://teamsparta.notion.site/12-9700-5c53365016c1416993c6876044a08d6c?p=1792dc3ef514813d8623e0cdcde5a2f4&pm=s) <br />
-
-#### [🕊️ 이메일 인증 응답 속도 ](https://teamsparta.notion.site/12-9700-5c53365016c1416993c6876044a08d6c?p=1792dc3ef51481229ef5c4c2f0ac9633&pm=s) <br />
-
-#### [🕊️ Dto 변환 로직의 책임 부여 ](https://teamsparta.notion.site/12-9700-5c53365016c1416993c6876044a08d6c?p=1792dc3ef51481ccbf60ce4de9dfdac6&pm=s) <br />
-
-#### [🕊️ 선착순 쿠폰 발급 성능 개선 ](https://teamsparta.notion.site/12-9700-5c53365016c1416993c6876044a08d6c?p=54c49b4f4ed14fadaecd39dd9779b04e&pm=s) <br />
+## 🚨 [트러블 슈팅](https://www.notion.so/teamsparta/1792dc3ef51481d08c52c339164bf06e?v=1792dc3ef5148163bcd2000c13520b27)
 
 #### [🕊️ Kafka bootstrap server를 찾지 못하는 문제 ](https://teamsparta.notion.site/12-9700-5c53365016c1416993c6876044a08d6c?p=55657231573f49789d435a8ff3a194a5&pm=s) <br />
 
