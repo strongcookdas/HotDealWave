@@ -26,7 +26,7 @@ public class ProductKafkaConsumer {
     @Value("${spring.kafka.topics.request-order}")
     private String requestOrderTopic;
 
-    @KafkaListener(topics = "${spring.kafka.topics.reduce-quantity}", groupId = "product-group")
+    @KafkaListener(topics = "${spring.kafka.topics.reduce-quantity}", groupId = "product-group", concurrency = "2")
     @Transactional
     public void consumeReduceQuantity(String message, Acknowledgment acknowledgment) throws JsonProcessingException {
         // 메시지 역직렬화
