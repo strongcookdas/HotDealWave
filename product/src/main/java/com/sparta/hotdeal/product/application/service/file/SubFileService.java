@@ -37,11 +37,11 @@ public class SubFileService {
         SubFile subFile = SubFile.of(fileUrl, file);
         subFileRepository.save(subFile);
 
-        try {
-            fileUploadService.uploadFile(img, path, filename);
-        } catch (IOException e) {
-            throw new ApplicationException(ErrorCode.INTERNAL_SERVER_EXCEPTION);
-        }
+//        try {
+//            fileUploadService.uploadFile(img, path, filename);
+//        } catch (IOException e) {
+//            throw new ApplicationException(ErrorCode.INTERNAL_SERVER_EXCEPTION);
+//        }
 
         return subFile;
     }
@@ -53,7 +53,7 @@ public class SubFileService {
             String fileKey = getFileKeyFromUrl(resource);
 
             // S3 SubFile 삭제
-            fileUploadService.deleteFile(fileKey);
+            //fileUploadService.deleteFile(fileKey);
 
             // SubFile 삭제
             subFile.delete(username);
@@ -79,7 +79,7 @@ public class SubFileService {
                 String fileKey = getFileKeyFromUrl(resource);
 
                 // S3 SubFile 삭제
-                fileUploadService.deleteFile(fileKey);
+                //fileUploadService.deleteFile(fileKey);
 
                 // SubFile 삭제
                 subFile.delete(username);
@@ -104,7 +104,7 @@ public class SubFileService {
             String fileKey = getFileKeyFromUrl(resource);
 
             // S3 SubFile 삭제
-            fileUploadService.deleteFile(fileKey);
+            //fileUploadService.deleteFile(fileKey);
 
             if (subFile.getDeletedAt() == null) {
                 subFile.delete(username);
