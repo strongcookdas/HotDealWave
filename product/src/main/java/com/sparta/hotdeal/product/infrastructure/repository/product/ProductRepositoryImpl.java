@@ -40,4 +40,9 @@ public class ProductRepositoryImpl implements ProductRepository {
     public List<Product> findAllByIdIn(List<UUID> productIds) {
         return productRepositoryJpa.findAllByIdIn(productIds);
     }
+
+    @Override
+    public List<Product> findAllByIdInWithLock(List<UUID> productIds) {
+        return productRepositoryJpa.findAllByIdInWithLock(productIds);
+    }
 }
