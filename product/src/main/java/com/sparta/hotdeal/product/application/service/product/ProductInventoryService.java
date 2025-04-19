@@ -60,7 +60,8 @@ public class ProductInventoryService {
                 .collect(Collectors.toList());
 
         // 상품들 조회
-        List<Product> products = productRepository.findAllByIdIn(productIds);
+        //List<Product> products = productRepository.findAllByIdIn(productIds);
+        List<Product> products = productRepository.findAllByIdInWithLock(productIds);
 
         // 상품이 없으면 예외 처리
         if (products.size() != reqPutProductQuantityDto.getProductList().size()) {

@@ -16,4 +16,7 @@ public interface ProductRepository {
     Product save(Product product);
 
     List<Product> findAllByIdIn(List<UUID> productIds);
+
+    //비관적락
+    List<Product> findAllByIdInWithLock(List<UUID> productIds);
 }
