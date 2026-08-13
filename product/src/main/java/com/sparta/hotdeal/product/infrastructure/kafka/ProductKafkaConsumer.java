@@ -23,7 +23,7 @@ public class ProductKafkaConsumer {
     private final ProductInventoryService productInventoryService;
     private final ObjectMapper objectMapper;
 
-    @Value("${spring.kafka.topics.request-order}")
+    @Value("${spring.kafka.topics.cancel-order}")
     private String requestOrderTopic;
 
     @KafkaListener(topics = "${spring.kafka.topics.reduce-quantity}", groupId = "product-group", concurrency = "2")

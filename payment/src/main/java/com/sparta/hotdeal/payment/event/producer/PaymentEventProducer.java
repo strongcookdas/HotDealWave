@@ -23,7 +23,7 @@ public class PaymentEventProducer {
     @Value("${spring.kafka.topics.update-order-status}")
     private String updateOrderStatusTopic;
 
-    @Value("${spring.kafka.topics.rollback-reduce-quantity}")
+    @Value("${spring.kafka.topics.restore-quantity}")
     private String rollbackProductReduceQuantity;
 
     private final ObjectMapper objectMapper;
