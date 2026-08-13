@@ -1,3 +1,6 @@
 .idea/**
 .env
 .env.local
+jmeter/jmeter.log
+jmeter/*.jtl
+jmeter/report/

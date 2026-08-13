@@ -1,5 +1,6 @@
 package com.sparta.hotdeal.order.infrastructure.dtos.product.req;
 
+import com.sparta.hotdeal.order.domain.entity.basket.Basket;
 import com.sparta.hotdeal.order.domain.entity.order.Order;
 import com.sparta.hotdeal.order.domain.entity.order.OrderProduct;
 import java.util.List;
@@ -31,6 +32,18 @@ public class ReqPutProductQuantityDto {
         return ReqPutProductQuantityDto.builder()
                 .orderId(order.getId())
                 .productList(orderProductList.stream().map(ProductQuantityDetail::of).toList())
+                .build();
+    }
+
+    public static ReqPutProductQuantityDto ofBasketList(Order order, List<Basket> basketList) {
+        return ReqPutProductQuantityDto.builder()
+                .orderId(order.getId())
+                .productList(basketList.stream()
+                        .map(basket -> ProductQuantityDetail.builder()
+                                .productId(basket.getProductId())
+                                .quantity(basket.getQuantity())
+                                .build())
+                        .toList())
                 .build();
     }
 }

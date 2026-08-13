@@ -4,8 +4,10 @@ spring:
     username: ${LOCAL_DB_USERNAME}
     password: ${LOCAL_DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
-#    hikari:
-#      maximum-pool-size: 20
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:10}
+  cache:
+    type: ${SPRING_CACHE_TYPE:redis}
   jpa:
     hibernate:
       ddl-auto: update
@@ -30,3 +32,8 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:19090/eureka/
+
+# 성능 테스트 Stage 0~5 비교용 토글 (application.yml 참고: 기본값은 기존 운영 동작과 동일)
+perf-test:
+  parallel-fetch: ${PERF_PARALLEL_FETCH:true}
+  sync-reduce-quantity: ${PERF_SYNC_REDUCE_QUANTITY:false}
