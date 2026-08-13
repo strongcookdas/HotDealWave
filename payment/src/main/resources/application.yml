@@ -13,7 +13,7 @@ spring:
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
     topics:
       ready-payment: ${KAFKA_READY_PAYMENT_TOPIC}
-      rollback-reduce-quantity: ${KAFKA_ROLLBACK_REDUCE_QUANTITY_TOPIC}
+      restore-quantity: ${KAFKA_RESTORE_QUANTITY_TOPIC}
       dlq: ${KAFKA_DLQ_TOPIC}
       update-order-status: ${KAFKA_UPDATE_ORDER_STATUS_TOPIC}
       cancel-payment: ${KAFKA_CANCEL_PAYMENT_TOPIC}

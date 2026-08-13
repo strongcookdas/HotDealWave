@@ -12,9 +12,9 @@ spring:
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
     topics:
       reduce-quantity: ${KAFKA_REDUCE_QUANTITY_TOPIC}
-      request-payment: ${KAFKA_REQUEST_PAYMENT_TOPIC}
+      ready-payment: ${KAFKA_READY_PAYMENT_TOPIC}
       restore-quantity: ${KAFKA_RESTORE_QUANTITY_TOPIC}
-      request-order: ${KAFKA_REQUEST_ORDER_TOPIC}
+      cancel-order: ${KAFKA_CANCEL_ORDER_TOPIC}
 logging:
   level:
     org.springframework.security: DEBUG
