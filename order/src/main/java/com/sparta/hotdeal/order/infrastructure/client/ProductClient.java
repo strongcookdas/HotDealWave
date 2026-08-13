@@ -24,6 +24,10 @@ public interface ProductClient {
     ResponseDto<Page<ResGetProductListDto>> getProductList(@RequestParam("productIds") List<UUID> productIds);
 
     @PutMapping("/api/v1/products/restore-quantity")
-    ResponseDto<Void> reduceQuantity(
+    ResponseDto<Void> restoreProductQuantity(
+            @RequestBody ReqPutProductQuantityDto reqPutProductQuantityDto);
+
+    @PutMapping("/api/v1/products/reduce-quantity")
+    ResponseDto<Void> reduceProductQuantity(
             @RequestBody ReqPutProductQuantityDto reqPutProductQuantityDto);
 }

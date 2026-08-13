@@ -20,6 +20,7 @@ import com.sparta.hotdeal.order.domain.entity.order.OrderProduct;
 import com.sparta.hotdeal.order.domain.entity.order.OrderStatus;
 import com.sparta.hotdeal.order.domain.repository.OrderRepository;
 import com.sparta.hotdeal.order.event.service.OrderProducerService;
+import jakarta.annotation.PostConstruct;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,6 +29,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -49,54 +51,40 @@ public class OrderService {
     private final OrderCalculationService orderCalculationService;
     private final OrderProducerService orderProducerService;
 
+    // 성능 테스트 단계별(Stage 0~5) 비교를 위한 토글. 기본값은 지금까지의 운영 동작(병렬 조회 + Kafka 비동기)과 동일.
+    @Value("${perf-test.parallel-fetch:true}")
+    private boolean parallelFetchEnabled;
 
-//    public ResPostOrderDto createOrder(UUID userId, String email, String role, ReqPostOrderDto req) {
-//        List<Basket> basketList = orderBasketService.getBasketList(userId, req.getBasketList());
-//
-//        Map<UUID, ProductDto> productDtoMap = getProductDetailsForBasketItems(basketList);
-//
-//        AddressDto addressDto = userClientPort.getAddress(userId, email, role, req.getAddressId());
-//        log.info("주소 단건 조회 API 호출");
-//
-//        CouponValidationDto couponValidationDto = validateAndUseCoupon(req.getCouponId(), basketList,
-//                productDtoMap);
-//
-//        int totalAmount = orderCalculationService.calculateTotalAmount(basketList, productDtoMap);
-//
-//        Order order = saveOrder(
-//                addressDto.getAddressId(),
-//                userId,
-//                totalAmount,
-//                getOrderName(productDtoMap),
-//                req.getCouponId(),
-//                couponValidationDto.getTotalDiscountAmount()
-//        );
-//
-//        orderProductService.saveOrderProductList(order, basketList, productDtoMap);
-//        orderBasketService.deleteBasketList(basketList);
-//
-//        orderProducerService.sendReduceProductQuantityMessage(order, basketList);
-//
-//        return ResPostOrderDto.of(order.getId());
-//    }
+    @Value("${perf-test.sync-reduce-quantity:false}")
+    private boolean syncReduceQuantityEnabled;
+
+    @PostConstruct
+    public void logPerfTestConfig() {
+        log.info("[PERF-TEST-CONFIG] parallelFetchEnabled={}, syncReduceQuantityEnabled={}",
+                parallelFetchEnabled, syncReduceQuantityEnabled);
+    }
 
     public ResPostOrderDto createOrder(UUID userId, String email, String role, ReqPostOrderDto req) {
         // 장바구니 목록 조회 (동기 처리)
         List<Basket> basketList = orderBasketService.getBasketList(userId, req.getBasketList());
 
-        // 상품 정보 조회 비동기 처리
-        CompletableFuture<Map<UUID, ProductDto>> productFuture = CompletableFuture.supplyAsync(
-                () -> getProductDetailsForBasketItems(basketList)
-        );
-
-        // 주소 정보 조회 비동기 처리
-        CompletableFuture<AddressDto> addressFuture = CompletableFuture.supplyAsync(
-                () -> userClientPort.getAddress(userId, email, role, req.getAddressId())
-        );
-
-        // 비동기 작업 완료 대기
-        Map<UUID, ProductDto> productDtoMap = productFuture.join();
-        AddressDto addressDto = addressFuture.join();
+        Map<UUID, ProductDto> productDtoMap;
+        AddressDto addressDto;
+        if (parallelFetchEnabled) {
+            // 상품/주소 조회 병렬 처리
+            CompletableFuture<Map<UUID, ProductDto>> productFuture = CompletableFuture.supplyAsync(
+                    () -> getProductDetailsForBasketItems(basketList)
+            );
+            CompletableFuture<AddressDto> addressFuture = CompletableFuture.supplyAsync(
+                    () -> userClientPort.getAddress(userId, email, role, req.getAddressId())
+            );
+            productDtoMap = productFuture.join();
+            addressDto = addressFuture.join();
+        } else {
+            // 상품/주소 순차 조회
+            productDtoMap = getProductDetailsForBasketItems(basketList);
+            addressDto = userClientPort.getAddress(userId, email, role, req.getAddressId());
+        }
 
         // 쿠폰 검증 및 사용 (동기 처리)
         CouponValidationDto couponValidationDto = validateAndUseCoupon(req.getCouponId(), basketList, productDtoMap);
@@ -118,8 +106,12 @@ public class OrderService {
         orderProductService.saveOrderProductList(order, basketList, productDtoMap);
         orderBasketService.deleteBasketList(basketList);
 
-        // 메시지 전송
-        orderProducerService.sendReduceProductQuantityMessage(order, basketList);
+        // 재고 차감: 동기 Feign 호출 vs Kafka 비동기 메시지
+        if (syncReduceQuantityEnabled) {
+            productClientPort.reduceProductQuantitySync(order, basketList);
+        } else {
+            orderProducerService.sendReduceProductQuantityMessage(order, basketList);
+        }
 
         return ResPostOrderDto.of(order.getId());
     }
