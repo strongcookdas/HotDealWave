@@ -25,7 +25,13 @@ public class OrderBasketService {
         return baskets;
     }
 
+    @Transactional
     public void deleteBasketList(List<Basket> basketList) {
-        basketList.forEach(basket -> basket.remove("email@email.com"));
+        // createOrder 흐름에서는 getBasketList가 이미 커밋된 별도 트랜잭션에서 조회한 detached 엔티티를
+        // 넘겨받으므로, dirty checking에 의존하지 않고 명시적으로 save 해야 반영된다.
+        basketList.forEach(basket -> {
+            basket.remove("email@email.com");
+            basketRepository.save(basket);
+        });
     }
 }

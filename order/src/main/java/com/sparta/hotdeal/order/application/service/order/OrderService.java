@@ -27,8 +27,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,7 +39,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
-@Transactional
 @RequiredArgsConstructor
 public class OrderService {
 
@@ -50,6 +51,10 @@ public class OrderService {
     private final OrderBasketService orderBasketService;
     private final OrderCalculationService orderCalculationService;
     private final OrderProducerService orderProducerService;
+    private final OrderPersistenceService orderPersistenceService;
+
+    @Qualifier("orderParallelFetchExecutor")
+    private final Executor orderParallelFetchExecutor;
 
     // 성능 테스트 단계별(Stage 0~5) 비교를 위한 토글. 기본값은 지금까지의 운영 동작(병렬 조회 + Kafka 비동기)과 동일.
     @Value("${perf-test.parallel-fetch:true}")
@@ -73,10 +78,10 @@ public class OrderService {
         if (parallelFetchEnabled) {
             // 상품/주소 조회 병렬 처리
             CompletableFuture<Map<UUID, ProductDto>> productFuture = CompletableFuture.supplyAsync(
-                    () -> getProductDetailsForBasketItems(basketList)
+                    () -> getProductDetailsForBasketItems(basketList), orderParallelFetchExecutor
             );
             CompletableFuture<AddressDto> addressFuture = CompletableFuture.supplyAsync(
-                    () -> userClientPort.getAddress(userId, email, role, req.getAddressId())
+                    () -> userClientPort.getAddress(userId, email, role, req.getAddressId()), orderParallelFetchExecutor
             );
             productDtoMap = productFuture.join();
             addressDto = addressFuture.join();
@@ -86,27 +91,26 @@ public class OrderService {
             addressDto = userClientPort.getAddress(userId, email, role, req.getAddressId());
         }
 
-        // 쿠폰 검증 및 사용 (동기 처리)
+        // 쿠폰 검증 및 사용 (동기 처리, 외부 API 호출)
         CouponValidationDto couponValidationDto = validateAndUseCoupon(req.getCouponId(), basketList, productDtoMap);
 
         // 총 금액 계산
         int totalAmount = orderCalculationService.calculateTotalAmount(basketList, productDtoMap);
 
-        // 주문 생성 및 저장
-        Order order = saveOrder(
+        // 여기까지는 전부 외부 API 호출/순수 계산이라 DB 커넥션을 붙잡지 않는다.
+        // 실제 DB 쓰기(주문 저장 + 주문상품 저장 + 장바구니 삭제)만 짧은 트랜잭션으로 묶는다.
+        Order order = orderPersistenceService.persistOrder(
                 addressDto.getAddressId(),
                 userId,
                 totalAmount,
                 getOrderName(productDtoMap),
                 req.getCouponId(),
-                couponValidationDto.getTotalDiscountAmount()
+                couponValidationDto.getTotalDiscountAmount(),
+                basketList,
+                productDtoMap
         );
 
-        // 주문 상품 저장 및 장바구니 삭제
-        orderProductService.saveOrderProductList(order, basketList, productDtoMap);
-        orderBasketService.deleteBasketList(basketList);
-
-        // 재고 차감: 동기 Feign 호출 vs Kafka 비동기 메시지
+        // 재고 차감: 동기 Feign 호출 vs Kafka 비동기 메시지 (트랜잭션 커밋 이후, DB 커넥션과 무관)
         if (syncReduceQuantityEnabled) {
             productClientPort.reduceProductQuantitySync(order, basketList);
         } else {
@@ -136,26 +140,6 @@ public class OrderService {
         }
 
         return couponValidationDto;
-    }
-
-    private Order saveOrder(
-            UUID addressId,
-            UUID userId,
-            int totalAmount,
-            String orderName,
-            UUID couponId,
-            int discountAmount
-    ) {
-        Order order = Order.create(
-                addressId,
-                userId,
-                totalAmount,
-                orderName,
-                couponId,
-                discountAmount
-        );
-
-        return orderRepository.save(order);
     }
 
     private String getOrderName(Map<UUID, ProductDto> productDtoMap) {
@@ -239,6 +223,7 @@ public class OrderService {
         ));
     }
 
+    @Transactional
     public void updateOrderStatus(UUID orderId, ReqPutOrderDto reqPutOrderDto) {
         Order order = orderRepository.findByIdAndDeletedAtIsNull(orderId)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.ORDER_NOT_FOUND_EXCEPTION));
@@ -246,6 +231,7 @@ public class OrderService {
         order.updateStatus(reqPutOrderDto.getOrderStatus());
     }
 
+    @Transactional
     public void cancelOrder(UUID userId, UUID orderId) {
         Order order = findByIdAndUserId(orderId, userId);
         checkOrderStatusCancellable(order);
@@ -269,6 +255,7 @@ public class OrderService {
         log.info("상품 수량 복구 API 호출");
     }
 
+    @Transactional
     public void refundOrder(UUID userId, UUID orderId) {
         Order order = findByIdAndUserId(orderId, userId);
         checkOrderRefundableDate(order);

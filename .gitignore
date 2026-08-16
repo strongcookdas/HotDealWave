@@ -1,6 +1,7 @@
 .idea/**
 .env
 .env.local
+.DS_Store
 jmeter/jmeter.log
-jmeter/*.jtl
-jmeter/report/
+jmeter/results/
+jmeter/thread-dumps/
