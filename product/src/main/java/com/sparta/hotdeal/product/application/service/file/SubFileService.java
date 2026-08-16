@@ -10,7 +10,9 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,14 @@ public class SubFileService {
 
     private final FileUploadService fileUploadService;
     private final SubFileRepository subFileRepository;
+
+    // 상품 목록 조회 시 File.getSubFiles() LAZY 접근으로 인한 N+1을 피하기 위해,
+    // 여러 File의 SubFile을 한 번의 쿼리로 모아서 fileId별로 그룹핑해 돌려준다.
+    @Transactional(readOnly = true)
+    public Map<UUID, List<SubFile>> getSubFilesGroupedByFileId(List<UUID> fileIds) {
+        return subFileRepository.findAllByFileIdIn(fileIds).stream()
+                .collect(Collectors.groupingBy(subFile -> subFile.getFile().getId()));
+    }
 
     public SubFile saveImg(MultipartFile img, File file, ImageTypeEnum imageType) {
         String path = imageType.getValue();
