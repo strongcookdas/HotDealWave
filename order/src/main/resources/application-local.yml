@@ -28,6 +28,12 @@ spring:
       username: ${REDIS_LOCAL_USERNAME}
       password: ${REDIS_LOCAL_PASSWORD}
 
+
+server:
+  tomcat:
+    threads:
+      max: ${TOMCAT_MAX_THREADS:200}
+
 eureka:
   client:
     service-url:

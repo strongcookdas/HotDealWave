@@ -19,11 +19,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,24 +37,28 @@ public class BasketService {
     private final BasketRepository basketRepository;
     private final ProductClientPort productClientPort;
 
+    @Qualifier("orderParallelFetchExecutor")
+    private final Executor orderParallelFetchExecutor;
+
     public ResPostBasketDto createBasket(UUID userId, ReqPostBasketDto req) {
-        CompletableFuture<ProductByIdtDto> productFuture = getProductAsync(req.getProductId());
+        // 기존에 @Async + 내부 supplyAsync(기본 ForkJoinPool.commonPool)로 이중 위임되던 걸
+        // 전용 Executor로 직접 위임하도록 단순화했다(commonPool 경합 문제 회피).
+        CompletableFuture<ProductByIdtDto> productFuture = CompletableFuture.supplyAsync(
+                () -> getProductOrThrow(req.getProductId()), orderParallelFetchExecutor
+        );
         Basket basket = Basket.create(req.getProductId(), userId, req.getQuantity());
         basket = basketRepository.save(basket);
         productFuture.join(); // 비동기 결과 대기
         return ResPostBasketDto.of(basket);
     }
 
-    @Async
-    public CompletableFuture<ProductByIdtDto> getProductAsync(UUID productId) {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                return productClientPort.getProduct(productId);
-            } catch (Exception e) {
-                log.error("상품 단건 조회 API 호출 실패 productId {}: {}", productId, e.getMessage());
-                throw new ApplicationException(ErrorCode.PRODUCT_NOT_FOUND_EXCEPTION);
-            }
-        });
+    private ProductByIdtDto getProductOrThrow(UUID productId) {
+        try {
+            return productClientPort.getProduct(productId);
+        } catch (Exception e) {
+            log.error("상품 단건 조회 API 호출 실패 productId {}: {}", productId, e.getMessage());
+            throw new ApplicationException(ErrorCode.PRODUCT_NOT_FOUND_EXCEPTION);
+        }
     }
 
     @Transactional(readOnly = true)
