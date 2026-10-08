@@ -4,6 +4,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -19,10 +21,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockedStatic;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @ExtendWith(MockitoExtension.class)
 class ProductKafkaConsumerTest {
@@ -77,7 +83,7 @@ class ProductKafkaConsumerTest {
     }
 
     @Test
-    @DisplayName("재고 차감은 성공했지만 결제 요청 발행이 실패하면 롤백 메시지를 발행해야 한다 - 현재는 실패하는 테스트(버그 재현)")
+    @DisplayName("재고 차감은 성공했지만 결제 요청 발행이 실패하면 롤백 메시지를 발행해야 한다")
     void consumeReduceQuantity_paymentRequestPublishFails_mustRollBack() throws Exception {
         String message = message(UUID.randomUUID());
         doThrow(new RuntimeException("kafka broker down"))
@@ -87,5 +93,38 @@ class ProductKafkaConsumerTest {
 
         verify(productInventoryService).sendRollbackRequest(anyString(), anyString(), anyString());
         verify(acknowledgment, atLeastOnce()).acknowledge();
+    }
+
+    @Test
+    @DisplayName("결제 요청 발행 실패 시, 트랜잭션이 활성화되어 있다면 재고 차감을 롤백 전용으로 표시해야 한다")
+    void consumeReduceQuantity_paymentRequestPublishFails_marksTransactionRollbackOnly() throws Exception {
+        String message = message(UUID.randomUUID());
+        doThrow(new RuntimeException("kafka broker down"))
+                .when(productInventoryService).sendPaymentRequest(anyString(), anyString());
+
+        TransactionStatus transactionStatus = mock(TransactionStatus.class);
+        try (MockedStatic<TransactionSynchronizationManager> syncManager =
+                     mockStatic(TransactionSynchronizationManager.class);
+             MockedStatic<TransactionAspectSupport> aspectSupport = mockStatic(TransactionAspectSupport.class)) {
+            syncManager.when(TransactionSynchronizationManager::isActualTransactionActive).thenReturn(true);
+            aspectSupport.when(TransactionAspectSupport::currentTransactionStatus).thenReturn(transactionStatus);
+
+            productKafkaConsumer.consumeReduceQuantity(message, acknowledgment);
+
+            verify(transactionStatus).setRollbackOnly();
+        }
+        verify(productInventoryService).sendRollbackRequest(anyString(), anyString(), anyString());
+    }
+
+    @Test
+    @DisplayName("결제 요청 발행 실패 시, 활성화된 트랜잭션이 없으면 롤백 표시를 시도하지 않고도 롤백 메시지는 보낸다")
+    void consumeReduceQuantity_paymentRequestPublishFails_noActiveTransaction_doesNotThrow() throws Exception {
+        String message = message(UUID.randomUUID());
+        doThrow(new RuntimeException("kafka broker down"))
+                .when(productInventoryService).sendPaymentRequest(anyString(), anyString());
+
+        productKafkaConsumer.consumeReduceQuantity(message, acknowledgment);
+
+        verify(productInventoryService).sendRollbackRequest(anyString(), anyString(), anyString());
     }
 }
