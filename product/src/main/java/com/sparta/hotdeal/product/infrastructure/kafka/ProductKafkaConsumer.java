@@ -49,7 +49,11 @@ public class ProductKafkaConsumer {
                     rollbackMessage); // 실패 시 전체 요청 롤백
             acknowledgment.acknowledge();
         } catch (Exception e) {
+            // 재고 차감은 이미 커밋되고 오프셋도 넘어간 뒤 이 지점(결제 요청 발행 등)에서 실패한 경우,
+            // 위 ApplicationException 분기와 동일하게 롤백 메시지를 보내야 주문이 영구히 멈추지 않는다.
             log.error("예기치 않은 오류 발생: {}", e.getMessage());
+            String rollbackMessage = objectMapper.writeValueAsString(key);
+            sendRollbackMessage(requestOrderTopic, key.getOrderId().toString(), rollbackMessage);
             acknowledgment.acknowledge(); // 예외 발생 시에도 메시지 중복 처리를 방지
         }
     }
