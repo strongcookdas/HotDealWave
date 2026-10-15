@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class OrderEventProducer {
 
-    @Value("${spring.kafka.topics.request-product}")
+    @Value("${spring.kafka.topics.reduce-quantity}")
     private String reduceProductQuantityTopic;
     @Value("${spring.kafka.topics.cancel-payment}")
     private String cancelPaymentTopic;

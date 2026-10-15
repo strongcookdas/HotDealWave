@@ -1,17 +1,29 @@
 <configuration>
+    <!-- 1. Loki Appender는 주석 처리 -->
+    <!--
     <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
         <http>
             <url>http://${HOST}:3100/loki/api/v1/push</url>
         </http>
         <format>
             <label>
-                <pattern>app=coupon-service,host=${HOSTNAME}</pattern>
+                <pattern>app=gateway-service,host=${HOSTNAME}</pattern>
             </label>
             <message class="com.github.loki4j.logback.JsonLayout" />
         </format>
     </appender>
+    -->
 
+    <!-- 2. 콘솔 출력용 Appender 추가 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 3. root level에서 CONSOLE 참조 -->
     <root level="INFO">
-        <appender-ref ref="LOKI" />
+        <appender-ref ref="CONSOLE" />
+        <!-- <appender-ref ref="LOKI" /> -->
     </root>
 </configuration>

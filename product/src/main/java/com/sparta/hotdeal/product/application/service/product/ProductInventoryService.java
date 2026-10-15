@@ -28,10 +28,10 @@ public class ProductInventoryService {
     private final ProductPromotionHelperService productPromotionHelperService;
     private final ProductKafkaProducer productKafkaProducer;
 
-    @Value("${spring.kafka.topics.request-payment}")
+    @Value("${spring.kafka.topics.ready-payment}")
     private String requestPaymentTopic;
 
-    @Value("${spring.kafka.topics.request-order}")
+    @Value("${spring.kafka.topics.cancel-order}")
     private String requestOrderTopic;
 
     public ResPutProductQuantityDto reduceQuantity(ReqPutProductQuantityDto reqPutProductQuantityDto) {

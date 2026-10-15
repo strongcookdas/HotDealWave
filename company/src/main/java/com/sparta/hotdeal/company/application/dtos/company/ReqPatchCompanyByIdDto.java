@@ -1,13 +1,16 @@
 package com.sparta.hotdeal.company.application.dtos.company;
 
-import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ReqPatchCompanyByIdDto {
     @NotNull(message = "업체 번호를 입력해주세요.")
     private Long companyPhoneNumber;

@@ -11,8 +11,6 @@ import com.sparta.hotdeal.company.infrastructure.security.RequestUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -51,7 +49,7 @@ public class CompanyController {
     @Secured({"ROLE_SELLER", "ROLE_MASTER", "ROLE_MANAGER"})
     @Operation(summary = "업체 수정 API", description = "업체를 수정합니다.")
     public ResponseDto<Void> updateCompany(@AuthenticationPrincipal RequestUserDetails userDetails,
-                                           @Valid @PathVariable UUID companyId,
+                                           @Valid @PathVariable("companyId") UUID companyId,
                                            @RequestBody ReqPatchCompanyByIdDto reqPatchCompanyByIdDto) {
         companyService.updateCompany(companyId, reqPatchCompanyByIdDto);
         return ResponseDto.of("업체가 수정되었습니다.", null);
@@ -61,7 +59,7 @@ public class CompanyController {
     @Secured({"ROLE_MASTER", "ROLE_MANAGER"})
     @Operation(summary = "업체 상태 변경 API", description = "업체 상태를 변경합니다.")
     public ResponseDto<Void> updateCompanyStatus(@AuthenticationPrincipal RequestUserDetails userDetails,
-                                                 @Valid @PathVariable UUID companyId,
+                                                 @Valid @PathVariable("companyId") UUID companyId,
                                                  @RequestBody ReqPatchCompanyByIdStatusDto reqPatchCompanyByIdStatusDto) {
         companyService.updateCompanyStatus(companyId, reqPatchCompanyByIdStatusDto);
         return ResponseDto.of("상태가 수정되었습니다.", null);
@@ -71,7 +69,7 @@ public class CompanyController {
     @Secured({"ROLE_SELLER", "ROLE_MASTER", "ROLE_MANAGER"})
     @Operation(summary = "업체 상세 조회 API", description = "업체 ID로 상세 정보를 조회합니다.")
     public ResponseDto<ResGetCompanyByIdDto> getCompanyById(@AuthenticationPrincipal RequestUserDetails userDetails,
-                                                            @PathVariable UUID companyId) {
+                                                            @PathVariable("companyId") UUID companyId) {
         ResGetCompanyByIdDto resGetCompanyByIdDto = companyService.getCompanyById(companyId);
         return ResponseDto.of("업체가 조회되었습니다.", resGetCompanyByIdDto);
     }
@@ -81,7 +79,7 @@ public class CompanyController {
     @Operation(summary = "업체 목록 조회 API", description = "업체 목록을 조회합니다.")
     public ResponseDto<Page<ResGetCompanyByIdDto>> getCompanyList(
             @AuthenticationPrincipal RequestUserDetails userDetails, Pageable pageable,
-            @RequestParam(required = false) CompanyStatusEnum status) {
+            @RequestParam(value = "status", required = false) CompanyStatusEnum status) {
         return ResponseDto.of("업체목록이 조회되었습니다.", companyService.getCompanyList(pageable, status));
     }
 }

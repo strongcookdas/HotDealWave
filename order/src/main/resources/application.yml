@@ -12,7 +12,7 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
     topics:
-      request-product: ${KAFKA_REQUEST_PRODUCT_TOPIC}
+      reduce-quantity: ${KAFKA_REDUCE_QUANTITY_TOPIC}
       cancel-order: ${KAFKA_CANCEL_ORDER_TOPIC}
       update-order-status: ${KAFKA_UPDATE_ORDER_STATUS_TOPIC}
       dlq: ${KAFKA_DLQ_TOPIC}

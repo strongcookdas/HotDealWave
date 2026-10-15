@@ -20,9 +20,9 @@ public class MailServiceImpl implements MailService {
         try {
             emailSender.send(emailForm);
         } catch (RuntimeException e) {
-            log.debug("MailService.sendEmail exception occur toEmail: {}, " +
-                    "title: {}, text: {}", toEmail, title, text);
-            throw new IllegalArgumentException();
+            log.error("MailService.sendEmail exception occur toEmail: {}, title: {}, text: {}",
+                    toEmail, title, text, e); // <- 마지막 인자로 e를 넘겨주면 StackTrace 전체가 출력됩니다.
+            throw e; // 원본 예외를 그대로 던짐
         }
     }
 

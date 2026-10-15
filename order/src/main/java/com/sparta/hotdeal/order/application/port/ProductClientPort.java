@@ -2,6 +2,7 @@ package com.sparta.hotdeal.order.application.port;
 
 import com.sparta.hotdeal.order.application.dtos.product.ProductByIdtDto;
 import com.sparta.hotdeal.order.application.dtos.product.ProductDto;
+import com.sparta.hotdeal.order.domain.entity.basket.Basket;
 import com.sparta.hotdeal.order.domain.entity.order.Order;
 import com.sparta.hotdeal.order.domain.entity.order.OrderProduct;
 import java.util.List;
@@ -17,4 +18,6 @@ public interface ProductClientPort {
     List<ProductDto> getProductALL(List<UUID> productIds);
 
     void restoreProductList(Order order, List<OrderProduct> orderProductDtoList);
+
+    void reduceProductQuantitySync(Order order, List<Basket> basketList);
 }

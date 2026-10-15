@@ -1,7 +1,7 @@
 package com.sparta.hotdeal.order.infrastructure.client;
 
 import com.sparta.hotdeal.order.infrastructure.config.CouponClientConfig;
-import com.sparta.hotdeal.order.infrastructure.dtos.ResponseDto;
+import com.sparta.hotdeal.order.application.dtos.ResponseDto;
 import com.sparta.hotdeal.order.infrastructure.dtos.coupon.req.ReqPostCouponValidateDto;
 import com.sparta.hotdeal.order.infrastructure.dtos.coupon.res.ResPostCouponValidateDto;
 import java.util.UUID;

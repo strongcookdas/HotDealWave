@@ -1,2 +1,7 @@
 .idea/**
 .env
+.env.local
+.DS_Store
+jmeter/jmeter.log
+jmeter/results/
+jmeter/thread-dumps/

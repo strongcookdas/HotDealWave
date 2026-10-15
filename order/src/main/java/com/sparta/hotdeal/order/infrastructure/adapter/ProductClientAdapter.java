@@ -3,6 +3,7 @@ package com.sparta.hotdeal.order.infrastructure.adapter;
 import com.sparta.hotdeal.order.application.dtos.product.ProductByIdtDto;
 import com.sparta.hotdeal.order.application.dtos.product.ProductDto;
 import com.sparta.hotdeal.order.application.port.ProductClientPort;
+import com.sparta.hotdeal.order.domain.entity.basket.Basket;
 import com.sparta.hotdeal.order.domain.entity.order.Order;
 import com.sparta.hotdeal.order.domain.entity.order.OrderProduct;
 import com.sparta.hotdeal.order.infrastructure.client.ProductClient;
@@ -52,6 +53,12 @@ public class ProductClientAdapter implements ProductClientPort {
     @Override
     public void restoreProductList(Order order, List<OrderProduct> orderProductDtoList) {
         ReqPutProductQuantityDto reqPutProductQuantityDto = ReqPutProductQuantityDto.of(order, orderProductDtoList);
-        productClient.reduceQuantity(reqPutProductQuantityDto);
+        productClient.restoreProductQuantity(reqPutProductQuantityDto);
+    }
+
+    @Override
+    public void reduceProductQuantitySync(Order order, List<Basket> basketList) {
+        ReqPutProductQuantityDto reqPutProductQuantityDto = ReqPutProductQuantityDto.ofBasketList(order, basketList);
+        productClient.reduceProductQuantity(reqPutProductQuantityDto);
     }
 }

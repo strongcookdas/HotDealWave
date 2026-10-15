@@ -3,7 +3,7 @@ server:
 
 spring:
   profiles:
-    active: ${ACTIVE_PROFILE}
+    active: ${ACTIVE_PROFILE:local}
   main:
     web-application-type: reactive
   application:

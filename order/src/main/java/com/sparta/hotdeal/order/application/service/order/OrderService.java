@@ -20,14 +20,18 @@ import com.sparta.hotdeal.order.domain.entity.order.OrderProduct;
 import com.sparta.hotdeal.order.domain.entity.order.OrderStatus;
 import com.sparta.hotdeal.order.domain.repository.OrderRepository;
 import com.sparta.hotdeal.order.event.service.OrderProducerService;
+import jakarta.annotation.PostConstruct;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -35,7 +39,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
-@Transactional
 @RequiredArgsConstructor
 public class OrderService {
 
@@ -48,78 +51,71 @@ public class OrderService {
     private final OrderBasketService orderBasketService;
     private final OrderCalculationService orderCalculationService;
     private final OrderProducerService orderProducerService;
+    private final OrderPersistenceService orderPersistenceService;
 
+    @Qualifier("orderParallelFetchExecutor")
+    private final Executor orderParallelFetchExecutor;
 
-//    public ResPostOrderDto createOrder(UUID userId, String email, String role, ReqPostOrderDto req) {
-//        List<Basket> basketList = orderBasketService.getBasketList(userId, req.getBasketList());
-//
-//        Map<UUID, ProductDto> productDtoMap = getProductDetailsForBasketItems(basketList);
-//
-//        AddressDto addressDto = userClientPort.getAddress(userId, email, role, req.getAddressId());
-//        log.info("주소 단건 조회 API 호출");
-//
-//        CouponValidationDto couponValidationDto = validateAndUseCoupon(req.getCouponId(), basketList,
-//                productDtoMap);
-//
-//        int totalAmount = orderCalculationService.calculateTotalAmount(basketList, productDtoMap);
-//
-//        Order order = saveOrder(
-//                addressDto.getAddressId(),
-//                userId,
-//                totalAmount,
-//                getOrderName(productDtoMap),
-//                req.getCouponId(),
-//                couponValidationDto.getTotalDiscountAmount()
-//        );
-//
-//        orderProductService.saveOrderProductList(order, basketList, productDtoMap);
-//        orderBasketService.deleteBasketList(basketList);
-//
-//        orderProducerService.sendReduceProductQuantityMessage(order, basketList);
-//
-//        return ResPostOrderDto.of(order.getId());
-//    }
+    // 성능 테스트 단계별(Stage 0~5) 비교를 위한 토글. 기본값은 지금까지의 운영 동작(병렬 조회 + Kafka 비동기)과 동일.
+    @Value("${perf-test.parallel-fetch:true}")
+    private boolean parallelFetchEnabled;
+
+    @Value("${perf-test.sync-reduce-quantity:false}")
+    private boolean syncReduceQuantityEnabled;
+
+    @PostConstruct
+    public void logPerfTestConfig() {
+        log.info("[PERF-TEST-CONFIG] parallelFetchEnabled={}, syncReduceQuantityEnabled={}",
+                parallelFetchEnabled, syncReduceQuantityEnabled);
+    }
 
     public ResPostOrderDto createOrder(UUID userId, String email, String role, ReqPostOrderDto req) {
         // 장바구니 목록 조회 (동기 처리)
         List<Basket> basketList = orderBasketService.getBasketList(userId, req.getBasketList());
 
-        // 상품 정보 조회 비동기 처리
-        CompletableFuture<Map<UUID, ProductDto>> productFuture = CompletableFuture.supplyAsync(
-                () -> getProductDetailsForBasketItems(basketList)
-        );
+        Map<UUID, ProductDto> productDtoMap;
+        AddressDto addressDto;
+        if (parallelFetchEnabled) {
+            // 상품/주소 조회 병렬 처리
+            CompletableFuture<Map<UUID, ProductDto>> productFuture = CompletableFuture.supplyAsync(
+                    () -> getProductDetailsForBasketItems(basketList), orderParallelFetchExecutor
+            );
+            CompletableFuture<AddressDto> addressFuture = CompletableFuture.supplyAsync(
+                    () -> userClientPort.getAddress(userId, email, role, req.getAddressId()), orderParallelFetchExecutor
+            );
+            productDtoMap = productFuture.join();
+            addressDto = addressFuture.join();
+        } else {
+            // 상품/주소 순차 조회
+            productDtoMap = getProductDetailsForBasketItems(basketList);
+            addressDto = userClientPort.getAddress(userId, email, role, req.getAddressId());
+        }
 
-        // 주소 정보 조회 비동기 처리
-        CompletableFuture<AddressDto> addressFuture = CompletableFuture.supplyAsync(
-                () -> userClientPort.getAddress(userId, email, role, req.getAddressId())
-        );
-
-        // 비동기 작업 완료 대기
-        Map<UUID, ProductDto> productDtoMap = productFuture.join();
-        AddressDto addressDto = addressFuture.join();
-
-        // 쿠폰 검증 및 사용 (동기 처리)
+        // 쿠폰 검증 및 사용 (동기 처리, 외부 API 호출)
         CouponValidationDto couponValidationDto = validateAndUseCoupon(req.getCouponId(), basketList, productDtoMap);
 
         // 총 금액 계산
         int totalAmount = orderCalculationService.calculateTotalAmount(basketList, productDtoMap);
 
-        // 주문 생성 및 저장
-        Order order = saveOrder(
+        // 여기까지는 전부 외부 API 호출/순수 계산이라 DB 커넥션을 붙잡지 않는다.
+        // 실제 DB 쓰기(주문 저장 + 주문상품 저장 + 장바구니 삭제)만 짧은 트랜잭션으로 묶는다.
+        Order order = orderPersistenceService.persistOrder(
                 addressDto.getAddressId(),
                 userId,
                 totalAmount,
                 getOrderName(productDtoMap),
                 req.getCouponId(),
-                couponValidationDto.getTotalDiscountAmount()
+                couponValidationDto.getTotalDiscountAmount(),
+                basketList,
+                productDtoMap
         );
 
-        // 주문 상품 저장 및 장바구니 삭제
-        orderProductService.saveOrderProductList(order, basketList, productDtoMap);
-        orderBasketService.deleteBasketList(basketList);
-
-        // 메시지 전송
-        orderProducerService.sendReduceProductQuantityMessage(order, basketList);
+        // 재고 차감: 동기 Feign 호출 vs Kafka 비동기 메시지 (트랜잭션 커밋 이후, DB 커넥션과 무관)
+        if (syncReduceQuantityEnabled) {
+            productClientPort.reduceProductQuantitySync(order, basketList);
+        } else {
+            orderProducerService.sendReduceProductQuantityMessage(order, basketList);
+        }
 
         return ResPostOrderDto.of(order.getId());
     }
@@ -144,26 +140,6 @@ public class OrderService {
         }
 
         return couponValidationDto;
-    }
-
-    private Order saveOrder(
-            UUID addressId,
-            UUID userId,
-            int totalAmount,
-            String orderName,
-            UUID couponId,
-            int discountAmount
-    ) {
-        Order order = Order.create(
-                addressId,
-                userId,
-                totalAmount,
-                orderName,
-                couponId,
-                discountAmount
-        );
-
-        return orderRepository.save(order);
     }
 
     private String getOrderName(Map<UUID, ProductDto> productDtoMap) {
@@ -247,6 +223,7 @@ public class OrderService {
         ));
     }
 
+    @Transactional
     public void updateOrderStatus(UUID orderId, ReqPutOrderDto reqPutOrderDto) {
         Order order = orderRepository.findByIdAndDeletedAtIsNull(orderId)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.ORDER_NOT_FOUND_EXCEPTION));
@@ -254,6 +231,7 @@ public class OrderService {
         order.updateStatus(reqPutOrderDto.getOrderStatus());
     }
 
+    @Transactional
     public void cancelOrder(UUID userId, UUID orderId) {
         Order order = findByIdAndUserId(orderId, userId);
         checkOrderStatusCancellable(order);
@@ -277,6 +255,7 @@ public class OrderService {
         log.info("상품 수량 복구 API 호출");
     }
 
+    @Transactional
     public void refundOrder(UUID userId, UUID orderId) {
         Order order = findByIdAndUserId(orderId, userId);
         checkOrderRefundableDate(order);

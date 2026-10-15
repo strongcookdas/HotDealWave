@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -156,7 +157,11 @@ public class ProductService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.PRODUCT_NOT_FOUND_EXCEPTION));
 
-        return convertToResGetProductDtoForDetail(product);
+        Map<UUID, List<SubFile>> subFilesByFileId = subFileService.getSubFilesGroupedByFileId(
+                List.of(product.getDetailImgs().getId(), product.getThumbImg().getId())
+        );
+
+        return convertToResGetProductDtoForDetail(product, subFilesByFileId);
     }
 
     @Transactional(readOnly = true)
@@ -169,29 +174,37 @@ public class ProductService {
 //        List<ProductDocument> searchResults = productSearchRepository.findBySearchAndIds(search, productIds, pageable);
         Page<Product> products = productRepository.findAllWithSearchAndPaging(search, productIds, pageable);
 
+        // 상품마다 detailImgs/thumbImg의 SubFile을 LAZY로 하나씩 조회하면 N+1이 발생하므로,
+        // 이 페이지에 있는 File ID를 모아 한 번에 조회해 미리 그룹핑해둔다.
+        List<UUID> fileIds = products.stream()
+                .flatMap(product -> List.of(product.getDetailImgs().getId(), product.getThumbImg().getId()).stream())
+                .distinct()
+                .toList();
+        Map<UUID, List<SubFile>> subFilesByFileId = subFileService.getSubFilesGroupedByFileId(fileIds);
+
         // ElasticSearch 결과를 기반으로 JPA에서 상세 정보를 조회하거나 보완
 //        List<ResGetProductDto> productDtos = searchResults.stream()
 //                .map(this::convertToResGetProductDtoForList)
 //                .collect(Collectors.toList());
 
         List<ResGetProductDto> productDtos = products.stream()
-                .map(this::convertToResGetProductDto).toList();
+                .map(product -> convertToResGetProductDto(product, subFilesByFileId)).toList();
         // 반환
 //        return new PageImpl<>(productDtos, pageable, searchResults.size());
         return new PageImpl<>(productDtos, pageable, products.getTotalElements());
     }
 
-    private ResGetProductDto convertToResGetProductDtoForDetail(Product product) {
+    private ResGetProductDto convertToResGetProductDtoForDetail(Product product, Map<UUID, List<SubFile>> subFilesByFileId) {
         // 평점 계산
         BigDecimal rating =
                 product.getRatingSum() == 0 ? BigDecimal.valueOf(0.0) : BigDecimal.valueOf(product.getRatingSum())
                         .divide(BigDecimal.valueOf(product.getReviewCnt()), 1, RoundingMode.HALF_UP);
 
-        // 파일 정보
-        File detailImgsFile = product.getDetailImgs();
-        File thumbImgFile = product.getThumbImg();
-        List<String> detailImgs = detailImgsFile.getSubFiles().stream().map(SubFile::getResource).toList();
-        String thumbImg = thumbImgFile.getSubFiles().get(0).getResource();
+        // 파일 정보 (미리 조회해둔 맵에서 조회, 추가 쿼리 없음)
+        List<String> detailImgs = subFilesByFileId.getOrDefault(product.getDetailImgs().getId(), List.of())
+                .stream().map(SubFile::getResource).toList();
+        String thumbImg = subFilesByFileId.getOrDefault(product.getThumbImg().getId(), List.of())
+                .stream().findFirst().map(SubFile::getResource).orElse(null);
 
         // ResGetProductDto 생성
         return ResGetProductDto.builder()
@@ -236,17 +249,18 @@ public class ProductService {
 //                .build();
 //    }
 
-    private ResGetProductDto convertToResGetProductDto(Product product) {
+    private ResGetProductDto convertToResGetProductDto(Product product, Map<UUID, List<SubFile>> subFilesByFileId) {
         // 평점 계산
         BigDecimal rating = product.getRatingSum() == 0 || product.getReviewCnt() == 0
                 ? BigDecimal.valueOf(0.0)
                 : BigDecimal.valueOf(product.getRatingSum())
                 .divide(BigDecimal.valueOf(product.getReviewCnt()), 1, RoundingMode.HALF_UP);
 
-        File detailImgsFile = product.getDetailImgs();
-        File thumbImgFile = product.getThumbImg();
-        List<String> detailImgs = detailImgsFile.getSubFiles().stream().map(SubFile::getResource).toList();
-        String thumbImg = thumbImgFile.getSubFiles().get(0).getResource();
+        // 파일 정보 (미리 조회해둔 맵에서 조회, 추가 쿼리 없음)
+        List<String> detailImgs = subFilesByFileId.getOrDefault(product.getDetailImgs().getId(), List.of())
+                .stream().map(SubFile::getResource).toList();
+        String thumbImg = subFilesByFileId.getOrDefault(product.getThumbImg().getId(), List.of())
+                .stream().findFirst().map(SubFile::getResource).orElse(null);
 
         return ResGetProductDto.builder()
                 .productId(product.getId())

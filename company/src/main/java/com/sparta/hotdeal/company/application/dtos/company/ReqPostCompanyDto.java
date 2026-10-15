@@ -2,14 +2,17 @@ package com.sparta.hotdeal.company.application.dtos.company;
 
 import com.sparta.hotdeal.company.domain.entity.company.CompanyStatusEnum;
 import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ReqPostCompanyDto {
     @NotNull
     @Digits(integer = 10, fraction = 0, message = "10자리 숫자만 가능합니다.")

@@ -14,6 +14,8 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Slf4j
 @Component
@@ -23,7 +25,7 @@ public class ProductKafkaConsumer {
     private final ProductInventoryService productInventoryService;
     private final ObjectMapper objectMapper;
 
-    @Value("${spring.kafka.topics.request-order}")
+    @Value("${spring.kafka.topics.cancel-order}")
     private String requestOrderTopic;
 
     @KafkaListener(topics = "${spring.kafka.topics.reduce-quantity}", groupId = "product-group", concurrency = "2")
@@ -49,7 +51,15 @@ public class ProductKafkaConsumer {
                     rollbackMessage); // 실패 시 전체 요청 롤백
             acknowledgment.acknowledge();
         } catch (Exception e) {
+            // 이미 성공한 reduceQuantity()를 여기서 되돌려야 한다 (안 그러면 재고가 영구히 묶임).
+            // 같은 트랜잭션 안의 로컬 변경이므로 메시지가 아니라 트랜잭션 롤백으로 되돌리고,
+            // 주문 취소는 별도 서비스(order)에 있으므로 메시지로 알린다.
             log.error("예기치 않은 오류 발생: {}", e.getMessage());
+            if (TransactionSynchronizationManager.isActualTransactionActive()) {
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            }
+            String rollbackMessage = objectMapper.writeValueAsString(key);
+            sendRollbackMessage(requestOrderTopic, key.getOrderId().toString(), rollbackMessage);
             acknowledgment.acknowledge(); // 예외 발생 시에도 메시지 중복 처리를 방지
         }
     }
